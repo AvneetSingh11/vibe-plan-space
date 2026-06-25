@@ -1,0 +1,6 @@
+{
+  "name": "Vibe Plan Space",
+  "description": "An aesthetic spatial planner and atmospheric mood companion designed to beautifully balance your daily vibes and organize your plans.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
