@@ -58,7 +58,7 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
   };
 
   return (
-    <div className="space-y-6 perspective-scene">
+    <div className="space-y-6 perspective-scene px-4 md:px-8">
       <header className="mb-8">
         <h2 className="text-3xl font-display font-bold tracking-tight mb-2 flex items-center gap-2">
           <Link2 className="w-8 h-8 text-primary" />
@@ -71,11 +71,11 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Google Calendar Card */}
-        <div className="card-3d p-6 rounded-3xl relative overflow-hidden bg-card border border-border">
+        <div className="card-3d p-6 rounded-3xl relative overflow-hidden bg-card">
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
           
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-400">
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400">
               <Calendar className="w-6 h-6" />
             </div>
             <div>
@@ -88,19 +88,19 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
             {calendarState === "disconnected" && (
               <button 
                 onClick={handleConnectCalendar}
-                className="w-full py-2.5 rounded-xl bg-surface hover:bg-surface-elevated border border-border text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-xl bg-surface hover:bg-surface-elevated text-sm font-medium transition-colors flex items-center justify-center gap-2"
               >
                 Connect Calendar
               </button>
             )}
             {calendarState === "connecting" && (
-              <div className="w-full py-2.5 rounded-xl border border-border text-sm font-medium flex items-center justify-center gap-2 text-muted-foreground">
+              <div className="w-full py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2 text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Connecting...
               </div>
             )}
             {calendarState === "connected" && (
-              <div className="w-full py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium flex items-center justify-center gap-2">
+              <div className="w-full py-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 text-sm font-medium flex items-center justify-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
                 Connected
               </div>
@@ -109,11 +109,11 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
         </div>
 
         {/* Google Classroom Card */}
-        <div className="card-3d p-6 rounded-3xl relative overflow-hidden bg-card border border-border">
+        <div className="card-3d p-6 rounded-3xl relative overflow-hidden bg-card">
           <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl"></div>
           
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-emerald-400">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
               <GraduationCap className="w-6 h-6" />
             </div>
             <div>
@@ -126,19 +126,19 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
             {classroomState === "disconnected" && (
               <button 
                 onClick={handleConnectClassroom}
-                className="w-full py-2.5 rounded-xl bg-surface hover:bg-surface-elevated border border-border text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-xl bg-surface hover:bg-surface-elevated text-sm font-medium transition-colors flex items-center justify-center gap-2"
               >
                 Connect Classroom
               </button>
             )}
             {classroomState === "connecting" && (
-              <div className="w-full py-2.5 rounded-xl border border-border text-sm font-medium flex items-center justify-center gap-2 text-muted-foreground">
+              <div className="w-full py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2 text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Connecting...
               </div>
             )}
             {classroomState === "connected" && (
-              <div className="w-full py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium flex items-center justify-center gap-2">
+              <div className="w-full py-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 text-sm font-medium flex items-center justify-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
                 Connected
               </div>
@@ -149,7 +149,7 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
 
       {/* Sync Action Area */}
       {(calendarState === "connected" || classroomState === "connected") && (
-        <div className="mt-8 p-6 rounded-3xl bg-surface border border-border text-center">
+        <div className="mt-8 p-6 rounded-3xl bg-surface text-center">
           <p className="text-muted-foreground text-sm mb-4">
             Your accounts are connected. You can now use the AI to pull your upcoming events and assignments directly into your Eisenhower Matrix.
           </p>
