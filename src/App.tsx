@@ -1072,7 +1072,7 @@ export default function App() {
               <div className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
                 <section className="card-3d rounded-3xl p-6 bg-card -none">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="font-display text-2xl">Good afternoon</h2>
+                    <h2 className="font-display text-2xl">Good {getTimePhrase().toLowerCase()}</h2>
                     <div className="flex gap-2">
                       <button 
                         onClick={handleVoiceSummary}
