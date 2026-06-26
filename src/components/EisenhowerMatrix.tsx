@@ -196,7 +196,8 @@ export default function EisenhowerMatrix({
           />
           <PremiumDatePicker 
             value={newTaskDate[quadrantId]} 
-            onChange={(d) => setNewTaskDate(prev => ({...prev, [quadrantId]: d || ''}))} 
+            onChange={(d) => setNewTaskDate(prev => ({...prev, [quadrantId]: d || ''}))}
+            compact={true}
           />
           <button type="submit" className="bg-primary/20 text-primary hover:bg-primary/30 p-1.5 rounded-lg transition-colors cursor-pointer active:scale-95">
             <Plus className="w-3.5 h-3.5" />

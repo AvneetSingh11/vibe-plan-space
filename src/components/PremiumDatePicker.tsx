@@ -6,9 +6,10 @@ interface PremiumDatePickerProps {
   onChange: (dateStr: string) => void;
   className?: string;
   placeholder?: string;
+  compact?: boolean;
 }
 
-export default function PremiumDatePicker({ value, onChange, className = "", placeholder = "Schedule" }: PremiumDatePickerProps) {
+export default function PremiumDatePicker({ value, onChange, className = "", placeholder = "Schedule", compact = false }: PremiumDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
 
@@ -71,14 +72,14 @@ export default function PremiumDatePicker({ value, onChange, className = "", pla
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface text-sm text-muted-foreground hover:bg-surface-elevated hover:text-foreground transition focus:outline-none focus:ring-0 border-none ring-0"
+        className={`flex items-center gap-1.5 rounded-lg bg-surface text-sm transition focus:outline-none focus:ring-0 border-none ring-0 ${compact ? 'p-1.5' : 'px-3 py-1.5'} ${value ? 'text-primary' : 'text-muted-foreground'} hover:bg-surface-elevated hover:text-foreground`}
       >
         <CalendarIcon className="w-4 h-4" />
-        {formatDateLabel(value)}
+        {!compact && formatDateLabel(value)}
       </button>
 
       {isOpen && (
-        <div className="absolute z-[100] mt-2 p-5 w-72 rounded-2xl bg-card border border-border shadow-3d backdrop-blur-xl left-1/2 -translate-x-1/2 animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute z-[100] mt-2 p-5 w-72 rounded-2xl bg-card border border-border shadow-3d backdrop-blur-xl right-0 md:-translate-x-1/4 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
           
           {/* Quick Selects */}
           <div className="grid grid-cols-2 gap-2 mb-4">
