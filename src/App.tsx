@@ -107,17 +107,45 @@ export default function App() {
   const handleVoiceSummary = async () => {
     setIsVoiceLoading(true);
     setVoiceSummary(null);
+    
+    // Simulate AI processing delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+
     try {
-      const response = await fetch("http://localhost:5000/api/ai/briefing");
-      const data = await response.json();
-      setVoiceSummary(data.summary);
+      const pendingTasks = tasks.filter(t => !t.completed);
+      const urgentTasks = pendingTasks.filter(t => t.urgent && t.important);
+      const timeOfDay = getTimePhrase().toLowerCase();
+      
+      let summary = `${getTimePhrase()}! You currently have ${pendingTasks.length === 0 ? 'no' : pendingTasks.length} pending tasks. `;
+      
+      if (urgentTasks.length > 0) {
+        summary += `I recommend focusing on your ${urgentTasks.length} urgent and important tasks first, starting with "${urgentTasks[0].title}". `;
+      } else if (pendingTasks.length > 0) {
+        summary += `You have a clear orbit with no urgent tasks. Great job staying ahead! You might want to tackle "${pendingTasks[0].title}" next. `;
+      } else {
+        summary += `Your schedule is completely clear! Take some time to rest and recharge. `;
+      }
+
+      const activeHabits = habits.filter(h => h.streak > 2);
+      if (activeHabits.length > 0) {
+        summary += `Also, keep up the great work on your habits! You have a solid ${activeHabits[0].streak} day streak going for ${activeHabits[0].name}.`;
+      }
+
+      setVoiceSummary(summary);
       if ("speechSynthesis" in window) {
-        const utterance = new SpeechSynthesisUtterance(data.summary);
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(summary);
+        
+        // Try to pick a natural English voice
+        const voices = window.speechSynthesis.getVoices();
+        const selectedVoice = voices.find((v) => v.lang.startsWith("en-") && (v.name.includes("Google") || v.name.includes("Premium"))) || voices.find((v) => v.lang.startsWith("en"));
+        if (selectedVoice) utterance.voice = selectedVoice;
+        
         window.speechSynthesis.speak(utterance);
       }
     } catch (e) {
       console.error(e);
-      setVoiceSummary("Could not load AI briefing at this time.");
+      setVoiceSummary("Could not generate your briefing right now.");
     }
     setIsVoiceLoading(false);
   };
