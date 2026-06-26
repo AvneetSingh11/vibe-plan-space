@@ -1084,35 +1084,38 @@ export default function App() {
           {/* Orbit uses the global header instead */}
 
           {/* POMODORO TIMER BAR WIDGET (Always prominent if active or simple widget at top of tabs) */}
-          <div className="card-3d bg-card -none p-5 rounded-3xl -none bg-gradient-to-r from-purple-500/5 via-slate-950/10 to-transparent flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className={`w-14 h-14 rounded-full border-2 ${focusTimerActive ? "border-none" : "border-none"} flex items-center justify-center transition-all`}>
-                  <Timer className={`w-6 h-6 ${focusTimerActive ? "text-primary-foreground font-medium animate-pulse" : "text-muted-foreground"}`} />
+          <div className="bg-black/40 backdrop-blur-2xl border border-white/10 p-6 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex flex-col md:flex-row items-center justify-between gap-6 transition-all duration-500 hover:border-white/20 relative overflow-hidden">
+            {/* Subtle background glow when active */}
+            {focusTimerActive && (
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/5 to-transparent animate-pulse pointer-events-none" />
+            )}
+            
+            <div className="flex items-center gap-5 z-10">
+              <div className="relative group">
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${focusTimerActive ? 'from-pink-500/20 to-purple-600/20 border-pink-500/50 shadow-[0_0_20px_rgba(236,72,153,0.3)]' : 'from-white/5 to-white/10 border-white/10'} border flex items-center justify-center transition-all duration-500 group-hover:scale-105`}>
+                  <Timer className={`w-8 h-8 transition-colors duration-500 ${focusTimerActive ? "text-pink-400 font-medium animate-pulse" : "text-white/60"}`} />
                 </div>
-                {focusTimerActive && (
-                  <span className="absolute inset-0 rounded-full border-2 border-pink-500 animate-ping opacity-60" />
-                )}
               </div>
-              <div className="space-y-0.5 text-center md:text-left">
-                <span className="text-[9px] uppercase font-mono font-extrabold tracking-widest text-primary-foreground font-medium">
+              
+              <div className="space-y-1 text-center md:text-left">
+                <span className="text-[10px] uppercase font-mono font-black tracking-[0.2em] text-pink-400/80">
                   {activeFocusTask ? "Active Sprint Target" : "POMODORO TIMER"}
                 </span>
-                <h3 className="text-sm font-bold text-foreground">
+                <h3 className="text-base font-bold text-white/90 tracking-tight">
                   {activeFocusTask ? activeFocusTask.title : "Unscheduled Pomodoro Session"}
                 </h3>
-                <p className="text-[11px] font-mono text-muted-foreground">
-                  Remaining Session:{" "}
-                  <span className="text-foreground font-bold font-mono text-xs">
+                <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
+                  <div className={`w-2 h-2 rounded-full ${focusTimerActive ? 'bg-pink-400 animate-ping' : 'bg-white/20'}`} />
+                  <span className={`text-4xl font-black font-mono tracking-tighter drop-shadow-md transition-colors duration-500 ${focusTimerActive ? 'text-white' : 'text-white/70'}`}>
                     {Math.floor(focusTimeLeft / 60)}:{(focusTimeLeft % 60).toString().padStart(2, "0")}
                   </span>
-                </p>
+                </div>
               </div>
             </div>
 
             {/* Quick Timer presets and actions */}
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <div className="bg-surface-elevated/50 p-1 rounded-xl border border-none flex gap-1 text-[10px] font-bold font-mono">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 z-10">
+              <div className="bg-black/50 p-1.5 rounded-2xl border border-white/5 flex gap-1 text-[11px] font-bold font-mono shadow-inner">
                 {([15, 25, 45] as const).map((mins) => (
                   <button
                     key={mins}
@@ -1122,10 +1125,10 @@ export default function App() {
                       setFocusTimerActive(false);
                       triggerAlertBeep();
                     }}
-                    className={`px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
+                    className={`px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 ${
                       focusSelectedPreset === mins
-                        ? "bg-primary shadow-[0_0_10px_rgba(255,255,255,0.1)] border border-none text-pink-300"
-                        : "text-muted-foreground hover:text-muted-foreground"
+                        ? "bg-gradient-to-b from-white/15 to-white/5 shadow-[0_2px_10px_rgba(255,255,255,0.1)] border border-white/20 text-white"
+                        : "text-white/40 hover:text-white/80 hover:bg-white/5"
                     }`}
                   >
                     {mins}m
@@ -1133,18 +1136,20 @@ export default function App() {
                 ))}
               </div>
 
-              <div className="flex gap-1.5">
+              <div className="flex gap-2">
                 <button
                   onClick={() => {
                     setFocusTimerActive(!focusTimerActive);
                     triggerAlertBeep();
                   }}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer ${
-                    focusTimerActive ? "bg-surface-elevated/50 text-muted-foreground hover:bg-surface-elevated/50" : "orbit-button-primary"
+                  className={`px-6 py-2.5 rounded-2xl text-sm font-bold flex items-center gap-2 cursor-pointer transition-all duration-300 shadow-lg ${
+                    focusTimerActive 
+                      ? "bg-white/10 text-white/80 hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]" 
+                      : "bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:shadow-[0_0_20px_rgba(236,72,153,0.4)] border border-pink-400/30 hover:scale-105"
                   }`}
                 >
-                  {focusTimerActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                  {focusTimerActive ? "Pause" : "Start"}
+                  {focusTimerActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}
+                  {focusTimerActive ? "PAUSE" : "START"}
                 </button>
                 <button
                   onClick={() => {
@@ -1152,10 +1157,10 @@ export default function App() {
                     setFocusTimeLeft(focusSelectedPreset * 60);
                     triggerAlertBeep();
                   }}
-                  className="p-2 rounded-xl bg-surface-elevated/50 border border-none text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                  className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 transition-all cursor-pointer hover:rotate-180 duration-500"
                   title="Reset Timer"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
+                  <RotateCcw className="w-4 h-4" />
                 </button>
               </div>
             </div>
