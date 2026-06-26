@@ -32,51 +32,51 @@ interface HowWeFeelHubProps {
 
 export const EMOTION_TEMPLATES = [
   // High Energy, Pleasant
-  { emotion: "Excited", emoji: "⚡", energy: "high", pleasantness: "pleasant", color: "from-amber-400 to-orange-500", glow: "glow-purple" },
-  { emotion: "Focused", emoji: "🧠", energy: "high", pleasantness: "pleasant", color: "from-purple-400 to-indigo-500", glow: "glow-purple" },
-  { emotion: "Happy", emoji: "😊", energy: "high", pleasantness: "pleasant", color: "from-yellow-400 to-amber-500", glow: "glow-purple" },
-  { emotion: "Proud", emoji: "🦁", energy: "high", pleasantness: "pleasant", color: "from-orange-400 to-pink-500", glow: "glow-purple" },
-  { emotion: "Energetic", emoji: "🔥", energy: "high", pleasantness: "pleasant", color: "from-red-400 to-orange-500", glow: "glow-purple" },
-  { emotion: "Inspired", emoji: "✨", energy: "high", pleasantness: "pleasant", color: "from-purple-400 to-amber-300", glow: "glow-purple" },
-  { emotion: "Playful", emoji: "🎈", energy: "high", pleasantness: "pleasant", color: "from-pink-400 to-yellow-400", glow: "glow-purple" },
-  { emotion: "Motivated", emoji: "🎯", energy: "high", pleasantness: "pleasant", color: "from-amber-400 to-rose-500", glow: "glow-purple" },
-  { emotion: "Euphoric", emoji: "🤩", energy: "high", pleasantness: "pleasant", color: "from-yellow-400 to-rose-500", glow: "glow-purple" },
-  { emotion: "Empowered", emoji: "🦸", energy: "high", pleasantness: "pleasant", color: "from-amber-500 to-red-600", glow: "glow-purple" },
-  { emotion: "Confident", emoji: "😎", energy: "high", pleasantness: "pleasant", color: "from-orange-400 to-purple-500", glow: "glow-purple" },
+  { emotion: "Excited", emoji: "⚡", energy: "high", pleasantness: "pleasant", color: "from-indigo-400 to-slate-500", glow: "glow-slate" },
+  { emotion: "Focused", emoji: "🧠", energy: "high", pleasantness: "pleasant", color: "from-slate-400 to-blue-500", glow: "glow-slate" },
+  { emotion: "Happy", emoji: "😊", energy: "high", pleasantness: "pleasant", color: "from-yellow-400 to-indigo-500", glow: "glow-slate" },
+  { emotion: "Proud", emoji: "🦁", energy: "high", pleasantness: "pleasant", color: "from-slate-400 to-sky-500", glow: "glow-slate" },
+  { emotion: "Energetic", emoji: "🔥", energy: "high", pleasantness: "pleasant", color: "from-red-400 to-slate-500", glow: "glow-slate" },
+  { emotion: "Inspired", emoji: "✨", energy: "high", pleasantness: "pleasant", color: "from-slate-400 to-indigo-300", glow: "glow-slate" },
+  { emotion: "Playful", emoji: "🎈", energy: "high", pleasantness: "pleasant", color: "from-sky-400 to-yellow-400", glow: "glow-slate" },
+  { emotion: "Motivated", emoji: "🎯", energy: "high", pleasantness: "pleasant", color: "from-indigo-400 to-blue-500", glow: "glow-slate" },
+  { emotion: "Euphoric", emoji: "🤩", energy: "high", pleasantness: "pleasant", color: "from-yellow-400 to-blue-500", glow: "glow-slate" },
+  { emotion: "Empowered", emoji: "🦸", energy: "high", pleasantness: "pleasant", color: "from-indigo-500 to-red-600", glow: "glow-slate" },
+  { emotion: "Confident", emoji: "😎", energy: "high", pleasantness: "pleasant", color: "from-slate-400 to-slate-500", glow: "glow-slate" },
 
 
   // High Energy, Unpleasant
-  { emotion: "Anxious", emoji: "😰", energy: "high", pleasantness: "unpleasant", color: "from-rose-400 to-red-500", glow: "glow-cyan" },
-  { emotion: "Stressed", emoji: "🤯", energy: "high", pleasantness: "unpleasant", color: "from-red-500 to-pink-600", glow: "glow-cyan" },
-  { emotion: "Frustrated", emoji: "😤", energy: "high", pleasantness: "unpleasant", color: "from-orange-500 to-red-600", glow: "glow-cyan" },
-  { emotion: "Angry", emoji: "😡", energy: "high", pleasantness: "unpleasant", color: "from-red-600 to-rose-700", glow: "glow-cyan" },
-  { emotion: "Overwhelmed", emoji: "🌀", energy: "high", pleasantness: "unpleasant", color: "from-violet-500 to-rose-500", glow: "glow-cyan" },
-  { emotion: "Panicked", emoji: "🚨", energy: "high", pleasantness: "unpleasant", color: "from-red-500 to-purple-800", glow: "glow-cyan" },
-  { emotion: "Irritated", emoji: "💢", energy: "high", pleasantness: "unpleasant", color: "from-orange-500 to-slate-800", glow: "glow-cyan" },
-  { emotion: "Jittery", emoji: "🫨", energy: "high", pleasantness: "unpleasant", color: "from-yellow-600 to-red-700", glow: "glow-cyan" },
-  { emotion: "Furious", emoji: "🤬", energy: "high", pleasantness: "unpleasant", color: "from-red-700 to-black", glow: "glow-cyan" },
-  { emotion: "Restless", emoji: "😬", energy: "high", pleasantness: "unpleasant", color: "from-rose-500 to-amber-600", glow: "glow-cyan" },
-  { emotion: "Defensive", emoji: "🛡️", energy: "high", pleasantness: "unpleasant", color: "from-slate-700 to-rose-900", glow: "glow-cyan" },
+  { emotion: "Anxious", emoji: "😰", energy: "high", pleasantness: "unpleasant", color: "from-blue-400 to-red-500", glow: "glow-sky" },
+  { emotion: "Stressed", emoji: "🤯", energy: "high", pleasantness: "unpleasant", color: "from-red-500 to-sky-600", glow: "glow-sky" },
+  { emotion: "Frustrated", emoji: "😤", energy: "high", pleasantness: "unpleasant", color: "from-slate-500 to-red-600", glow: "glow-sky" },
+  { emotion: "Angry", emoji: "😡", energy: "high", pleasantness: "unpleasant", color: "from-red-600 to-blue-700", glow: "glow-sky" },
+  { emotion: "Overwhelmed", emoji: "🌀", energy: "high", pleasantness: "unpleasant", color: "from-indigo-500 to-blue-500", glow: "glow-sky" },
+  { emotion: "Panicked", emoji: "🚨", energy: "high", pleasantness: "unpleasant", color: "from-red-500 to-slate-800", glow: "glow-sky" },
+  { emotion: "Irritated", emoji: "💢", energy: "high", pleasantness: "unpleasant", color: "from-slate-500 to-slate-800", glow: "glow-sky" },
+  { emotion: "Jittery", emoji: "🫨", energy: "high", pleasantness: "unpleasant", color: "from-yellow-600 to-red-700", glow: "glow-sky" },
+  { emotion: "Furious", emoji: "🤬", energy: "high", pleasantness: "unpleasant", color: "from-red-700 to-black", glow: "glow-sky" },
+  { emotion: "Restless", emoji: "😬", energy: "high", pleasantness: "unpleasant", color: "from-blue-500 to-indigo-600", glow: "glow-sky" },
+  { emotion: "Defensive", emoji: "🛡️", energy: "high", pleasantness: "unpleasant", color: "from-slate-700 to-blue-900", glow: "glow-sky" },
 
 
   // Low Energy, Pleasant
-  { emotion: "Calm", emoji: "🧘", energy: "low", pleasantness: "pleasant", color: "from-emerald-400 to-teal-500", glow: "glow-green" },
-  { emotion: "Relaxed", emoji: "😌", energy: "low", pleasantness: "pleasant", color: "from-teal-400 to-cyan-500", glow: "glow-green" },
-  { emotion: "Peaceful", emoji: "🕊️", energy: "low", pleasantness: "pleasant", color: "from-sky-400 to-emerald-500", glow: "glow-green" },
-  { emotion: "Grateful", emoji: "🙏", energy: "low", pleasantness: "pleasant", color: "from-green-400 to-emerald-500", glow: "glow-green" },
-  { emotion: "Satisfied", emoji: "💚", energy: "low", pleasantness: "pleasant", color: "from-emerald-500 to-green-600", glow: "glow-green" },
-  { emotion: "Serene", emoji: "🌊", energy: "low", pleasantness: "pleasant", color: "from-sky-300 to-teal-400", glow: "glow-green" },
-  { emotion: "Content", emoji: "☕", energy: "low", pleasantness: "pleasant", color: "from-teal-400 to-lime-300", glow: "glow-green" },
-  { emotion: "Thoughtful", emoji: "💬", energy: "low", pleasantness: "pleasant", color: "from-indigo-400 to-teal-400", glow: "glow-green" },
-  { emotion: "Cozy", emoji: "🍵", energy: "low", pleasantness: "pleasant", color: "from-amber-200 to-rose-300", glow: "glow-green" },
-  { emotion: "Mellow", emoji: "🪴", energy: "low", pleasantness: "pleasant", color: "from-teal-200 to-green-400", glow: "glow-green" },
-  { emotion: "Reflective", emoji: "🪞", energy: "low", pleasantness: "pleasant", color: "from-indigo-300 to-sky-400", glow: "glow-green" },
+  { emotion: "Calm", emoji: "🧘", energy: "low", pleasantness: "pleasant", color: "from-slate-400 to-blue-500", glow: "glow-green" },
+  { emotion: "Relaxed", emoji: "😌", energy: "low", pleasantness: "pleasant", color: "from-blue-400 to-sky-500", glow: "glow-green" },
+  { emotion: "Peaceful", emoji: "🕊️", energy: "low", pleasantness: "pleasant", color: "from-indigo-400 to-slate-500", glow: "glow-green" },
+  { emotion: "Grateful", emoji: "🙏", energy: "low", pleasantness: "pleasant", color: "from-green-400 to-slate-500", glow: "glow-green" },
+  { emotion: "Satisfied", emoji: "💚", energy: "low", pleasantness: "pleasant", color: "from-slate-500 to-green-600", glow: "glow-green" },
+  { emotion: "Serene", emoji: "🌊", energy: "low", pleasantness: "pleasant", color: "from-indigo-300 to-blue-400", glow: "glow-green" },
+  { emotion: "Content", emoji: "☕", energy: "low", pleasantness: "pleasant", color: "from-blue-400 to-lime-300", glow: "glow-green" },
+  { emotion: "Thoughtful", emoji: "💬", energy: "low", pleasantness: "pleasant", color: "from-blue-400 to-blue-400", glow: "glow-green" },
+  { emotion: "Cozy", emoji: "🍵", energy: "low", pleasantness: "pleasant", color: "from-indigo-200 to-blue-300", glow: "glow-green" },
+  { emotion: "Mellow", emoji: "🪴", energy: "low", pleasantness: "pleasant", color: "from-blue-200 to-green-400", glow: "glow-green" },
+  { emotion: "Reflective", emoji: "🪞", energy: "low", pleasantness: "pleasant", color: "from-blue-300 to-indigo-400", glow: "glow-green" },
 
 
   // Low Energy, Unpleasant
-  { emotion: "Tired", emoji: "🥱", energy: "low", pleasantness: "unpleasant", color: "from-indigo-400 to-blue-500", glow: "" },
-  { emotion: "Bored", emoji: "😐", energy: "low", pleasantness: "unpleasant", color: "from-slate-400 to-indigo-500", glow: "" },
-  { emotion: "Sad", emoji: "😢", energy: "low", pleasantness: "unpleasant", color: "from-blue-500 to-indigo-600", glow: "" },
+  { emotion: "Tired", emoji: "🥱", energy: "low", pleasantness: "unpleasant", color: "from-blue-400 to-blue-500", glow: "" },
+  { emotion: "Bored", emoji: "😐", energy: "low", pleasantness: "unpleasant", color: "from-slate-400 to-blue-500", glow: "" },
+  { emotion: "Sad", emoji: "😢", energy: "low", pleasantness: "unpleasant", color: "from-blue-500 to-blue-600", glow: "" },
   { emotion: "Lonely", emoji: "🥀", energy: "low", pleasantness: "unpleasant", color: "from-blue-600 to-slate-600", glow: "" },
   { emotion: "Disappointed", emoji: "🥺", energy: "low", pleasantness: "unpleasant", color: "from-slate-500 to-blue-600", glow: "" },
   { emotion: "Exhausted", emoji: "🔋", energy: "low", pleasantness: "unpleasant", color: "from-slate-700 to-black", glow: "" },
@@ -98,7 +98,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, className = "" }:
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-2 text-[10px] sm:text-xs rounded-xl text-left flex items-center justify-between bg-slate-950/60 border border-slate-800 hover:border-purple-500/50 transition-colors cursor-pointer text-slate-200"
+        className="w-full px-3 py-2 text-[10px] sm:text-xs rounded-xl text-left flex items-center justify-between bg-slate-950/60 border border-slate-800 hover:border-slate-500/50 transition-colors cursor-pointer text-slate-200"
       >
         <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-2" />
@@ -115,7 +115,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, className = "" }:
               <button
                 key={opt.value}
                 type="button"
-                className="w-full text-left px-3 py-2 text-[10px] sm:text-xs text-slate-200 hover:bg-purple-600/20 hover:text-purple-300 transition-colors first:rounded-t-xl last:rounded-b-xl truncate"
+                className="w-full text-left px-3 py-2 text-[10px] sm:text-xs text-slate-200 hover:bg-slate-600/20 hover:text-slate-300 transition-colors first:rounded-t-xl last:rounded-b-xl truncate"
                 onClick={() => {
                   onChange(opt.value);
                   setIsOpen(false);
@@ -319,12 +319,12 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
     <div id="how-we-feel-hub" className="space-y-6">
       
       {/* Banner introduction with glass design */}
-      <div className="card-3d bg-card border-none p-6 rounded-2xl border border-purple-500/10 relative overflow-hidden">
-        <div className="absolute top-[-10%] right-[-5%] w-[30%] h-[120%] bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="card-3d bg-card border-none p-6 rounded-2xl border border-slate-500/10 relative overflow-hidden">
+        <div className="absolute top-[-10%] right-[-5%] w-[30%] h-[120%] bg-gradient-to-br from-slate-500/10 to-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-purple-400 tracking-widest uppercase font-mono flex items-center gap-1.5">
-              <Heart className="w-3.5 h-3.5 text-purple-400 fill-purple-400/20" /> Mind & Focus Hub
+            <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono flex items-center gap-1.5">
+              <Heart className="w-3.5 h-3.5 text-slate-400 fill-slate-400/20" /> Mind & Focus Hub
             </span>
             <h2 className="text-xl md:text-2xl font-extrabold text-foreground font-display">
               The "How We Feel" Focus Engine
@@ -338,7 +338,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             <button
               onClick={() => setHubTab("log")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                hubTab === "log" ? "bg-purple-600 text-slate-950 shadow-md" : "text-muted-foreground hover:text-foreground"
+                hubTab === "log" ? "bg-slate-600 text-slate-950 shadow-md" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Log Emotion
@@ -346,7 +346,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             <button
               onClick={() => setHubTab("stats")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                hubTab === "stats" ? "bg-purple-600 text-slate-950 shadow-md" : "text-muted-foreground hover:text-foreground"
+                hubTab === "stats" ? "bg-slate-600 text-slate-950 shadow-md" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Mind Statistics
@@ -354,7 +354,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             <button
               onClick={() => setHubTab("analytics")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                hubTab === "analytics" ? "bg-purple-600 text-slate-950 shadow-md" : "text-muted-foreground hover:text-foreground"
+                hubTab === "analytics" ? "bg-slate-600 text-slate-950 shadow-md" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Deep Analytics
@@ -362,7 +362,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             <button
               onClick={() => setHubTab("insights")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                hubTab === "insights" ? "bg-purple-600 text-slate-950 shadow-md" : "text-muted-foreground hover:text-foreground"
+                hubTab === "insights" ? "bg-slate-600 text-slate-950 shadow-md" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               AI Insights Guide
@@ -379,7 +379,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
           <div className="lg:col-span-7 space-y-6">
             <div className="card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60 flex flex-col h-full">
               <h3 className="text-sm font-bold text-slate-200 mb-4 flex items-center gap-1.5 font-display">
-                <Smile className="w-4 h-4 text-purple-400" />
+                <Smile className="w-4 h-4 text-slate-400" />
                 Select Your Emotional Quadrant
               </h3>
 
@@ -392,20 +392,20 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                   onClick={() => setSelectedQuadrant("high-pleasant")}
                   className={`relative p-5 rounded-2xl flex flex-col justify-between text-left transition-all duration-300 border cursor-pointer ${
                     selectedQuadrant === "high-pleasant"
-                      ? "bg-amber-500/15 border-amber-400/80 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
-                      : "bg-amber-950/5 border-amber-500/10 hover:border-amber-500/40 hover:bg-amber-500/5"
+                      ? "bg-indigo-500/15 border-indigo-400/80 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+                      : "bg-indigo-950/5 border-indigo-500/10 hover:border-indigo-500/40 hover:bg-indigo-500/5"
                   }`}
                 >
                   <div>
-                    <span className="block text-sm font-extrabold text-amber-300 uppercase tracking-wider font-sans">High Energy</span>
-                    <span className="block text-xs text-amber-500 font-semibold font-mono mt-1">Pleasant Feelings</span>
+                    <span className="block text-sm font-extrabold text-indigo-300 uppercase tracking-wider font-sans">High Energy</span>
+                    <span className="block text-xs text-indigo-500 font-semibold font-mono mt-1">Pleasant Feelings</span>
                   </div>
                   <div className="flex items-center justify-between mt-auto">
                     <div className="flex -space-x-1.5">
                       <EmotionBlock emotion="Happy" size="sm" animate={false} />
                       <EmotionBlock emotion="Excited" size="sm" animate={false} />
                     </div>
-                    <span className="text-xs font-bold bg-amber-500/10 text-amber-400 px-2 py-1 rounded border border-amber-500/20">Yellow</span>
+                    <span className="text-xs font-bold bg-indigo-500/10 text-indigo-400 px-2 py-1 rounded border border-indigo-500/20">Yellow</span>
                   </div>
                 </button>
 
@@ -415,20 +415,20 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                   onClick={() => setSelectedQuadrant("high-unpleasant")}
                   className={`relative p-5 rounded-2xl flex flex-col justify-between text-left transition-all duration-300 border cursor-pointer ${
                     selectedQuadrant === "high-unpleasant"
-                      ? "bg-rose-500/15 border-rose-400/80 shadow-[0_0_20px_rgba(244,63,94,0.15)]"
-                      : "bg-rose-950/5 border-rose-500/10 hover:border-rose-500/40 hover:bg-rose-500/5"
+                      ? "bg-blue-500/15 border-blue-400/80 shadow-[0_0_20px_rgba(244,63,94,0.15)]"
+                      : "bg-blue-950/5 border-blue-500/10 hover:border-blue-500/40 hover:bg-blue-500/5"
                   }`}
                 >
                   <div>
-                    <span className="block text-sm font-extrabold text-rose-300 uppercase tracking-wider font-sans">High Energy</span>
-                    <span className="block text-xs text-rose-500 font-semibold font-mono mt-1">Unpleasant Feelings</span>
+                    <span className="block text-sm font-extrabold text-blue-300 uppercase tracking-wider font-sans">High Energy</span>
+                    <span className="block text-xs text-blue-500 font-semibold font-mono mt-1">Unpleasant Feelings</span>
                   </div>
                   <div className="flex items-center justify-between mt-auto">
                     <div className="flex -space-x-1.5">
                       <EmotionBlock emotion="Anxious" size="sm" animate={false} />
                       <EmotionBlock emotion="Stressed" size="sm" animate={false} />
                     </div>
-                    <span className="text-xs font-bold bg-rose-500/10 text-rose-400 px-2 py-1 rounded border border-rose-500/20">Red</span>
+                    <span className="text-xs font-bold bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20">Red</span>
                   </div>
                 </button>
 
@@ -438,20 +438,20 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                   onClick={() => setSelectedQuadrant("low-pleasant")}
                   className={`relative p-5 rounded-2xl flex flex-col justify-between text-left transition-all duration-300 border cursor-pointer ${
                     selectedQuadrant === "low-pleasant"
-                      ? "bg-emerald-500/15 border-emerald-400/80 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
-                      : "bg-emerald-950/5 border-emerald-500/10 hover:border-emerald-500/40 hover:bg-emerald-500/5"
+                      ? "bg-slate-500/15 border-slate-400/80 shadow-[0_0_20px_rgba(16,185,129,0.15)]"
+                      : "bg-slate-950/5 border-slate-500/10 hover:border-slate-500/40 hover:bg-slate-500/5"
                   }`}
                 >
                   <div>
-                    <span className="block text-sm font-extrabold text-emerald-300 uppercase tracking-wider font-sans">Low Energy</span>
-                    <span className="block text-xs text-emerald-500 font-semibold font-mono mt-1">Pleasant Feelings</span>
+                    <span className="block text-sm font-extrabold text-slate-300 uppercase tracking-wider font-sans">Low Energy</span>
+                    <span className="block text-xs text-slate-500 font-semibold font-mono mt-1">Pleasant Feelings</span>
                   </div>
                   <div className="flex items-center justify-between mt-auto">
                     <div className="flex -space-x-1.5">
                       <EmotionBlock emotion="Calm" size="sm" animate={false} />
                       <EmotionBlock emotion="Relaxed" size="sm" animate={false} />
                     </div>
-                    <span className="text-xs font-bold bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20">Green</span>
+                    <span className="text-xs font-bold bg-slate-500/10 text-slate-400 px-2 py-1 rounded border border-slate-500/20">Green</span>
                   </div>
                 </button>
 
@@ -461,20 +461,20 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                   onClick={() => setSelectedQuadrant("low-unpleasant")}
                   className={`relative p-5 rounded-2xl flex flex-col justify-between text-left transition-all duration-300 border cursor-pointer ${
                     selectedQuadrant === "low-unpleasant"
-                      ? "bg-indigo-500/15 border-indigo-400/80 shadow-[0_0_20px_rgba(99,102,241,0.15)]"
-                      : "bg-indigo-950/5 border-indigo-500/10 hover:border-indigo-500/40 hover:bg-indigo-500/5"
+                      ? "bg-blue-500/15 border-blue-400/80 shadow-[0_0_20px_rgba(99,102,241,0.15)]"
+                      : "bg-blue-950/5 border-blue-500/10 hover:border-blue-500/40 hover:bg-blue-500/5"
                   }`}
                 >
                   <div>
-                    <span className="block text-sm font-extrabold text-indigo-300 uppercase tracking-wider font-sans">Low Energy</span>
-                    <span className="block text-xs text-indigo-500 font-semibold font-mono mt-1">Unpleasant Feelings</span>
+                    <span className="block text-sm font-extrabold text-blue-300 uppercase tracking-wider font-sans">Low Energy</span>
+                    <span className="block text-xs text-blue-500 font-semibold font-mono mt-1">Unpleasant Feelings</span>
                   </div>
                   <div className="flex items-center justify-between mt-auto">
                     <div className="flex -space-x-1.5">
                       <EmotionBlock emotion="Tired" size="sm" animate={false} />
                       <EmotionBlock emotion="Bored" size="sm" animate={false} />
                     </div>
-                    <span className="text-xs font-bold bg-indigo-500/10 text-indigo-400 px-2 py-1 rounded border border-indigo-500/20">Blue</span>
+                    <span className="text-xs font-bold bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20">Blue</span>
                   </div>
                 </button>
 
@@ -489,7 +489,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                   {selectedQuadrant && (
                     <button
                       onClick={() => setSelectedQuadrant(null)}
-                      className="text-[10px] text-purple-400 hover:text-purple-300 font-mono"
+                      className="text-[10px] text-slate-400 hover:text-slate-300 font-mono"
                     >
                       Show All Categories
                     </button>
@@ -504,7 +504,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                       onClick={() => setChosenEmotion(item)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
                         chosenEmotion?.emotion === item.emotion
-                          ? "bg-purple-600 text-slate-950 border-purple-500 font-extrabold"
+                          ? "bg-slate-600 text-slate-950 border-slate-500 font-extrabold"
                           : "bg-slate-950/50 border-slate-800 hover:border-slate-700 text-foreground"
                       }`}
                     >
@@ -524,7 +524,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             {/* Quick Log Form */}
             <div className="card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60">
               <h3 className="text-sm font-bold text-slate-200 mb-3 flex items-center gap-1.5 font-display">
-                <PenTool className="w-4 h-4 text-purple-400" />
+                <PenTool className="w-4 h-4 text-slate-400" />
                 Submit Emotional Check-In
               </h3>
 
@@ -574,14 +574,14 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                     value={logNote}
                     onChange={(e) => setLogNote(e.target.value)}
                     placeholder="E.g., I'm feeling stressed due to a close deadline, but I'm ready to write down the final code."
-                    className="w-full px-3 py-2 text-xs rounded-xl text-foreground placeholder-slate-500 bg-slate-950/40 border border-slate-800 focus:outline-none focus:border-purple-500"
+                    className="w-full px-3 py-2 text-xs rounded-xl text-foreground placeholder-slate-500 bg-slate-950/40 border border-slate-800 focus:outline-none focus:border-slate-500"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={!chosenEmotion}
-                  className="w-full py-2.5 bg-purple-600 hover:bg-purple-500 disabled:bg-slate-800 disabled:text-slate-600 rounded-xl text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-slate-600 hover:bg-slate-500 disabled:bg-slate-800 disabled:text-slate-600 rounded-xl text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Heart className="w-3.5 h-3.5 fill-slate-950/10" />
                   Record Reflection Entry
@@ -592,7 +592,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             {/* Pre/Post Task Specific Action Panel */}
             <div className="card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60 space-y-4">
               <h3 className="text-sm font-bold text-slate-200 flex items-center gap-1.5 font-display">
-                <Brain className="w-4 h-4 text-purple-400" />
+                <Brain className="w-4 h-4 text-slate-400" />
                 Before & After Task reflections
               </h3>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -601,7 +601,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
 
               {/* Before Starting List */}
               <div className="space-y-2.5">
-                <span className="block text-[10px] uppercase font-bold text-purple-400 tracking-wider font-mono">
+                <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider font-mono">
                   Pending Task Mood Trigger
                 </span>
 
@@ -615,7 +615,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                           <p className="text-[11px] font-bold text-slate-200 truncate">{task.title}</p>
                           <p className="text-[9px] text-muted-foreground font-mono flex items-center gap-1.5 mt-0.5">
                             Before state: {task.emotionBefore ? (
-                              <span className="text-purple-400 font-bold flex items-center gap-1">
+                              <span className="text-slate-400 font-bold flex items-center gap-1">
                                 <EmotionBlock emotion={task.emotionBefore} size="xs" animate={false} />
                                 {task.emotionBefore}
                               </span>
@@ -636,7 +636,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                             <button
                               onClick={() => handleTaskBeforeSubmit(task.id, taskBeforeEmotion)}
                               disabled={!taskBeforeEmotion}
-                              className="text-[9px] bg-purple-600 hover:bg-purple-500 text-slate-950 px-1.5 py-0.5 rounded font-bold cursor-pointer"
+                              className="text-[9px] bg-slate-600 hover:bg-slate-500 text-slate-950 px-1.5 py-0.5 rounded font-bold cursor-pointer"
                             >
                               Log
                             </button>
@@ -660,7 +660,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
 
               {/* After Completing List */}
               <div className="space-y-2.5 pt-2 border-t border-slate-800/40">
-                <span className="block text-[10px] uppercase font-bold text-cyan-400 tracking-wider font-mono">
+                <span className="block text-[10px] uppercase font-bold text-sky-400 tracking-wider font-mono">
                   Reflect on Completed Tasks
                 </span>
 
@@ -684,7 +684,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                             )}
                             <span className="text-slate-600">&rarr;</span>
                             {task.emotionAfter ? (
-                              <span className="text-cyan-400 font-bold flex items-center gap-1">
+                              <span className="text-sky-400 font-bold flex items-center gap-1">
                                 <EmotionBlock emotion={task.emotionAfter} size="xs" animate={false} />
                                 {task.emotionAfter}
                               </span>
@@ -706,7 +706,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                               <button
                                 onClick={() => handleTaskAfterSubmit(task.id, taskAfterEmotion)}
                                 disabled={!taskAfterEmotion}
-                                className="text-[9px] bg-cyan-600 hover:bg-cyan-500 text-slate-950 px-1.5 py-0.5 rounded font-bold cursor-pointer"
+                                className="text-[9px] bg-sky-600 hover:bg-sky-500 text-slate-950 px-1.5 py-0.5 rounded font-bold cursor-pointer"
                               >
                                 Log
                               </button>
@@ -717,7 +717,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                                 setTaskAfterLogSelected(task.id);
                                 setTaskAfterEmotion("");
                               }}
-                              className="text-[9px] bg-cyan-600/10 hover:bg-cyan-600/20 border border-cyan-500/20 text-cyan-400 px-2 py-1 rounded-lg font-bold cursor-pointer shrink-0"
+                              className="text-[9px] bg-sky-600/10 hover:bg-sky-600/20 border border-sky-500/20 text-sky-400 px-2 py-1 rounded-lg font-bold cursor-pointer shrink-0"
                             >
                               Reflect Mood
                             </button>
@@ -744,7 +744,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             {/* Visual Donut Dial Metrics (5 cols) */}
             <div className="md:col-span-5 card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60 flex flex-col items-center justify-center min-h-[300px]">
               <h3 className="text-sm font-bold text-slate-200 mb-6 self-start flex items-center gap-1.5 font-display">
-                <Activity className="w-4 h-4 text-purple-400" /> Average Mood Coordinates
+                <Activity className="w-4 h-4 text-slate-400" /> Average Mood Coordinates
               </h3>
 
               <div className="grid grid-cols-2 gap-8 w-full">
@@ -804,7 +804,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             {/* Distribution Stats Bars (7 cols) */}
             <div className="md:col-span-7 card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60 space-y-4">
               <h3 className="text-sm font-bold text-slate-200 flex items-center gap-1.5 font-display">
-                <TrendingUp className="w-4 h-4 text-purple-400" /> Affect Quadrant Distribution
+                <TrendingUp className="w-4 h-4 text-slate-400" /> Affect Quadrant Distribution
               </h3>
 
               {totalLogs === 0 ? (
@@ -816,44 +816,44 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                   {/* Yellow Bar */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-amber-400 flex items-center gap-1">💛 Yellow: High Energy, Pleasant</span>
+                      <span className="font-bold text-yellow-200 flex items-center gap-1">💛 Yellow: High Energy, Pleasant</span>
                       <span className="font-mono text-muted-foreground">{countHighPleasant} logs ({pctHP}%)</span>
                     </div>
                     <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800/50">
-                      <div className="bg-gradient-to-r from-amber-400 to-orange-500 h-full rounded-full transition-all duration-500" style={{ width: `${pctHP}%` }}></div>
+                      <div className="bg-gradient-to-r from-yellow-200/80 to-amber-300/80 h-full rounded-full transition-all duration-500" style={{ width: `${pctHP}%` }}></div>
                     </div>
                   </div>
 
                   {/* Red Bar */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-rose-400 flex items-center gap-1">❤️ Red: High Energy, Unpleasant</span>
+                      <span className="font-bold text-rose-300 flex items-center gap-1">❤️ Red: High Energy, Unpleasant</span>
                       <span className="font-mono text-muted-foreground">{countHighUnpleasant} logs ({pctHU}%)</span>
                     </div>
                     <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800/50">
-                      <div className="bg-gradient-to-r from-rose-500 to-red-600 h-full rounded-full transition-all duration-500" style={{ width: `${pctHU}%` }}></div>
+                      <div className="bg-gradient-to-r from-rose-300/80 to-red-300/80 h-full rounded-full transition-all duration-500" style={{ width: `${pctHU}%` }}></div>
                     </div>
                   </div>
 
                   {/* Green Bar */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-emerald-400 flex items-center gap-1">💚 Green: Low Energy, Pleasant</span>
+                      <span className="font-bold text-emerald-300 flex items-center gap-1">💚 Green: Low Energy, Pleasant</span>
                       <span className="font-mono text-muted-foreground">{countLowPleasant} logs ({pctLP}%)</span>
                     </div>
                     <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800/50">
-                      <div className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full transition-all duration-500" style={{ width: `${pctLP}%` }}></div>
+                      <div className="bg-gradient-to-r from-emerald-300/80 to-teal-300/80 h-full rounded-full transition-all duration-500" style={{ width: `${pctLP}%` }}></div>
                     </div>
                   </div>
 
                   {/* Blue Bar */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-indigo-400 flex items-center gap-1">💙 Blue: Low Energy, Unpleasant</span>
+                      <span className="font-bold text-blue-300 flex items-center gap-1">💙 Blue: Low Energy, Unpleasant</span>
                       <span className="font-mono text-muted-foreground">{countLowUnpleasant} logs ({pctLU}%)</span>
                     </div>
                     <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800/50">
-                      <div className="bg-gradient-to-r from-indigo-500 to-blue-600 h-full rounded-full transition-all duration-500" style={{ width: `${pctLU}%` }}></div>
+                      <div className="bg-gradient-to-r from-blue-300/80 to-indigo-300/80 h-full rounded-full transition-all duration-500" style={{ width: `${pctLU}%` }}></div>
                     </div>
                   </div>
                 </div>
@@ -866,7 +866,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
           {/* Historical Check-Ins log feed list */}
           <div className="card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60">
             <h3 className="text-sm font-bold text-slate-200 mb-4 flex items-center gap-1.5 font-display">
-              <Calendar className="w-4 h-4 text-purple-400" />
+              <Calendar className="w-4 h-4 text-slate-400" />
               Mind Reflection Feed History
             </h3>
 
@@ -876,10 +876,10 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
               <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                 {emotionLogs.slice().reverse().map((log) => {
                   let badgeColor = "bg-slate-900 border-slate-800 text-muted-foreground";
-                  if (log.energy === "high" && log.pleasantness === "pleasant") badgeColor = "bg-amber-500/10 border-amber-500/20 text-amber-300";
-                  if (log.energy === "high" && log.pleasantness === "unpleasant") badgeColor = "bg-rose-500/10 border-rose-500/20 text-rose-300";
-                  if (log.energy === "low" && log.pleasantness === "pleasant") badgeColor = "bg-emerald-500/10 border-emerald-500/20 text-emerald-300";
-                  if (log.energy === "low" && log.pleasantness === "unpleasant") badgeColor = "bg-indigo-500/10 border-indigo-500/20 text-indigo-300";
+                  if (log.energy === "high" && log.pleasantness === "pleasant") badgeColor = "bg-indigo-500/10 border-indigo-500/20 text-indigo-300";
+                  if (log.energy === "high" && log.pleasantness === "unpleasant") badgeColor = "bg-blue-500/10 border-blue-500/20 text-blue-300";
+                  if (log.energy === "low" && log.pleasantness === "pleasant") badgeColor = "bg-slate-500/10 border-slate-500/20 text-slate-300";
+                  if (log.energy === "low" && log.pleasantness === "unpleasant") badgeColor = "bg-blue-500/10 border-blue-500/20 text-blue-300";
 
                   return (
                     <div key={log.id} className="p-3 bg-slate-950/40 border border-slate-900 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
@@ -922,12 +922,12 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
         <div className="space-y-6">
           <div className="card-3d bg-card border-none p-6 rounded-2xl border border-slate-800/60 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
-              <Sparkles className="w-24 h-24 text-purple-400 animate-pulse" />
+              <Sparkles className="w-24 h-24 text-slate-400 animate-pulse" />
             </div>
 
             <div className="space-y-4 max-w-3xl">
               <h3 className="text-lg font-bold text-foreground flex items-center gap-2 font-display">
-                <Sparkles className="w-5 h-5 text-purple-400 animate-spin" style={{ animationDuration: "12s" }} />
+                <Sparkles className="w-5 h-5 text-slate-400 animate-spin" style={{ animationDuration: "12s" }} />
                 Gemini Cognitive Mindset Companion
               </h3>
               <p className="text-xs text-foreground leading-relaxed">
@@ -938,7 +938,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                 <button
                   onClick={fetchAIInsights}
                   disabled={insightsLoading}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:from-slate-800 disabled:to-slate-900 disabled:text-slate-600 rounded-xl text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-lg shadow-purple-500/10 transition-all duration-200"
+                  className="px-4 py-2 bg-gradient-to-r from-slate-600 to-blue-600 hover:from-slate-500 hover:to-blue-500 disabled:from-slate-800 disabled:to-slate-900 disabled:text-slate-600 rounded-xl text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-lg shadow-slate-500/10 transition-all duration-200"
                 >
                   {insightsLoading ? (
                     <>
@@ -965,8 +965,8 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
           {/* Render Active Insights Card */}
           {insightsLoading && (
             <div className="card-3d bg-card border-none p-12 rounded-2xl border border-slate-800/60 flex flex-col items-center justify-center space-y-4">
-              <div className="w-12 h-12 rounded-full bg-purple-600/10 border border-purple-500/20 flex items-center justify-center animate-bounce">
-                <Brain className="w-6 h-6 text-purple-400 animate-pulse" />
+              <div className="w-12 h-12 rounded-full bg-slate-600/10 border border-slate-500/20 flex items-center justify-center animate-bounce">
+                <Brain className="w-6 h-6 text-slate-400 animate-pulse" />
               </div>
               <div className="text-center space-y-1">
                 <p className="text-xs font-bold text-slate-200">Processing Psychometric Metrics...</p>
@@ -991,13 +991,13 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
               {/* Cognitive Summary */}
-              <div className="card-3d bg-card border-none p-5 rounded-2xl border border-purple-500/10 space-y-3 relative overflow-hidden">
+              <div className="card-3d bg-card border-none p-5 rounded-2xl border border-slate-500/10 space-y-3 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                  <Smile className="w-16 h-16 text-purple-400" />
+                  <Smile className="w-16 h-16 text-slate-400" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400">
-                    <Smile className="w-4 h-4 text-purple-400" />
+                  <div className="p-1.5 rounded-lg bg-slate-500/10 border border-slate-500/20 text-slate-400">
+                    <Smile className="w-4 h-4 text-slate-400" />
                   </div>
                   <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono">Cognitive Summary</h4>
                 </div>
@@ -1007,13 +1007,13 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
               </div>
 
               {/* Productivity Correlation */}
-              <div className="card-3d bg-card border-none p-5 rounded-2xl border border-cyan-500/10 space-y-3 relative overflow-hidden">
+              <div className="card-3d bg-card border-none p-5 rounded-2xl border border-sky-500/10 space-y-3 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                  <TrendingUp className="w-16 h-16 text-cyan-400" />
+                  <TrendingUp className="w-16 h-16 text-sky-400" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
-                    <TrendingUp className="w-4 h-4 text-cyan-400" />
+                  <div className="p-1.5 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400">
+                    <TrendingUp className="w-4 h-4 text-sky-400" />
                   </div>
                   <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono">Productivity Correlation</h4>
                 </div>
@@ -1023,13 +1023,13 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
               </div>
 
               {/* Tactical Mindset Hacks */}
-              <div className="card-3d bg-card border-none p-5 rounded-2xl border border-emerald-500/10 space-y-3 relative overflow-hidden">
+              <div className="card-3d bg-card border-none p-5 rounded-2xl border border-slate-500/10 space-y-3 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                  <MessageSquare className="w-16 h-16 text-emerald-400" />
+                  <MessageSquare className="w-16 h-16 text-slate-400" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                    <MessageSquare className="w-4 h-4 text-emerald-400" />
+                  <div className="p-1.5 rounded-lg bg-slate-500/10 border border-slate-500/20 text-slate-400">
+                    <MessageSquare className="w-4 h-4 text-slate-400" />
                   </div>
                   <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono">Tactical Mindset Hacks</h4>
                 </div>
@@ -1105,17 +1105,17 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
         };
 
         const circadianPeriods = [
-          { name: "Morning Routine", hours: "5 AM - 12 PM", logs: morningLogs, dominant: getDominant(morningLogs), pleasant: getPleasantPct(morningLogs), color: "from-amber-500/20 to-orange-500/5", border: "border-amber-500/20", textColor: "text-amber-400" },
-          { name: "Midday Focus", hours: "12 PM - 5 PM", logs: afternoonLogs, dominant: getDominant(afternoonLogs), pleasant: getPleasantPct(afternoonLogs), color: "from-sky-500/20 to-cyan-500/5", border: "border-sky-500/20", textColor: "text-sky-400" },
-          { name: "Evening Wind Down", hours: "5 PM - 10 PM", logs: eveningLogs, dominant: getDominant(eveningLogs), pleasant: getPleasantPct(eveningLogs), color: "from-indigo-500/20 to-purple-500/5", border: "border-indigo-500/20", textColor: "text-indigo-400" },
-          { name: "Late Night Sleep", hours: "10 PM - 5 AM", logs: nightLogs, dominant: getDominant(nightLogs), pleasant: getPleasantPct(nightLogs), color: "from-violet-500/20 to-fuchsia-500/5", border: "border-violet-500/20", textColor: "text-violet-400" },
+          { name: "Morning Routine", hours: "5 AM - 12 PM", logs: morningLogs, dominant: getDominant(morningLogs), pleasant: getPleasantPct(morningLogs), color: "from-indigo-500/20 to-slate-500/5", border: "border-indigo-500/20", textColor: "text-indigo-400" },
+          { name: "Midday Focus", hours: "12 PM - 5 PM", logs: afternoonLogs, dominant: getDominant(afternoonLogs), pleasant: getPleasantPct(afternoonLogs), color: "from-indigo-500/20 to-sky-500/5", border: "border-indigo-500/20", textColor: "text-indigo-400" },
+          { name: "Evening Wind Down", hours: "5 PM - 10 PM", logs: eveningLogs, dominant: getDominant(eveningLogs), pleasant: getPleasantPct(eveningLogs), color: "from-blue-500/20 to-slate-500/5", border: "border-blue-500/20", textColor: "text-blue-400" },
+          { name: "Late Night Sleep", hours: "10 PM - 5 AM", logs: nightLogs, dominant: getDominant(nightLogs), pleasant: getPleasantPct(nightLogs), color: "from-indigo-500/20 to-sky-500/5", border: "border-indigo-500/20", textColor: "text-indigo-400" },
         ];
 
         if (emotionLogs.length < 2) {
           return (
             <div className="card-3d bg-card border-none p-12 rounded-2xl border border-slate-800/60 text-center space-y-4 max-w-2xl mx-auto">
-              <div className="w-16 h-16 rounded-2xl bg-purple-600/10 border border-purple-500/20 flex items-center justify-center mx-auto animate-bounce">
-                <BarChart2 className="w-8 h-8 text-purple-400" />
+              <div className="w-16 h-16 rounded-2xl bg-slate-600/10 border border-slate-500/20 flex items-center justify-center mx-auto animate-bounce">
+                <BarChart2 className="w-8 h-8 text-slate-400" />
               </div>
               <div className="space-y-2">
                 <h3 className="text-base font-bold text-foreground">Unlock Deep Affective Analytics</h3>
@@ -1126,7 +1126,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
               </div>
               <button
                 onClick={() => setHubTab("log")}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-slate-950 font-bold text-xs rounded-xl cursor-pointer shadow-lg shadow-purple-500/20 transition-all"
+                className="px-4 py-2 bg-slate-600 hover:bg-slate-500 text-slate-950 font-bold text-xs rounded-xl cursor-pointer shadow-lg shadow-slate-500/20 transition-all"
               >
                 Go Log Your First Mood Coordinates
               </button>
@@ -1179,7 +1179,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-bold text-slate-200 flex items-center gap-1.5 font-display">
-                      <TrendingUp className="w-4 h-4 text-purple-400" /> High-Resolution Affective Timeline
+                      <TrendingUp className="w-4 h-4 text-slate-400" /> High-Resolution Affective Timeline
                     </h3>
                     <p className="text-[10px] text-muted-foreground font-mono">Last {logPoints.length} mindset check-ins mapped chronologically</p>
                   </div>
@@ -1187,11 +1187,11 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                   {/* Legend indicator */}
                   <div className="flex items-center gap-4 text-[9px] font-mono">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded bg-amber-500 block"></span>
+                      <span className="w-2.5 h-2.5 rounded bg-indigo-500 block"></span>
                       <span className="text-muted-foreground">Energy Level</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded bg-emerald-500 block"></span>
+                      <span className="w-2.5 h-2.5 rounded bg-slate-500 block"></span>
                       <span className="text-muted-foreground">Pleasantness</span>
                     </div>
                   </div>
@@ -1284,7 +1284,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
 
                   {/* Absolute Timeline Info overlay on hover */}
                   {hoveredLog ? (
-                    <div className="absolute bottom-3 left-3 right-3 bg-slate-950/95 border border-purple-500/30 rounded-xl p-2.5 flex items-center justify-between gap-3 animate-fade-in shadow-xl backdrop-blur-md">
+                    <div className="absolute bottom-3 left-3 right-3 bg-slate-950/95 border border-slate-500/30 rounded-xl p-2.5 flex items-center justify-between gap-3 animate-fade-in shadow-xl backdrop-blur-md">
                       <div className="flex items-center gap-2.5 min-w-0">
                         <EmotionBlock emotion={hoveredLog.emotion} size="xs" />
                         <div className="min-w-0">
@@ -1297,7 +1297,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-[9px] font-mono text-purple-400 font-bold uppercase">Check-In Node</p>
+                        <p className="text-[9px] font-mono text-slate-400 font-bold uppercase">Check-In Node</p>
                         <p className="text-[8px] text-muted-foreground font-mono mt-0.5">
                           {new Date(hoveredLog.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
@@ -1315,7 +1315,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
               <div className="lg:col-span-4 card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60 flex flex-col justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-slate-200 mb-1 flex items-center gap-1.5 font-display">
-                    <BarChart2 className="w-4 h-4 text-purple-400" /> Mind Block Leaderboard
+                    <BarChart2 className="w-4 h-4 text-slate-400" /> Mind Block Leaderboard
                   </h3>
                   <p className="text-[10px] text-muted-foreground font-mono mb-4">Your most frequently recorded affective blocks</p>
                 </div>
@@ -1334,13 +1334,13 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                           </div>
                           <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-900">
                             <div 
-                              className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full transition-all duration-500" 
+                              className="bg-gradient-to-r from-slate-500 to-blue-500 h-full rounded-full transition-all duration-500" 
                               style={{ width: `${fillPct}%` }}
                             />
                           </div>
                         </div>
                         <div className="w-6 text-right shrink-0">
-                          <span className="text-[10px] font-mono text-purple-400 font-bold">#{idx + 1}</span>
+                          <span className="text-[10px] font-mono text-slate-400 font-bold">#{idx + 1}</span>
                         </div>
                       </div>
                     );
@@ -1358,7 +1358,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             <div className="space-y-3">
               <div>
                 <h3 className="text-sm font-bold text-slate-200 flex items-center gap-1.5 font-display">
-                  <Clock className="w-4 h-4 text-purple-400" /> Circadian Rhythm Chronobiology
+                  <Clock className="w-4 h-4 text-slate-400" /> Circadian Rhythm Chronobiology
                 </h3>
                 <p className="text-[10px] text-muted-foreground font-mono">Mapping dominant mind states across physical day segments</p>
               </div>
@@ -1406,7 +1406,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             <div className="card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60">
               <div className="mb-4">
                 <h3 className="text-sm font-bold text-slate-200 flex items-center gap-1.5 font-display">
-                  <Activity className="w-4 h-4 text-purple-400" /> Completed Task Mindset Transitions
+                  <Activity className="w-4 h-4 text-slate-400" /> Completed Task Mindset Transitions
                 </h3>
                 <p className="text-[10px] text-muted-foreground font-mono">Real-world cognitive state transformations logged during task completions</p>
               </div>
@@ -1432,13 +1432,13 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
 
                       if (bTemplate && aTemplate) {
                         if (bTemplate.pleasantness === "unpleasant" && aTemplate.pleasantness === "pleasant") {
-                          shiftBadge = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+                          shiftBadge = "bg-slate-500/10 border-slate-500/20 text-slate-400";
                           shiftLabel = "Mind Shift: Positive Resolution";
                         } else if (bTemplate.energy === "high" && bTemplate.pleasantness === "unpleasant" && aTemplate.pleasantness === "pleasant") {
-                          shiftBadge = "bg-teal-500/10 border-teal-500/20 text-teal-400";
+                          shiftBadge = "bg-blue-500/10 border-blue-500/20 text-blue-400";
                           shiftLabel = "Anxiety Discharged";
                         } else if (bTemplate.emotion === "Focused" && aTemplate.emotion === "Proud") {
-                          shiftBadge = "bg-purple-500/10 border-purple-500/20 text-purple-400";
+                          shiftBadge = "bg-slate-500/10 border-slate-500/20 text-slate-400";
                           shiftLabel = "Flow State Mastered";
                         } else if (aTemplate.emotion === "Tired" || aTemplate.emotion === "Exhausted") {
                           shiftBadge = "bg-blue-500/10 border-blue-500/20 text-blue-400";

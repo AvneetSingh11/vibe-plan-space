@@ -279,10 +279,11 @@ Classify the intent into one of four actions:
 4. "unknown": If the intent is unclear.
 
 For "add_task", extract:
-- title: The name of the task
+- title: The name of the task, stripped of action words like "add a task to" or "remind me to".
 - urgent: Boolean. True if keywords like "urgent", "last minute", "asap", "due soon", "quick" are present.
 - important: Boolean. True if keywords like "important", "crucial", "critical", "major", "grade" are present.
 - estimatedMinutes: Integer. Default to 30 if not mentioned.
+- deadline: String in YYYY-MM-DD format if a date like 'tomorrow' or 'next week' is mentioned.
 
 For "breakdown", extract:
 - goal: The target goal string.
@@ -290,7 +291,7 @@ For "breakdown", extract:
 Return a JSON object conforming exactly to this structure:
 {
   "action": "add_task" | "get_briefing" | "breakdown" | "unknown",
-  "taskDetails": { "title": "string", "urgent": true/false, "important": true/false, "estimatedMinutes": 30 },
+  "taskDetails": { "title": "string", "urgent": true/false, "important": true/false, "estimatedMinutes": 30, "deadline": "YYYY-MM-DD" },
   "goal": "string",
   "explanation": "A short, user-friendly feedback statement (e.g., 'Adding Urgent task: Finish slides')"
 }`;
@@ -313,7 +314,8 @@ Return a JSON object conforming exactly to this structure:
                     title: { type: Type.STRING },
                     urgent: { type: Type.BOOLEAN },
                     important: { type: Type.BOOLEAN },
-                    estimatedMinutes: { type: Type.INTEGER }
+                    estimatedMinutes: { type: Type.INTEGER },
+                    deadline: { type: Type.STRING }
                   },
                   required: ["title", "urgent", "important"]
                 },
@@ -355,10 +357,21 @@ Return a JSON object conforming exactly to this structure:
       };
     } else if (lowerText.includes("add") || lowerText.includes("remind") || lowerText.includes("create") || lowerText.includes("task") || lowerText.includes("todo")) {
       // Extract a plausible title
-      let cleanedTitle = text.replace(/add task|remind me to|create task|add|remind/gi, "").trim();
+      let cleanedTitle = text.replace(/add a task of completing|add a task of|add a task to|add task|add a task|remind me to|create task|add|remind/gi, "").trim();
       const isUrgent = lowerText.includes("urgent") || lowerText.includes("asap") || lowerText.includes("fast") || lowerText.includes("soon");
       const isImportant = lowerText.includes("important") || lowerText.includes("crucial") || lowerText.includes("critical") || lowerText.includes("major");
       
+      let deadline: string | undefined = undefined;
+      if (lowerText.includes("tomorrow")) {
+          const tmrw = new Date();
+          tmrw.setDate(tmrw.getDate() + 1);
+          deadline = tmrw.toISOString().split("T")[0];
+          cleanedTitle = cleanedTitle.replace(/till tomorrow|by tomorrow|tomorrow/gi, "").trim();
+      } else if (lowerText.includes("today")) {
+          deadline = new Date().toISOString().split("T")[0];
+          cleanedTitle = cleanedTitle.replace(/for today|by today|today/gi, "").trim();
+      }
+
       cleanedTitle = cleanedTitle.replace(/urgent|important/gi, "").replace(/\s+/g, " ").trim();
       
       result = {
@@ -367,9 +380,10 @@ Return a JSON object conforming exactly to this structure:
           title: cleanedTitle || "Voice Added Task",
           urgent: isUrgent,
           important: isImportant,
-          estimatedMinutes: 30
+          estimatedMinutes: 30,
+          deadline: deadline
         },
-        explanation: `Added task: "${cleanedTitle || "Voice Added Task"}" (${isUrgent ? 'Urgent' : 'Normal'} & ${isImportant ? 'Important' : 'Standard'}).`
+        explanation: `Task added: ${cleanedTitle || "Voice Added Task"}`
       };
     }
 

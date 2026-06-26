@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight } from "lucide-react";
+import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight, Volume2, TrendingUp, CheckSquare, Target, Settings, Play as PlayIcon, Pause as PauseIcon } from "lucide-react";
 import EisenhowerMatrix from "./components/EisenhowerMatrix";
 import VoiceAssistant from "./components/VoiceAssistant";
 import IntegrationsHub from "./components/IntegrationsHub";
@@ -50,10 +50,52 @@ const Pause = () => <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" str
 const Play = () => <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>;
 const RotateCcw = () => <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>;
 
+function AmbientSound({ name, url, volume, onVolumeChange }: { key?: string, name: string, url: string, volume: number, onVolumeChange: (v: number) => void }) {
+  const audioRef = React.useRef<HTMLAudioElement>(null);
+  
+  React.useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+      if (volume > 0 && audioRef.current.paused) {
+        audioRef.current.play().catch(() => console.log('Autoplay prevented'));
+      } else if (volume === 0 && !audioRef.current.paused) {
+        audioRef.current.pause();
+      }
+    }
+  }, [volume]);
+
+  return (
+    <div className="flex items-center gap-4">
+      <span className="font-body-md text-[13px] text-on-surface-variant w-24">{name}</span>
+      <input 
+        type="range" 
+        min="0" 
+        max="1" 
+        step="0.01" 
+        value={volume} 
+        onChange={(e) => onVolumeChange(parseFloat(e.target.value))} 
+        className="flex-1 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary-container" 
+      />
+      <Volume2 className="w-4 h-4 text-on-surface-variant/50" />
+      <audio ref={audioRef} src={url} loop preload="auto" />
+    </div>
+  );
+}
+
 export default function App() {
   const [newTaskDate, setNewTaskDate] = React.useState<string | undefined>(undefined);
 
+  const [ambientVolumes, setAmbientVolumes] = React.useState<{ [key: string]: number }>({
+    'Rain': 0.0,
+    'Ocean': 0.0,
+    'Cafe': 0.0
+  });
 
+  const ambientSources = [
+    { name: 'Rain', url: 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg' },
+    { name: 'Ocean', url: 'https://actions.google.com/sounds/v1/water/waves_crashing_on_rock_beach.ogg' },
+    { name: 'Cafe', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg' }
+  ];
 
   const [isVoiceLoading, setIsVoiceLoading] = React.useState(false);
 
@@ -223,8 +265,8 @@ export default function App() {
   const toggleTaskImportant = (id: string) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, important: !t.important } : t));
   };
-  const addTask = (title: string, urgent: boolean, important: boolean, estimatedMinutes: number) => {
-    setTasks(prev => [{ id: generateUniqueId(), title, urgent, important, estimatedMinutes, completed: false }, ...prev]);
+  const addTask = (title: string, urgent: boolean, important: boolean, estimatedMinutes: number, deadline?: string) => {
+    setTasks(prev => [{ id: generateUniqueId(), title, urgent, important, estimatedMinutes, deadline, completed: false, createdAt: new Date().toISOString() }, ...prev]);
   };
 
   const toggleHabit = (id: string) => {
@@ -1035,304 +1077,227 @@ export default function App() {
   return (
     <div
       id="vibe-plan-space"
-      className="flex flex-col min-h-screen bg-aurora text-foreground"
+      className="antialiased min-h-screen relative flex"
     >
-      {/* Decorative Spatial Pulsing Orbs (activated by theme class inside index.css) */}
-      
+      {/* Atmospheric Shader Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-aurora-orange via-background to-background opacity-50"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-aurora-blue via-transparent to-transparent opacity-30"></div>
+      </div>
 
-      {/* Mobile header removed for Orbit layout */}
-
-      {/* FULL RESPONSIVE NAVIGATION & MAIN LAYOUT DECK */}
-      
-      {/* Orbit Beautiful Header */}
-      <header className="backdrop-blur sticky top-0 z-30 bg-background/60 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-        <div className="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 perspective-scene">
-              <div className="absolute inset-0 preserve-3d spin-slow">
-                <div className="absolute inset-0 rounded-full border-2 border-primary/60 rounded-full"></div>
-                <div className="absolute inset-1 rounded-full border border-primary/40 rounded-full" style={{ transform: 'rotateX(70deg)' }}></div>
-                <div className="absolute inset-1 rounded-full border border-primary/40 rounded-full" style={{ transform: 'rotateY(70deg)' }}></div>
-                <div className="absolute inset-[35%] rounded-full bg-primary"></div>
-              </div>
-            </div>
-            <div>
-              <h1 className="font-display text-xl leading-none">Orbit</h1>
-              <p className="text-xs text-muted-foreground">AI productivity companion</p>
-            </div>
-          </div>
-          <nav className="flex gap-1 text-sm">
-            {navItems.map((navItem) => (
-              <button
-                key={navItem.id}
-                onClick={() => setActiveTab(navItem.id)}
-                className={`px-3 py-1.5 rounded-full capitalize transition ${
-                  activeTab === navItem.id
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {navItem.label}
-              </button>
-            ))}
-          </nav>
+      {/* SideNavBar removed as per user request */}
+      {/* TopNavBar */}
+      <nav className="top-nav-container fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-[1000px] rounded-full backdrop-blur-3xl text-primary-container font-headline-md text-sm border border-glass-stroke shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex justify-between items-center px-6 py-2 z-50">
+        <div className="flex items-center gap-2">
+          <span className="font-headline-md text-lg font-bold tracking-tight text-primary-container">Aura</span>
         </div>
-      </header>
+        <div className="hidden md:flex items-center gap-4">
+          <button onClick={() => setActiveTab('dashboard')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Dashboard</button>
+          <button onClick={() => setActiveTab('matrix')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'matrix' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Matrix</button>
+          <button onClick={() => setActiveTab('habits')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'habits' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Habits</button>
+          <button onClick={() => setActiveTab('mind')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'mind' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Mind</button>
+          <button onClick={() => setActiveTab('command')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'command' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Voice</button>
+          <button onClick={() => setActiveTab('integrations')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'integrations' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Integrations</button>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-full overflow-hidden border border-glass-stroke">
+            <img alt="User profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl-laiQcHCZ52LjAnfDbeS4vokKf8qf9qYi26dPMUQnJFXkW7_Su7OrSAj3gS44DNq975mOMy5GUyMptx5sWKqtmM1IhUWC5kBCGXpZl968eK2Gs7wfqXbQ2LU4zhsA5bQKfawd2G2PycrShSwiXUa0W7TZ0ymAVQkr_0YO7xPOSSeClAytrt1kNsMj1oUdawtCx_VjpSfrbZwHPgFOfxTpTbzDCF_oJuoR-0Gt4761i_xmovLUFzK4r7-goRESaIot0OVTpznaqI" />
+          </div>
+        </div>
+      </nav>
 
-      <main className="flex-1 space-y-12 pb-12">
+      {/* Mobile Bottom Nav */}
+      <nav className="md:hidden fixed bottom-4 left-4 right-4 bg-surface-container-highest/80 backdrop-blur-xl border border-glass-stroke rounded-full px-6 py-3 flex justify-between items-center z-50 shadow-2xl">
+        <button onClick={() => setActiveTab('dashboard')} className={`flex flex-col items-center gap-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
+          <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' " + (activeTab === 'dashboard' ? '1' : '0') }}>grid_view</span>
+        </button>
+        <button onClick={() => setActiveTab('matrix')} className={`flex flex-col items-center gap-1 ${activeTab === 'matrix' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
+          <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' " + (activeTab === 'matrix' ? '1' : '0') }}>blur_on</span>
+        </button>
+        <button onClick={() => setActiveTab('command')} className="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center -mt-8 shadow-[0_0_20px_rgba(255,180,161,0.4)] text-on-primary-container">
+          <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
+        </button>
+        <button onClick={() => setActiveTab('habits')} className={`flex flex-col items-center gap-1 ${activeTab === 'habits' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
+          <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' " + (activeTab === 'habits' ? '1' : '0') }}>inventory_2</span>
+        </button>
+        <button className="flex flex-col items-center gap-1 text-on-surface-variant">
+          <span className="material-symbols-outlined text-[24px]">menu</span>
+        </button>
+      </nav>
+
+      {/* Main Content Canvas */}
+      <main className="flex-1 mt-20 mb-24 md:mb-0 p-6 perspective-container relative z-10 w-full max-w-[1200px] mx-auto min-h-screen flex flex-col">
           
           {/* Orbit uses the global header instead */}
 
-          {/* POMODORO TIMER BAR WIDGET (Always prominent if active or simple widget at top of tabs) */}
-          <div className="bg-black/40 backdrop-blur-2xl border border-white/10 p-6 rounded-[2rem] shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex flex-col md:flex-row items-center justify-between gap-6 transition-all duration-500 hover:border-white/20 relative overflow-hidden">
-            {/* Subtle background glow when active */}
-            {focusTimerActive && (
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/5 to-transparent animate-pulse pointer-events-none" />
-            )}
-            
-            <div className="flex items-center gap-5 z-10">
-              <div className="relative group">
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${focusTimerActive ? 'from-pink-500/20 to-purple-600/20 border-pink-500/50 shadow-[0_0_20px_rgba(236,72,153,0.3)]' : 'from-white/5 to-white/10 border-white/10'} border flex items-center justify-center transition-all duration-500 group-hover:scale-105`}>
-                  <Timer className={`w-8 h-8 transition-colors duration-500 ${focusTimerActive ? "text-pink-400 font-medium animate-pulse" : "text-white/60"}`} />
-                </div>
-              </div>
-              
-              <div className="space-y-1 text-center md:text-left">
-                <span className="text-[10px] uppercase font-mono font-black tracking-[0.2em] text-pink-400/80">
-                  {activeFocusTask ? "Active Sprint Target" : "POMODORO TIMER"}
-                </span>
-                <h3 className="text-base font-bold text-white/90 tracking-tight">
-                  {activeFocusTask ? activeFocusTask.title : "Unscheduled Pomodoro Session"}
-                </h3>
-                <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
-                  <div className={`w-2 h-2 rounded-full ${focusTimerActive ? 'bg-pink-400 animate-ping' : 'bg-white/20'}`} />
-                  <span className={`text-4xl font-black font-mono tracking-tighter drop-shadow-md transition-colors duration-500 ${focusTimerActive ? 'text-white' : 'text-white/70'}`}>
-                    {Math.floor(focusTimeLeft / 60)}:{(focusTimeLeft % 60).toString().padStart(2, "0")}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Timer presets and actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 z-10">
-              <div className="bg-black/50 p-1.5 rounded-2xl border border-white/5 flex gap-1 text-[11px] font-bold font-mono shadow-inner">
-                {([15, 25, 45] as const).map((mins) => (
-                  <button
-                    key={mins}
-                    onClick={() => {
-                      setFocusSelectedPreset(mins);
-                      setFocusTimeLeft(mins * 60);
-                      setFocusTimerActive(false);
-                      triggerAlertBeep();
-                    }}
-                    className={`px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 ${
-                      focusSelectedPreset === mins
-                        ? "bg-gradient-to-b from-white/15 to-white/5 shadow-[0_2px_10px_rgba(255,255,255,0.1)] border border-white/20 text-white"
-                        : "text-white/40 hover:text-white/80 hover:bg-white/5"
-                    }`}
-                  >
-                    {mins}m
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setFocusTimerActive(!focusTimerActive);
-                    triggerAlertBeep();
-                  }}
-                  className={`px-6 py-2.5 rounded-2xl text-sm font-bold flex items-center gap-2 cursor-pointer transition-all duration-300 shadow-lg ${
-                    focusTimerActive 
-                      ? "bg-white/10 text-white/80 hover:bg-white/20 border border-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]" 
-                      : "bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:shadow-[0_0_20px_rgba(236,72,153,0.4)] border border-pink-400/30 hover:scale-105"
-                  }`}
-                >
-                  {focusTimerActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}
-                  {focusTimerActive ? "PAUSE" : "START"}
-                </button>
-                <button
-                  onClick={() => {
-                    setFocusTimerActive(false);
-                    setFocusTimeLeft(focusSelectedPreset * 60);
-                    triggerAlertBeep();
-                  }}
-                  className="p-3 rounded-2xl bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 transition-all cursor-pointer hover:rotate-180 duration-500"
-                  title="Reset Timer"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
+          {/* Old Pomodoro removed as per user request */}
 
           {/* ACTIVE VIEW BLOCK */}
+          {/* ACTIVE VIEW BLOCK */}
           {activeTab === "dashboard" && (
-            <div className="space-y-6 animate-rise">
+            <div className="flex flex-col lg:flex-row gap-6 h-full pb-12 animate-rise">
               
-              {/* Keep the Pomodoro Timer Feature */}
-              
-
-              <div className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
-                <section className="card-3d rounded-3xl p-6 bg-card -none">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="font-display text-2xl">{getTimePhrase()}</h2>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={handleVoiceSummary}
-                        disabled={isVoiceLoading}
-                        className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-sm disabled:opacity-50 flex items-center gap-2 transition hover:opacity-90 active:scale-95 active:shadow-inner"
-                      >
-                        {isVoiceLoading ? (
-                          <>
-                            <div className="w-3 h-3 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
-                            Loading
-                          </>
-                        ) : (
-                          <>🎙 Vocal briefing</>
-                        )}
-                      </button>
-                      <button className="px-3 py-1.5 rounded-full border-none shadow-inner bg-surface/50 text-sm hover:bg-surface transition active:scale-95 active:shadow-inner">Stop</button>
-                    </div>
-                  </div>
-                  
-                  {voiceSummary && (
-                    <div className="mb-4 p-4 rounded-2xl bg-surface border-none shadow-inner bg-surface/50/50 text-sm">
-                      <p className="text-muted-foreground leading-relaxed">{voiceSummary}</p>
-                    </div>
-                  )}
-
-                  
-                  <form 
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const titleInput = e.currentTarget.elements.namedItem('taskInput') as HTMLInputElement;
-                      const timeInput = e.currentTarget.elements.namedItem('timeInput') as HTMLInputElement;
-                      
-                      if (titleInput.value.trim()) {
-                        setTasks([{
-                          id: Math.random().toString(36).substr(2, 9),
-                          title: titleInput.value,
-                          quadrant: "Q2",
-                          completed: false,
-                          estimatedMinutes: parseInt(timeInput.value) || 30,
-                          deadline: newTaskDate,
-                          createdAt: new Date().toISOString()
-                        }, ...tasks]);
-                        titleInput.value = '';
-                        timeInput.value = '';
-                        setNewTaskDate(undefined);
-                      }
-                    }}
-                    className="flex gap-2 mb-4 flex-wrap items-center"
-                  >
-
-                    <input 
-                      name="taskInput"
-                      placeholder="Add a task..." 
-                      className="flex-1 px-4 py-2 rounded-full bg-surface border-none shadow-inner bg-surface/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition" 
-                    />
-                    <div className="flex items-center px-3 py-2 rounded-full bg-surface border-none shadow-inner bg-surface/50 focus-within:ring-2 focus-within:ring-primary/20 transition">
-                      <input
-                        name="timeInput"
-                        type="number"
-                        placeholder="30"
-                        min="1"
-                        max="999"
-                        className="w-10 bg-transparent text-sm text-center focus:outline-none placeholder:text-muted-foreground/50"
-                      />
-                      <span className="text-xs text-muted-foreground ml-1">min</span>
-                    </div>
-                    <PremiumDatePicker value={newTaskDate} onChange={setNewTaskDate} />
-                    <button type="submit" className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm hover:opacity-90 transition active:scale-95 active:shadow-inner">Add</button>
-                  </form>
-                  
-                  <ul className="space-y-2">
-                    {(tasks.filter(t => !t.completed && (!t.deadline || t.deadline <= new Date().toISOString().split('T')[0])).length === 0) ? (
-                      <p className="text-sm text-muted-foreground">Nothing pending for today. A clear orbit.</p>
-                    ) : (
-                      tasks.filter(t => !t.completed && (!t.deadline || t.deadline <= new Date().toISOString().split('T')[0])).slice(0, 5).map(task => (
-                        <li key={task.id} className="flex items-center gap-3 p-3 rounded-2xl bg-surface border-none shadow-inner">
+              {/* Left Column: Today's Prime Objectives */}
+              <section className="glass-panel rounded-3xl p-6 lg:w-[40%] flex flex-col h-[850px] relative">
+                <h3 className="font-headline-md text-xl mb-6 flex items-center gap-2 text-on-surface">
+                  <CheckSquare className="w-5 h-5 text-primary-fixed-dim" /> Today's Prime Objectives
+                </h3>
+                <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 mb-4">
+                  {(tasks.filter(t => !t.completed && (!t.deadline || t.deadline <= new Date().toISOString().split('T')[0])).length === 0) ? (
+                    <p className="text-sm text-on-surface-variant font-body-md text-center mt-10">Nothing pending for today. A clear orbit.</p>
+                  ) : (
+                    tasks.filter(t => !t.completed && (!t.deadline || t.deadline <= new Date().toISOString().split('T')[0])).map(task => (
+                      <div key={task.id} className="flex flex-col gap-2 p-4 rounded-2xl bg-white/5 border border-glass-stroke hover:bg-white/10 transition-colors">
+                        <div className="flex items-start gap-3">
                           <button 
                             onClick={() => setTasks(tasks.map(t => t.id === task.id ? { ...t, completed: !t.completed } : t))}
-                            className="w-5 h-5 rounded-full bg-surface-elevated shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)] border-none flex items-center justify-center transition hover:bg-primary/10"
+                            className="w-5 h-5 mt-0.5 rounded flex items-center justify-center border border-on-surface-variant transition-colors hover:border-on-surface cursor-pointer"
                           />
-                          <span className="text-sm">{task.title}</span>
-                          <div className="ml-auto flex items-center gap-3">
-                            <PremiumDatePicker 
-                              value={task.deadline} 
-                              onChange={(d) => setTasks(tasks.map(t => t.id === task.id ? { ...t, deadline: d } : t))} 
-                            />
-                            <span className="text-xs text-muted-foreground flex items-center font-mono bg-surface p-1 px-2 rounded-lg border-none ring-0">
-                              <input 
-                                type="number" 
-                                min="1" 
-                                max="999" 
-                                value={task.estimatedMinutes || task.timeEstimate || 30} 
-                                onChange={(e) => {
-                                  const val = parseInt(e.target.value);
-                                  if (!isNaN(val) && val > 0) {
-                                    setTasks(tasks.map(t => t.id === task.id ? { ...t, estimatedMinutes: val } : t));
-                                  }
-                                }}
-                                className="w-8 bg-transparent text-right focus:outline-none focus:bg-surface-elevated rounded hover:bg-surface transition-colors"
-                              />
-                              <span className="ml-1">m</span>
-                            </span>
-                            <span className="text-[10px] font-bold text-muted-foreground bg-surface-elevated px-2 py-1 rounded-md">{task.quadrant}</span>
-                          </div>
-                        </li>
-                      ))
-                    )}
-                  </ul>
-                </section>
+                          <span className="font-body-md text-[15px] text-on-surface leading-snug">{task.title}</span>
+                        </div>
+                        <div className="ml-8 mt-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                           <div className="h-full bg-primary-fixed-dim w-1/3 rounded-full"></div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
                 
-                <section className="space-y-6">
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="rounded-2xl p-4 bg-card -none tilt-soft text-center">
-                      <div className="font-display text-3xl">{tasks.filter(t => !t.completed).length}</div>
-                      <div className="text-xs text-muted-foreground mt-1">Open</div>
-                    </div>
-                    <div className="rounded-2xl p-4 bg-card -none tilt-soft text-center">
-                      <div className="font-display text-3xl">{tasks.filter(t => t.completed).length}</div>
-                      <div className="text-xs text-muted-foreground mt-1">Done</div>
-                    </div>
-                    <div className="rounded-2xl p-4 bg-card -none tilt-soft text-center">
-                      <div className="font-display text-3xl">{Math.max(0, ...habits.map(h => h.streak))}</div>
-                      <div className="text-xs text-muted-foreground mt-1">Top streak</div>
-                    </div>
-                  </div>
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const titleInput = e.currentTarget.elements.namedItem('taskInput') as HTMLInputElement;
+                    if (titleInput.value.trim()) {
+                      setTasks([{
+                        id: Math.random().toString(36).substr(2, 9),
+                        title: titleInput.value,
+                        quadrant: "Q2",
+                        completed: false,
+                        estimatedMinutes: 30,
+                        createdAt: new Date().toISOString()
+                      }, ...tasks]);
+                      titleInput.value = '';
+                    }
+                  }}
+                  className="flex gap-2 items-center pt-4 border-t border-glass-stroke"
+                >
+                  <input 
+                    name="taskInput"
+                    placeholder="Type override command..." 
+                    className="flex-1 px-4 py-3 rounded-xl glass-input text-on-surface text-sm focus:outline-none placeholder:text-on-surface-variant" 
+                  />
+                  <button type="submit" className="p-3 rounded-xl bg-primary-container text-on-primary-container hover:scale-105 transition-transform cursor-pointer">
+                    <span className="material-symbols-outlined text-[20px]">send</span>
+                  </button>
+                </form>
+              </section>
+
+              {/* Right Column: Pomodoro + Ambient Sound + Insights */}
+              <section className="lg:w-[60%] flex flex-col gap-6 h-[850px]">
+                
+                {/* Top: Deep Work Session (Pomodoro) */}
+                <div className="glass-panel rounded-3xl p-8 flex-1 flex flex-col items-center justify-center relative overflow-hidden">
+                  <div className={`absolute inset-0 bg-aurora-orange blur-[120px] transition-opacity duration-1000 ${focusTimerActive ? 'opacity-20' : 'opacity-0'} pointer-events-none`}></div>
                   
-                  <div className="rounded-3xl p-5 bg-card -none card-3d">
-                    <h3 className="font-display text-lg mb-2">Objective decomposer</h3>
-                    <p className="text-xs text-muted-foreground mb-3">Turn a milestone into a chronological checklist.</p>
-                    <form 
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const input = e.currentTarget.elements.namedItem('breakdownInput') as HTMLInputElement;
-                        if (input.value.trim()) {
-                          handleAutonomousBreakdown(input.value);
-                          input.value = '';
-                        }
-                      }}
-                      className="flex gap-2 mb-3"
-                    >
-                      <input 
-                        name="breakdownInput"
-                        placeholder="Launch portfolio site…" 
-                        className="flex-1 px-3 py-2 rounded-full bg-surface border-none shadow-inner bg-surface/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition" 
+                  <div className="relative w-[400px] h-[400px] flex flex-col items-center justify-center my-2 z-10 group">
+                    {/* SVG Ring */}
+                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 400 400">
+                      <circle cx="200" cy="200" r="184" className="stroke-white/10" strokeWidth="12" fill="transparent" />
+                      <circle
+                        cx="200"
+                        cy="200"
+                        r="184"
+                        className={`stroke-primary-container transition-all duration-1000 ${focusTimerActive ? 'drop-shadow-[0_0_20px_rgba(255,180,161,0.6)]' : ''}`}
+                        strokeWidth="12"
+                        fill="transparent"
+                        strokeDasharray={1156.1}
+                        strokeDashoffset={1156.1 - (1156.1 * (focusTimeLeft / (focusSelectedPreset * 60)))}
+                        strokeLinecap="round"
                       />
-                      <button 
-                        type="submit" 
-                        disabled={isDecomposing}
-                        className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm disabled:opacity-50 transition hover:opacity-90 active:scale-95 active:shadow-inner"
-                      >
-                        {isDecomposing ? "Breaking..." : "Break"}
-                      </button>
-                    </form>
+                    </svg>
+                    
+                    {/* Inner Content (Title, Time, Status) */}
+                    <div className="flex flex-col items-center justify-center relative z-20 gap-4">
+                      <h3 className="font-headline-md text-[18px] text-on-surface-variant font-medium tracking-wide">Deep Work Session</h3>
+                      
+                      <div className={`font-display-hero text-[80px] tracking-tighter leading-none ${focusTimerActive ? 'text-on-surface' : 'text-on-surface-variant'} transition-colors duration-500`}>
+                        {Math.floor(focusTimeLeft / 60).toString().padStart(2, "0")}:{Math.floor(focusTimeLeft % 60).toString().padStart(2, "0")}
+                      </div>
+                      
+                      <p className={`font-label-caps text-[13px] uppercase tracking-widest ${focusTimerActive ? 'text-primary-container' : 'text-on-surface-variant'}`}>
+                        {focusTimerActive ? 'Focus Mode Active' : 'System Standby'}
+                      </p>
+                    </div>
+
+                    {/* Hover Controls */}
+                    <div className="absolute w-[140px] h-[64px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/60 backdrop-blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-30 shadow-2xl">
+                        <button onClick={() => {
+                          setFocusTimerActive(!focusTimerActive);
+                          triggerAlertBeep();
+                        }} className="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-110 transition-transform cursor-pointer shadow-lg">
+                          {focusTimerActive ? <PauseIcon className="w-6 h-6" /> : <PlayIcon className="w-6 h-6 ml-1 fill-current" />}
+                        </button>
+                        <button onClick={() => {
+                          setFocusTimerActive(false);
+                          setFocusTimeLeft(focusSelectedPreset * 60);
+                        }} className="w-10 h-10 rounded-full bg-white/10 text-on-surface flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer border border-glass-stroke">
+                          <span className="material-symbols-outlined text-[20px]">replay</span>
+                        </button>
+                    </div>
                   </div>
-                </section>
-              </div>
+
+                  {/* Preset Controls */}
+                  <div className="flex items-center gap-3 mt-6 z-20">
+                    {[15, 25, 45, 60].map(preset => (
+                      <button
+                        key={preset}
+                        onClick={() => {
+                          setFocusSelectedPreset(preset);
+                          setFocusTimeLeft(preset * 60);
+                          setFocusTimerActive(false);
+                        }}
+                        className={`px-4 py-1.5 rounded-full font-label-caps text-[12px] transition-colors border ${
+                          focusSelectedPreset === preset 
+                            ? 'bg-primary-container text-on-primary-container border-primary-container shadow-[0_0_15px_rgba(255,180,161,0.3)]' 
+                            : 'bg-white/5 text-on-surface-variant border-glass-stroke hover:bg-white/10 hover:text-on-surface'
+                        }`}
+                      >
+                        {preset}m
+                      </button>
+                    ))}
+                  </div>
+
+                </div>
+
+                {/* Middle: Ambient Sound Controls */}
+                <div className="glass-panel rounded-3xl p-6">
+                  <h3 className="font-headline-md text-[16px] flex items-center gap-2 mb-5 text-on-surface">
+                    <Volume2 className="w-4 h-4 text-on-surface-variant" /> Ambient Sound Controls
+                  </h3>
+                  <div className="space-y-5">
+                    {ambientSources.map((sound) => (
+                      <AmbientSound 
+                        key={sound.name}
+                        name={sound.name}
+                        url={sound.url}
+                        volume={ambientVolumes[sound.name] || 0}
+                        onVolumeChange={(v) => setAmbientVolumes(prev => ({...prev, [sound.name]: v}))}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bottom: Productivity Insight */}
+                <div className="glass-panel rounded-3xl p-5 border-l-[6px] border-l-primary-container bg-primary-container/5">
+                  <h3 className="font-headline-md text-[14px] flex items-center gap-2 mb-3 text-on-surface">
+                    <TrendingUp className="w-4 h-4 text-primary-fixed-dim" /> Productivity Insight
+                  </h3>
+                  <p className="font-body-md text-on-surface-variant text-[14px] bg-black/20 p-4 rounded-xl border border-glass-stroke leading-relaxed">
+                    Maintaining focus. Next scheduled break in <span className="text-primary-fixed-dim font-bold">{Math.floor(focusTimeLeft / 60)} minutes</span>. Keep the momentum.
+                  </p>
+                </div>
+                
+              </section>
             </div>
           )}
 
@@ -1408,12 +1373,12 @@ export default function App() {
     </main>
 
       {/* FOOTER ZONE */}
-      <footer className="text-center py-6 text-sm text-muted-foreground border-t border-border mt-8">
-        <div className="flex justify-center gap-6 mb-2">
-          <a href="#/privacy" className="hover:text-primary transition">Privacy Policy</a>
-          <a href="#/terms" className="hover:text-primary transition">Terms of Service</a>
+      <footer className="fixed bottom-0 w-full text-center py-2 pb-16 md:pb-2 text-xs text-on-surface-variant/50 border-t border-glass-stroke bg-background/80 backdrop-blur-md z-40">
+        <div className="flex justify-center gap-6 mb-1">
+          <a href="#/privacy" className="hover:text-primary-container transition">Privacy Policy</a>
+          <a href="#/terms" className="hover:text-primary-container transition">Terms of Service</a>
         </div>
-        <p>&copy; {new Date().getFullYear()} Vibe Plan Space. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Aura Spatial. All rights reserved.</p>
       </footer>
     </div>
   );

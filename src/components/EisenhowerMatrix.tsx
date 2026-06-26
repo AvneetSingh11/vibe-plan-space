@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Task } from "../types";
 import PremiumDatePicker from "./PremiumDatePicker";
-import { Check, Clock, ShieldAlert, Sparkles, AlertCircle, Bookmark, Zap, Trash2, Plus } from "lucide-react";
+import { Check, Clock, ShieldAlert, Bookmark, Zap, AlertCircle, Trash2, Plus } from "lucide-react";
 
 interface EisenhowerMatrixProps {
   tasks: Task[];
@@ -40,8 +40,7 @@ export default function EisenhowerMatrix({
     title: string,
     tagline: string,
     tasksList: Task[],
-    accentColor: string,
-    bgGlow: string,
+    accentColor: string, // Tailwind text color class, e.g. text-error
     icon: React.ReactNode,
     quadrantId: string,
     isUrgent: boolean,
@@ -50,122 +49,118 @@ export default function EisenhowerMatrix({
     return (
       <div
         id={`quadrant-${quadrantId}`}
-        className={`card-3d p-5 rounded-3xl flex flex-col h-[340px] bg-card`}
+        className={`glass-panel p-6 rounded-3xl flex flex-col h-[500px] relative overflow-hidden group`}
       >
-        <div className="flex items-center justify-between mb-3 border-b border-slate-800/60 pb-2">
-          <div className="flex items-center gap-2">
-            {icon}
-            <div>
-              <h3 className="text-sm font-bold text-white font-display uppercase tracking-wide">
-                {title}
-              </h3>
-              <span className="text-[10px] text-muted-foreground font-medium">{tagline}</span>
-            </div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full blur-3xl opacity-5 -mr-16 -mt-16 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none"></div>
+        
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-glass-stroke z-10">
+          <div className="flex items-center gap-3">
+             <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 border border-glass-stroke">
+                {icon}
+             </div>
+             <div>
+               <h3 className="font-headline-md text-[18px] text-on-surface">{title}</h3>
+               <span className="font-body-md text-[11px] text-on-surface-variant line-clamp-1 opacity-80">{tagline}</span>
+             </div>
           </div>
-          <span className="text-xs font-bold font-mono px-2 py-0.5 rounded bg-slate-900/60 text-foreground border border-slate-800">
+          <span className="font-data-mono text-[12px] px-2 py-1 rounded bg-white/5 text-on-surface border border-glass-stroke shadow-inner">
             {tasksList.length}
           </span>
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+        <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar z-10 pb-4">
           {tasksList.map((task) => (
             <div
               key={task.id}
               id={`matrix-task-${task.id}`}
-              className={`p-3 rounded-xl bg-surface transition-all flex items-start gap-2.5 group relative ${
-                task.completed ? "opacity-50" : ""
+              className={`p-4 rounded-2xl bg-white/5 border border-glass-stroke hover:bg-white/10 transition-all flex flex-col gap-3 group/task relative ${
+                task.completed ? "opacity-50 grayscale" : ""
               }`}
             >
-              {/* Custom checkbox */}
-              <button
-                id={`check-matrix-task-${task.id}`}
-                onClick={() => onToggleComplete(task.id)}
-                className={`w-5 h-5 mt-0.5 rounded flex items-center justify-center border transition-all cursor-pointer ${
-                  task.completed
-                    ? "bg-primary border-primary text-primary-foreground shadow-md shadow-primary/20"
-                    : "border-slate-700 hover:border-slate-500 text-transparent"
-                }`}
-              >
-                <Check className="w-3.5 h-3.5 stroke-[3.5px] checkmark-pop" />
-              </button>
-
-              <div className="flex-1 min-w-0 pr-4">
-                <p 
-                  onClick={() => onSelectTask && onSelectTask(task)}
-                  className={`text-xs font-semibold leading-relaxed transition-all cursor-pointer hover:underline hover:text-cyan-400 ${
-                    task.completed ? "text-muted-foreground line-through" : "text-foreground"
-                  }`}
-                  title="Click to view details & focus"
-                >
-                  {task.title}
-                </p>
-                
-                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                  {/* Estimated minutes */}
-                  <PremiumDatePicker 
-                      value={task.deadline} 
-                      onChange={(d) => { if(onUpdateDeadline) onUpdateDeadline(task.id, d); }} 
-                      compact={true}
-                    />
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono bg-surface p-1 px-1.5 rounded-lg border-none ring-0">
-                    <Clock className="w-3 h-3 text-muted-foreground" />
-                    <input 
-                      type="number" 
-                      min="1" 
-                      max="999" 
-                      value={task.estimatedMinutes || 30} 
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value);
-                        if (!isNaN(val) && val > 0 && onUpdateEstimatedMinutes) {
-                          onUpdateEstimatedMinutes(task.id, val);
-                        }
-                      }}
-                      className="w-6 bg-transparent text-right focus:outline-none focus:bg-surface-elevated rounded hover:bg-surface transition-colors"
-                    />
-                    <span>m</span>
+               {/* Header: Title and badge */}
+               <div className="flex justify-between items-start gap-2">
+                 <p 
+                    onClick={() => onSelectTask && onSelectTask(task)}
+                    className={`font-body-md text-[14px] leading-snug cursor-pointer transition-colors ${task.completed ? "line-through text-on-surface-variant" : "text-on-surface group-hover/task:text-primary-fixed-dim"}`}
+                 >
+                    {task.title}
+                 </p>
+                 <span className={`flex-shrink-0 font-label-caps text-label-caps uppercase tracking-wider px-2 py-1 rounded-full ${task.urgent ? 'bg-error/20 text-error border border-error/30' : 'bg-primary-container/20 text-primary-container border border-primary-container/30'}`}>
+                    {task.urgent ? 'High' : 'Low'}
+                 </span>
+               </div>
+               
+               {/* Footer: Controls */}
+               <div className="flex items-center justify-between mt-auto pt-2 border-t border-glass-stroke">
+                  <div className="flex items-center gap-2">
+                     <button 
+                        onClick={() => onToggleComplete(task.id)} 
+                        className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all cursor-pointer ${task.completed ? 'bg-primary-fixed-dim border-primary-fixed-dim text-on-primary-fixed' : 'border-on-surface-variant text-transparent hover:border-on-surface'}`}
+                     >
+                        <Check className="w-3.5 h-3.5 stroke-[3px]" />
+                     </button>
+                     <PremiumDatePicker 
+                        value={task.deadline} 
+                        onChange={(d) => { if(onUpdateDeadline) onUpdateDeadline(task.id, d); }} 
+                        compact={true}
+                     />
+                     <div className="flex items-center gap-1 text-[10px] text-on-surface-variant font-mono bg-black/20 p-1 px-1.5 rounded-lg border border-glass-stroke">
+                        <Clock className="w-3 h-3" />
+                        <input 
+                          type="number" 
+                          min="1" 
+                          max="999" 
+                          value={task.estimatedMinutes || 30} 
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value);
+                            if (!isNaN(val) && val > 0 && onUpdateEstimatedMinutes) {
+                              onUpdateEstimatedMinutes(task.id, val);
+                            }
+                          }}
+                          className="w-6 bg-transparent text-right focus:outline-none focus:text-primary-fixed-dim transition-colors"
+                        />
+                        <span>m</span>
+                     </div>
                   </div>
+                  
+                  <div className="flex items-center gap-1">
+                     <button
+                        onClick={() => onToggleUrgent(task.id)}
+                        className={`text-[9px] px-1.5 py-0.5 rounded font-bold cursor-pointer transition-colors ${
+                          task.urgent
+                            ? "bg-error/20 text-error border border-error/30"
+                            : "bg-white/5 text-on-surface-variant border border-glass-stroke hover:text-on-surface"
+                        }`}
+                      >
+                        U
+                      </button>
+                      <button
+                        onClick={() => onToggleImportant(task.id)}
+                        className={`text-[9px] px-1.5 py-0.5 rounded font-bold cursor-pointer transition-colors ${
+                          task.important
+                            ? "bg-primary-container/20 text-primary-container border border-primary-container/30"
+                            : "bg-white/5 text-on-surface-variant border border-glass-stroke hover:text-on-surface"
+                        }`}
+                      >
+                        I
+                      </button>
+                  </div>
+               </div>
 
-                  {/* Priority Toggle Buttons */}
-                  <button
-                    id={`toggle-matrix-urgent-${task.id}`}
-                    onClick={() => onToggleUrgent(task.id)}
-                    className={`text-[9px] px-1.5 py-0.5 rounded font-bold cursor-pointer transition-colors ${
-                      task.urgent
-                        ? "bg-destructive/10 text-destructive border border-destructive/20"
-                        : "bg-slate-900/60 text-muted-foreground border border-slate-800 hover:text-foreground"
-                    }`}
-                  >
-                    Urgent
-                  </button>
-                  <button
-                    id={`toggle-matrix-important-${task.id}`}
-                    onClick={() => onToggleImportant(task.id)}
-                    className={`text-[9px] px-1.5 py-0.5 rounded font-bold cursor-pointer transition-colors ${
-                      task.important
-                        ? "bg-primary/10 text-primary border border-primary/20"
-                        : "bg-slate-900/60 text-muted-foreground border border-slate-800 hover:text-foreground"
-                    }`}
-                  >
-                    Important
-                  </button>
-                </div>
-              </div>
-
-              {/* Delete task button */}
-              <button
-                id={`delete-matrix-task-${task.id}`}
-                onClick={() => onDeleteTask(task.id)}
-                className="absolute top-2.5 right-2.5 p-1 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 rounded-md transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
-                title="Delete task"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
+               {/* Delete task button */}
+               <button
+                 onClick={() => onDeleteTask(task.id)}
+                 className="absolute -top-2 -right-2 p-1.5 bg-surface-container-highest text-on-surface-variant border border-glass-stroke hover:text-error hover:border-error/50 rounded-full transition-all opacity-0 group-hover/task:opacity-100 cursor-pointer shadow-lg"
+                 title="Delete task"
+               >
+                 <Trash2 className="w-3.5 h-3.5" />
+               </button>
             </div>
           ))}
 
           {tasksList.length === 0 && (
-            <div className="h-full flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
-              <span className="text-xs">No tasks in this quadrant</span>
+            <div className="h-full flex flex-col items-center justify-center py-8 text-center text-on-surface-variant">
+              <span className="font-body-md text-[13px] opacity-70">Sector clear. No active tasks.</span>
             </div>
           )}
         </div>
@@ -186,22 +181,22 @@ export default function EisenhowerMatrix({
               setNewTaskDate(prev => ({...prev, [quadrantId]: ''}));
             }
           }}
-          className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-800/60"
+          className="flex items-center gap-2 mt-3 pt-3 border-t border-glass-stroke z-10"
         >
           <input 
             type="text" 
-            placeholder="Add task..." 
+            placeholder="Initialize new task..." 
             value={newTaskText[quadrantId] || ''}
             onChange={(e) => setNewTaskText(prev => ({...prev, [quadrantId]: e.target.value}))}
-            className="flex-1 bg-surface text-xs px-2.5 py-1.5 rounded-lg border-none shadow-inner focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder:text-muted-foreground/50"
+            className="glass-input flex-1 text-on-surface text-xs px-3 py-2 rounded-xl focus:outline-none placeholder-on-surface-variant"
           />
           <PremiumDatePicker 
             value={newTaskDate[quadrantId]} 
             onChange={(d) => setNewTaskDate(prev => ({...prev, [quadrantId]: d || ''}))}
             compact={true}
           />
-          <button type="submit" className="bg-primary/20 text-primary hover:bg-primary/30 p-1.5 rounded-lg transition-colors cursor-pointer active:scale-95">
-            <Plus className="w-3.5 h-3.5" />
+          <button type="submit" className="bg-primary-container text-on-primary-container hover:scale-105 p-2 rounded-xl transition-transform cursor-pointer">
+            <Plus className="w-4 h-4" />
           </button>
         </form>
       </div>
@@ -209,56 +204,56 @@ export default function EisenhowerMatrix({
   };
 
   return (
-    <div id="eisenhower-matrix-container">
-      <div className="mb-4">
-        <h2 className="text-lg font-bold text-white font-display">Intelligent Prioritization Matrix</h2>
-        <p className="text-xs text-muted-foreground">Tasks categorized dynamically using Eisenhower's principles</p>
-      </div>
+    <div className="w-full h-full flex flex-col">
+      <header className="mb-8 flex justify-between items-end">
+        <div>
+          <h1 className="font-display-hero text-display-hero gradient-text mb-2">Aura Task Fleet</h1>
+          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+            Prioritization matrix. Critical operational tasks sorted by urgency and strategic importance.
+          </p>
+        </div>
+      </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 pb-12">
         {renderQuadrant(
+          "Do First",
           "Urgent & Important",
-          "Do first - critical deadline items",
           q1,
-          "text-red-400",
-          "border-red-500/10 hover:border-red-500/30",
-          <ShieldAlert className="w-4 h-4 text-red-400" />,
+          "text-error",
+          <ShieldAlert className="w-5 h-5 text-error" />,
           "q1",
           true,
           true
         )}
 
         {renderQuadrant(
+          "Schedule",
           "Important, Not Urgent",
-          "Schedule - planning & goals",
           q2,
-          "text-purple-400",
-          "border-purple-500/10 hover:border-purple-500/30",
-          <Bookmark className="w-4 h-4 text-purple-400" />,
+          "text-tertiary-fixed-dim",
+          <Bookmark className="w-5 h-5 text-tertiary-fixed-dim" />,
           "q2",
           false,
           true
         )}
 
         {renderQuadrant(
+          "Delegate",
           "Urgent, Not Important",
-          "Delegate - busywork & secondary noise",
           q3,
-          "text-cyan-400",
-          "border-cyan-500/10 hover:border-cyan-500/30",
-          <Zap className="w-4 h-4 text-cyan-400" />,
+          "text-primary-container",
+          <Zap className="w-5 h-5 text-primary-container" />,
           "q3",
           true,
           false
         )}
 
         {renderQuadrant(
+          "Eliminate",
           "Not Urgent & Not Important",
-          "Eliminate - lowest priority backburner",
           q4,
-          "text-muted-foreground",
-          "border-slate-800 hover:border-slate-700",
-          <AlertCircle className="w-4 h-4 text-muted-foreground" />,
+          "text-on-surface-variant",
+          <AlertCircle className="w-5 h-5 text-on-surface-variant" />,
           "q4",
           false,
           false

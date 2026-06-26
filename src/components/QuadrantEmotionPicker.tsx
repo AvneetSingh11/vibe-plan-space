@@ -38,7 +38,7 @@ export const QuadrantEmotionPicker = ({ value, onChange, placeholder, className 
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-2 text-[10px] sm:text-xs rounded-xl text-left flex items-center justify-between bg-slate-950/60 border border-slate-800 hover:border-purple-500/50 transition-colors cursor-pointer text-slate-200"
+        className="w-full px-3 py-2 text-[10px] sm:text-xs rounded-xl text-left flex items-center justify-between bg-slate-950/60 border border-slate-800 hover:border-slate-500/50 transition-colors cursor-pointer text-slate-200"
       >
         <div className="flex items-center gap-1.5 truncate min-w-0">
           {selectedTemplate ? (
@@ -75,28 +75,28 @@ export const QuadrantEmotionPicker = ({ value, onChange, placeholder, className 
                 <button
                   type="button"
                   onClick={() => setSelectedQuadrant('Q2')}
-                  className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 transition-colors cursor-pointer"
+                  className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-colors cursor-pointer"
                 >
-                  <span className="text-[10px] font-bold text-rose-400 uppercase">High Energy</span>
-                  <span className="text-[9px] text-rose-500/80">Unpleasant</span>
+                  <span className="text-[10px] font-bold text-red-400 uppercase">High Energy</span>
+                  <span className="text-[9px] text-red-500/80">Unpleasant</span>
                 </button>
                 {/* Q3: Low/Pleasant (Green) */}
                 <button
                   type="button"
                   onClick={() => setSelectedQuadrant('Q3')}
-                  className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors cursor-pointer"
+                  className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 transition-colors cursor-pointer"
                 >
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase">Low Energy</span>
-                  <span className="text-[9px] text-emerald-500/80">Pleasant</span>
+                  <span className="text-[10px] font-bold text-green-400 uppercase">Low Energy</span>
+                  <span className="text-[9px] text-green-500/80">Pleasant</span>
                 </button>
                 {/* Q4: Low/Unpleasant (Blue) */}
                 <button
                   type="button"
                   onClick={() => setSelectedQuadrant('Q4')}
-                  className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 transition-colors cursor-pointer"
+                  className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-colors cursor-pointer"
                 >
-                  <span className="text-[10px] font-bold text-indigo-400 uppercase">Low Energy</span>
-                  <span className="text-[9px] text-indigo-500/80">Unpleasant</span>
+                  <span className="text-[10px] font-bold text-blue-400 uppercase">Low Energy</span>
+                  <span className="text-[9px] text-blue-500/80">Unpleasant</span>
                 </button>
               </div>
             ) : (
