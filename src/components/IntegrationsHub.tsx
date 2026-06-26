@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Task } from "../types";
 import { Calendar, GraduationCap, Loader2, Link2, CheckCircle2 } from "lucide-react";
+import { useGoogleLogin } from '@react-oauth/google';
 
 interface IntegrationsHubProps {
   onAddTasks: (tasks: Partial<Task>[]) => void;
@@ -9,52 +10,126 @@ interface IntegrationsHubProps {
 export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
   const [calendarState, setCalendarState] = useState<"disconnected" | "connecting" | "connected">("disconnected");
   const [classroomState, setClassroomState] = useState<"disconnected" | "connecting" | "connected">("disconnected");
+  const [calendarToken, setCalendarToken] = useState<string | null>(null);
+  const [classroomToken, setClassroomToken] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+
+  const loginCalendar = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      setCalendarToken(tokenResponse.access_token);
+      setCalendarState("connected");
+    },
+    onError: () => setCalendarState("disconnected"),
+    scope: 'https://www.googleapis.com/auth/calendar.readonly',
+  });
+
+  const loginClassroom = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      setClassroomToken(tokenResponse.access_token);
+      setClassroomState("connected");
+    },
+    onError: () => setClassroomState("disconnected"),
+    scope: 'https://www.googleapis.com/auth/classroom.courses.readonly https://www.googleapis.com/auth/classroom.coursework.me.readonly',
+  });
 
   const handleConnectCalendar = () => {
     setCalendarState("connecting");
-    setTimeout(() => {
-      setCalendarState("connected");
-    }, 1500);
+    loginCalendar();
   };
 
   const handleConnectClassroom = () => {
     setClassroomState("connecting");
-    setTimeout(() => {
-      setClassroomState("connected");
-    }, 1500);
+    loginClassroom();
   };
 
-  const handleSyncTasks = () => {
+  const handleSyncTasks = async () => {
     setIsSyncing(true);
-    setTimeout(() => {
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const nextWeek = new Date(today);
-      nextWeek.setDate(nextWeek.getDate() + 5);
+    const newTasks: Partial<Task>[] = [];
+    const today = new Date();
 
-      const mockTasks: Partial<Task>[] = [];
-
-      if (calendarState === "connected") {
-        mockTasks.push(
-          { title: "Project Sync Meeting Prep", urgent: true, important: true, estimatedMinutes: 20, deadline: tomorrow.toISOString().split('T')[0] },
-          { title: "Weekly Review Event", urgent: false, important: true, estimatedMinutes: 45, deadline: nextWeek.toISOString().split('T')[0] }
+    try {
+      // Fetch Calendar Events
+      if (calendarState === "connected" && calendarToken) {
+        const calRes = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${today.toISOString()}&maxResults=15&singleEvents=true&orderBy=startTime`,
+          { headers: { Authorization: `Bearer ${calendarToken}` } }
         );
+        if (calRes.ok) {
+          const calData = await calRes.json();
+          if (calData.items) {
+            calData.items.forEach((event: any) => {
+              if (event.summary) {
+                // If the event is happening soon, it's urgent and important
+                const eventDate = new Date(event.start.dateTime || event.start.date);
+                const isUrgent = (eventDate.getTime() - today.getTime()) < 48 * 60 * 60 * 1000;
+                newTasks.push({
+                  title: `📅 ${event.summary}`,
+                  urgent: isUrgent,
+                  important: true,
+                  estimatedMinutes: 60,
+                  deadline: eventDate.toISOString().split('T')[0]
+                });
+              }
+            });
+          }
+        }
       }
 
-      if (classroomState === "connected") {
-        mockTasks.push(
-          { title: "Study for Midterms (Classroom)", urgent: true, important: true, estimatedMinutes: 120, deadline: tomorrow.toISOString().split('T')[0] },
-          { title: "Read Chapter 4 (Classroom)", urgent: false, important: false, estimatedMinutes: 60, deadline: nextWeek.toISOString().split('T')[0] }
-        );
+      // Fetch Classroom Assignments
+      if (classroomState === "connected" && classroomToken) {
+        // 1. Fetch courses
+        const coursesRes = await fetch('https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE', {
+          headers: { Authorization: `Bearer ${classroomToken}` }
+        });
+        if (coursesRes.ok) {
+          const coursesData = await coursesRes.json();
+          if (coursesData.courses) {
+            // 2. Fetch coursework for each course
+            for (const course of coursesData.courses.slice(0, 5)) { // Limit to 5 courses to prevent rate limits
+              const cwRes = await fetch(`https://classroom.googleapis.com/v1/courses/${course.id}/courseWork`, {
+                headers: { Authorization: `Bearer ${classroomToken}` }
+              });
+              if (cwRes.ok) {
+                const cwData = await cwRes.json();
+                if (cwData.courseWork) {
+                  cwData.courseWork.forEach((work: any) => {
+                    // Only add if there is no due date or due date is in the future
+                    let isUrgent = false;
+                    let deadline = undefined;
+                    
+                    if (work.dueDate) {
+                      const dueDate = new Date(work.dueDate.year, work.dueDate.month - 1, work.dueDate.day);
+                      if (dueDate < today) return; // Skip past due assignments for this demo
+                      isUrgent = (dueDate.getTime() - today.getTime()) < 3 * 24 * 60 * 60 * 1000;
+                      deadline = dueDate.toISOString().split('T')[0];
+                    }
+
+                    newTasks.push({
+                      title: `🎓 ${work.title} (${course.name})`,
+                      urgent: isUrgent,
+                      important: true,
+                      estimatedMinutes: 90,
+                      deadline: deadline
+                    });
+                  });
+                }
+              }
+            }
+          }
+        }
       }
 
-      if (mockTasks.length > 0) {
-        onAddTasks(mockTasks);
+      if (newTasks.length > 0) {
+        onAddTasks(newTasks);
+      } else {
+        alert("Sync complete! No new upcoming events or assignments were found.");
       }
+    } catch (err) {
+      console.error("Sync Error:", err);
+      alert("There was an error syncing your data. Please check the console.");
+    } finally {
       setIsSyncing(false);
-    }, 2000);
+    }
   };
 
   return (
