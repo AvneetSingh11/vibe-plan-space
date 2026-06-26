@@ -9,6 +9,8 @@ import { HowWeFeelHub } from "./components/HowWeFeelHub";
 import AIBreakdownPlanner from "./components/AIBreakdownPlanner";
 import SuggestionCard from "./components/SuggestionCard";
 import NotificationCenter from "./components/NotificationCenter";
+import PrivacyPolicy from "./components/PrivacyPolicy";
+import TermsOfService from "./components/TermsOfService";
 import { Task, Habit, EmotionLog } from "./types";
 
 
@@ -51,7 +53,7 @@ const RotateCcw = () => <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"
 export default function App() {
   const [newTaskDate, setNewTaskDate] = React.useState<string | undefined>(undefined);
 
-  // Navigation / Tab state: default to 'dashboard'
+
 
   const [isVoiceLoading, setIsVoiceLoading] = React.useState(false);
 
@@ -188,7 +190,23 @@ export default function App() {
     setIsDecomposing(false);
   };
 
-  const [activeTab, setActiveTab] = React.useState<"dashboard" | "matrix" | "habits" | "mind" | "command">("dashboard");
+  const [activeTab, setActiveTab] = React.useState<string>("dashboard");
+
+  // Simple hash router for legal pages
+  React.useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '#/privacy') setActiveTab('privacy');
+    if (hash === '#/terms') setActiveTab('terms');
+    
+    // Listen for hash changes
+    const handleHashChange = () => {
+      if (window.location.hash === '#/privacy') setActiveTab('privacy');
+      else if (window.location.hash === '#/terms') setActiveTab('terms');
+      else setActiveTab('dashboard');
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Mobile Sidebar Drawer open state
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
@@ -1337,10 +1355,19 @@ export default function App() {
         }}
       />
     )}
+    
+    {activeTab === "privacy" && <PrivacyPolicy />}
+    {activeTab === "terms" && <TermsOfService />}
     </main>
 
       {/* FOOTER ZONE */}
-      <div className="h-24"></div>
+      <footer className="text-center py-6 text-sm text-muted-foreground border-t border-border mt-8">
+        <div className="flex justify-center gap-6 mb-2">
+          <a href="#/privacy" className="hover:text-primary transition">Privacy Policy</a>
+          <a href="#/terms" className="hover:text-primary transition">Terms of Service</a>
+        </div>
+        <p>&copy; {new Date().getFullYear()} Vibe Plan Space. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
