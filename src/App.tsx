@@ -1096,10 +1096,10 @@ export default function App() {
               </div>
               <div className="space-y-0.5 text-center md:text-left">
                 <span className="text-[9px] uppercase font-mono font-extrabold tracking-widest text-primary-foreground font-medium">
-                  {activeFocusTask ? "Active Sprint Target" : "Mindfulness Breathing Clock"}
+                  {activeFocusTask ? "Active Sprint Target" : "POMODORO TIMER"}
                 </span>
                 <h3 className="text-sm font-bold text-foreground">
-                  {activeFocusTask ? activeFocusTask.title : "Unscheduled Mind focus Loop"}
+                  {activeFocusTask ? activeFocusTask.title : "Unscheduled Pomodoro Session"}
                 </h3>
                 <p className="text-[11px] font-mono text-muted-foreground">
                   Remaining Session:{" "}
