@@ -499,9 +499,10 @@ export default function App() {
   // Time of day greeting helper
   const getTimePhrase = () => {
     const hrs = new Date().getHours();
-    if (hrs < 12) return "Morning";
-    if (hrs < 18) return "Afternoon";
-    return "Evening";
+    if (hrs < 4) return "Still awake?";
+    if (hrs < 12) return "Good morning";
+    if (hrs < 18) return "Good afternoon";
+    return "Good evening";
   };
 
   // Toggle complete
@@ -1072,7 +1073,7 @@ export default function App() {
               <div className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
                 <section className="card-3d rounded-3xl p-6 bg-card -none">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="font-display text-2xl">Good {getTimePhrase().toLowerCase()}</h2>
+                    <h2 className="font-display text-2xl">{getTimePhrase()}</h2>
                     <div className="flex gap-2">
                       <button 
                         onClick={handleVoiceSummary}
