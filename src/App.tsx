@@ -993,7 +993,7 @@ export default function App() {
   return (
     <div
       id="vibe-plan-space"
-      className="min-h-screen bg-aurora text-foreground"
+      className="flex flex-col min-h-screen bg-aurora text-foreground"
     >
       {/* Decorative Spatial Pulsing Orbs (activated by theme class inside index.css) */}
       
@@ -1037,7 +1037,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="space-y-12">
+      <main className="flex-1 space-y-12 pb-12">
           
           {/* Orbit uses the global header instead */}
 
