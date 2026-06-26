@@ -228,11 +228,30 @@ export default function App() {
   };
 
   const toggleHabit = (id: string) => {
-    setHabits(prev => prev.map(h => h.id === id ? { ...h, completed: !h.completed, streak: h.completed ? h.streak - 1 : h.streak + 1 } : h));
+    setHabits(prev => prev.map(h => {
+      if (h.id === id) {
+        const nextCompleted = !h.completed;
+        const todayStr = new Date().toISOString().split("T")[0];
+        let nextHistory = h.history ? [...h.history] : [];
+        let nextStreak = h.streak;
+
+        if (nextCompleted) {
+          if (!nextHistory.includes(todayStr)) {
+            nextHistory.push(todayStr);
+          }
+          nextStreak = h.streak + 1;
+        } else {
+          nextHistory = nextHistory.filter((d) => d !== todayStr);
+          nextStreak = Math.max(0, h.streak - 1);
+        }
+        return { ...h, completed: nextCompleted, streak: nextStreak, history: nextHistory };
+      }
+      return h;
+    }));
   };
   const addHabit = (name: string) => {
     const icon = "Star";
-    setHabits(prev => [{ id: generateUniqueId(), name, icon, completed: false, streak: 0, targetDays: 7 }, ...prev]);
+    setHabits(prev => [{ id: generateUniqueId(), name, icon, completed: false, streak: 0, targetDays: 7, history: [] }, ...prev]);
   };
   const deleteHabit = (id: string) => {
     setHabits(prev => prev.filter(h => h.id !== id));
@@ -309,6 +328,29 @@ export default function App() {
     }
     return ensureUniqueIds(initialHabits, "habit");
   });
+
+  // Daily habit reset checker
+  React.useEffect(() => {
+    const checkDailyReset = () => {
+      const todayStr = new Date().toISOString().split("T")[0];
+      setHabits(prev => {
+        let changed = false;
+        const nextHabits = prev.map(h => {
+          const completedToday = h.history && h.history.includes(todayStr);
+          if (h.completed && !completedToday) {
+            changed = true;
+            return { ...h, completed: false };
+          }
+          return h;
+        });
+        return changed ? nextHabits : prev;
+      });
+    };
+    
+    checkDailyReset();
+    const interval = setInterval(checkDailyReset, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const [notifications, setNotifications] = React.useState<ContextNotification[]>(() => {
     try {
