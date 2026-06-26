@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Task } from "../types";
 import PremiumDatePicker from "./PremiumDatePicker";
-import { Check, Clock, ShieldAlert, Sparkles, AlertCircle, Bookmark, Zap, Trash2 } from "lucide-react";
+import { Check, Clock, ShieldAlert, Sparkles, AlertCircle, Bookmark, Zap, Trash2, Plus } from "lucide-react";
 
 interface EisenhowerMatrixProps {
   tasks: Task[];
@@ -12,6 +12,7 @@ interface EisenhowerMatrixProps {
   onSelectTask?: (task: Task) => void;
   onUpdateEstimatedMinutes?: (id: string, mins: number) => void;
   onUpdateDeadline?: (id: string, dateStr: string) => void;
+  onAddTask?: (title: string, urgent: boolean, important: boolean, mins: number, deadline?: string) => void;
 }
 
 export default function EisenhowerMatrix({
@@ -22,9 +23,13 @@ export default function EisenhowerMatrix({
   onToggleImportant,
   onSelectTask,
   onUpdateEstimatedMinutes,
-  onUpdateDeadline
+  onUpdateDeadline,
+  onAddTask
 }: EisenhowerMatrixProps) {
   
+  const [newTaskText, setNewTaskText] = useState<Record<string, string>>({});
+  const [newTaskDate, setNewTaskDate] = useState<Record<string, string>>({});
+
   // Categorize tasks
   const q1 = tasks.filter(t => t.urgent && t.important);
   const q2 = tasks.filter(t => !t.urgent && t.important);
@@ -38,7 +43,9 @@ export default function EisenhowerMatrix({
     accentColor: string,
     bgGlow: string,
     icon: React.ReactNode,
-    quadrantId: string
+    quadrantId: string,
+    isUrgent: boolean,
+    isImportant: boolean
   ) => {
     return (
       <div
@@ -161,6 +168,40 @@ export default function EisenhowerMatrix({
             </div>
           )}
         </div>
+
+        {/* Quick Add Form inside quadrant */}
+        <form 
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (newTaskText[quadrantId]?.trim() && onAddTask) {
+              onAddTask(
+                newTaskText[quadrantId].trim(),
+                isUrgent,
+                isImportant,
+                30,
+                newTaskDate[quadrantId]
+              );
+              setNewTaskText(prev => ({...prev, [quadrantId]: ''}));
+              setNewTaskDate(prev => ({...prev, [quadrantId]: ''}));
+            }
+          }}
+          className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-800/60"
+        >
+          <input 
+            type="text" 
+            placeholder="Add task..." 
+            value={newTaskText[quadrantId] || ''}
+            onChange={(e) => setNewTaskText(prev => ({...prev, [quadrantId]: e.target.value}))}
+            className="flex-1 bg-surface text-xs px-2.5 py-1.5 rounded-lg border-none shadow-inner focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder:text-muted-foreground/50"
+          />
+          <PremiumDatePicker 
+            value={newTaskDate[quadrantId]} 
+            onChange={(d) => setNewTaskDate(prev => ({...prev, [quadrantId]: d || ''}))} 
+          />
+          <button type="submit" className="bg-primary/20 text-primary hover:bg-primary/30 p-1.5 rounded-lg transition-colors cursor-pointer active:scale-95">
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+        </form>
       </div>
     );
   };
@@ -180,7 +221,9 @@ export default function EisenhowerMatrix({
           "text-red-400",
           "border-red-500/10 hover:border-red-500/30",
           <ShieldAlert className="w-4 h-4 text-red-400" />,
-          "q1"
+          "q1",
+          true,
+          true
         )}
 
         {renderQuadrant(
@@ -190,7 +233,9 @@ export default function EisenhowerMatrix({
           "text-purple-400",
           "border-purple-500/10 hover:border-purple-500/30",
           <Bookmark className="w-4 h-4 text-purple-400" />,
-          "q2"
+          "q2",
+          false,
+          true
         )}
 
         {renderQuadrant(
@@ -200,7 +245,9 @@ export default function EisenhowerMatrix({
           "text-cyan-400",
           "border-cyan-500/10 hover:border-cyan-500/30",
           <Zap className="w-4 h-4 text-cyan-400" />,
-          "q3"
+          "q3",
+          true,
+          false
         )}
 
         {renderQuadrant(
@@ -210,7 +257,9 @@ export default function EisenhowerMatrix({
           "text-muted-foreground",
           "border-slate-800 hover:border-slate-700",
           <AlertCircle className="w-4 h-4 text-muted-foreground" />,
-          "q4"
+          "q4",
+          false,
+          false
         )}
       </div>
     </div>

@@ -1243,6 +1243,9 @@ export default function App() {
         onToggleImportant={toggleTaskImportant}
         onUpdateEstimatedMinutes={(id, mins) => setTasks(tasks.map(t => t.id === id ? { ...t, estimatedMinutes: mins } : t))}
         onUpdateDeadline={(id, dateStr) => setTasks(tasks.map(t => t.id === id ? { ...t, deadline: dateStr || undefined } : t))}
+        onAddTask={(title, urgent, important, mins, deadline) => {
+          setTasks(prev => [{ id: Math.random().toString(36).substr(2, 9), title, urgent, important, estimatedMinutes: mins || 30, deadline, completed: false, createdAt: new Date().toISOString() }, ...prev]);
+        }}
       />
     )}
 
