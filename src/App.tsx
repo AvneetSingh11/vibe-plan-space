@@ -1089,7 +1089,7 @@ export default function App() {
       {/* TopNavBar */}
       <nav className="top-nav-container fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-[1000px] rounded-full backdrop-blur-3xl text-primary-container font-headline-md text-sm border border-glass-stroke shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex justify-between items-center px-6 py-2 z-50">
         <div className="flex items-center gap-2">
-          <span className="font-headline-md text-lg font-bold tracking-tight text-primary-container">Aura</span>
+            <span className="font-headline-md text-lg font-bold tracking-tight text-primary-container">Vibe Plan Space</span>
         </div>
         <div className="hidden md:flex items-center gap-4">
           <button onClick={() => setActiveTab('dashboard')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Dashboard</button>
@@ -1374,11 +1374,11 @@ export default function App() {
 
       {/* FOOTER ZONE */}
       <footer className="fixed bottom-0 w-full text-center py-2 pb-16 md:pb-2 text-xs text-on-surface-variant/50 border-t border-glass-stroke bg-background/80 backdrop-blur-md z-40">
-        <div className="flex justify-center gap-6 mb-1">
-          <a href="#/privacy" className="hover:text-primary-container transition">Privacy Policy</a>
-          <a href="#/terms" className="hover:text-primary-container transition">Terms of Service</a>
+        <div className="flex items-center justify-center gap-6 mb-4">
+          <button onClick={() => setView('privacy')} className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</button>
+          <button onClick={() => setView('terms')} className="hover:text-primary transition-colors cursor-pointer">Terms of Service</button>
         </div>
-        <p>&copy; {new Date().getFullYear()} Aura Spatial. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Vibe Plan Space. All rights reserved.</p>
       </footer>
     </div>
   );

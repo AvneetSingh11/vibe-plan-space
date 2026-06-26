@@ -30,7 +30,7 @@ export default function HabitTracker({ habits, onToggleHabit, onAddHabit, onDele
     <div className="w-full h-full flex flex-col items-center">
       <header className="w-full max-w-4xl mb-8 flex justify-between items-end">
         <div>
-          <h1 className="font-display-hero text-display-hero gradient-text mb-2">Aura Vault</h1>
+          <h1 className="font-display-hero text-display-hero gradient-text mb-2">Vibe Vault</h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
             Behavioral conditioning and consistency protocols.
           </p>
