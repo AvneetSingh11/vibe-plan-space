@@ -104,14 +104,22 @@ export default function App() {
 
   const [voiceSummary, setVoiceSummary] = React.useState<string | null>(null);
 
+  const abortVoiceRef = React.useRef(false);
+
   const handleVoiceSummary = async () => {
     if (isVoiceLoading) return; // Prevent multiple clicks causing overlapping voices
     
     setIsVoiceLoading(true);
     setVoiceSummary(null);
+    abortVoiceRef.current = false;
     
     // Simulate AI processing delay
     await new Promise(resolve => setTimeout(resolve, 800));
+
+    if (abortVoiceRef.current) {
+      setIsVoiceLoading(false);
+      return;
+    }
 
     try {
       const pendingTasks = tasks.filter(t => !t.completed);
@@ -131,6 +139,11 @@ export default function App() {
       const activeHabits = habits.filter(h => h.streak > 2);
       if (activeHabits.length > 0) {
         summary += `Also, keep up the great work on your habits! You have a solid ${activeHabits[0].streak} day streak going for ${activeHabits[0].name}.`;
+      }
+
+      if (abortVoiceRef.current) {
+        setIsVoiceLoading(false);
+        return;
       }
 
       setVoiceSummary(summary);
