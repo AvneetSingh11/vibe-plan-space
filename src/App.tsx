@@ -105,6 +105,8 @@ export default function App() {
   const [voiceSummary, setVoiceSummary] = React.useState<string | null>(null);
 
   const handleVoiceSummary = async () => {
+    if (isVoiceLoading) return; // Prevent multiple clicks causing overlapping voices
+    
     setIsVoiceLoading(true);
     setVoiceSummary(null);
     
@@ -133,14 +135,9 @@ export default function App() {
 
       setVoiceSummary(summary);
       if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel(); // Stop any currently playing voices
         const utterance = new SpeechSynthesisUtterance(summary);
-        
-        // Try to pick a natural English voice
-        const voices = window.speechSynthesis.getVoices();
-        const selectedVoice = voices.find((v) => v.lang.startsWith("en-") && (v.name.includes("Google") || v.name.includes("Premium"))) || voices.find((v) => v.lang.startsWith("en"));
-        if (selectedVoice) utterance.voice = selectedVoice;
-        
+        // Let the system use its consistent default voice instead of randomly switching when voices load async
         window.speechSynthesis.speak(utterance);
       }
     } catch (e) {
