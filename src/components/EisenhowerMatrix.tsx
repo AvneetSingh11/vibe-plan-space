@@ -105,6 +105,7 @@ export default function EisenhowerMatrix({
                   <PremiumDatePicker 
                       value={task.deadline} 
                       onChange={(d) => { if(onUpdateDeadline) onUpdateDeadline(task.id, d); }} 
+                      compact={true}
                     />
                     <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono bg-surface p-1 px-1.5 rounded-lg border-none ring-0">
                     <Clock className="w-3 h-3 text-muted-foreground" />
