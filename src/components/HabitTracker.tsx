@@ -209,6 +209,7 @@ export default function HabitTracker({ habits, onToggleHabit, onAddHabit, onDele
             </p>
           )}
         </div>
+        </div>
       </div>
 
       <div className="w-full max-w-4xl glass-panel rounded-3xl p-8 relative overflow-hidden flex flex-col md:flex-row gap-8">
