@@ -249,7 +249,7 @@ export default function EisenhowerMatrix({
         )}
 
         {renderQuadrant(
-          "Eliminate",
+          "Declutter",
           "Not Urgent & Not Important",
           q4,
           "text-on-surface-variant",

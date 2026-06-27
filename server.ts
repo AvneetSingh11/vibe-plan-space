@@ -198,22 +198,28 @@ Create a highly focused briefing that highlights what to tackle first, reminds t
           : "No specific tasks logged with emotions.";
 
         const logSummary = emotionLogs && emotionLogs.length > 0
-          ? emotionLogs.map((l: any) => `- Logged: ${l.emotion} (${l.emoji}). Stage: ${l.stage}. Energy: ${l.energy}. Pleasantness: ${l.pleasantness}. Note: "${l.note || ''}".`).join("\n")
+          ? emotionLogs.map((l: any) => {
+              let entry = `- Logged: ${l.emotion} (${l.emoji}). Stage: ${l.stage}. Energy: ${l.energy}. Pleasantness: ${l.pleasantness}. Note: "${l.note || ''}".`;
+              if (l.analysis) {
+                entry += ` AI Note Analysis -> Sentiment: ${l.analysis.sentiment}, Trigger: ${l.analysis.primaryTrigger}, Pattern: ${l.analysis.cognitiveDistortion}.`;
+              }
+              return entry;
+            }).join("\n")
           : "No general emotion logs recorded.";
 
         const prompt = `You are Vibe Plan Space Mind & Focus Guide, a warm, professional, and hyper-intelligent cognitive psychologist and productivity expert.
-Analyze the user's logged emotions alongside their task completions to find deep correlations between their mood, energy levels, and execution capability.
+Analyze the user's logged emotions, their self-reflective notes (including triggers and patterns extracted from them), alongside their task completions to find deep correlations between their mood, energy levels, and execution capability.
 
 User's Task Data:
 ${taskSummary}
 
-User's General Emotion Logs:
+User's General Emotion Logs (with reflective notes & AI extracted themes):
 ${logSummary}
 
 Provide an analysis of their mood and productivity. You must return exactly 3 fields:
-1. "summary": A concise overview of their current emotional baseline and overall focus health (2-3 sentences).
-2. "productivityCorrelation": A deep insight on how their feelings (e.g. anxiety vs. excitement, low vs. high energy) directly impact their completion rates and focus blocks. Focus on what triggers high performance and what triggers procrastination.
-3. "actionableAdvice": 2-3 specific, scientifically-backed, tactical suggestions (like micro-meditations, shifting task priorities, Pomodoro scheduling, or physical movement) to optimize their daily flow based on these emotional patterns.
+1. "summary": A concise overview of their current emotional baseline, primary triggers, and overall focus health (2-3 sentences).
+2. "productivityCorrelation": A deep insight on how their feelings (e.g. anxiety vs. excitement, low vs. high energy) and their mental habits (like specific cognitive distortions) directly impact their completion rates and focus blocks. Focus on what triggers high performance and what triggers procrastination.
+3. "actionableAdvice": 2-3 specific, scientifically-backed, tactical suggestions (like cognitive reframing, micro-meditations, shifting task priorities, Pomodoro scheduling, or physical movement) to optimize their daily flow based on these emotional patterns.
 
 Format the response strictly as a JSON object with those 3 keys.`;
 
@@ -254,11 +260,125 @@ Format the response strictly as a JSON object with those 3 keys.`;
 
     // High-fidelity fallback
     const simulatedInsights = {
-      summary: "Your emotional baseline shows a high level of dedication mixed with performance anxiety. You actively log emotions before high-impact items, which demonstrates superb self-awareness.",
-      productivityCorrelation: "Our records suggest a clear pattern: entering a task with 'Anxious' or 'Stressed' feelings sometimes leads to longer task times or delayed completion. However, once completed, your transition to 'Satisfied' or 'Relieved' marks a massive release of cognitive tension, resetting your focus window.",
+      summary: "Your emotional baseline shows a high level of dedication mixed with performance anxiety. Your self-reflective notes reveal recurring triggers around deadlines and work commitments.",
+      productivityCorrelation: "Our records suggest a clear pattern: entering a task with 'Anxious' or 'Stressed' feelings sometimes leads to longer task times. However, when you actively reframe your thoughts in your self-reflective notes, it marks a massive release of cognitive tension, resetting your focus window.",
       actionableAdvice: "First, when starting a task labeled as 'Anxious' or 'Stressed', apply the 'Rule of 5': commit to just 5 minutes of low-stakes drafting to bypass the friction. Second, schedule a 3-minute green-zone transition (like deep abdominal breathing) to step down your high-energy unpleasant states before entering a new Pomodoro cycle."
     };
     return res.json({ insights: simulatedInsights, source: "simulation" });
+  });
+
+  // API Endpoint: Analyze Self-Reflective Emotion Note
+  app.post("/api/ai/analyze-note", async (req, res) => {
+    const { note, emotion } = req.body;
+    if (!note || typeof note !== "string" || note.trim() === "") {
+      return res.status(400).json({ error: "Note is required" });
+    }
+
+    if (ai) {
+      try {
+        console.log(`Analyzing reflective note: "${note}" with emotion: "${emotion}"`);
+        const prompt = `You are a clinical psychologist and mindfulness coach. Analyze this self-reflective note written by a user when logging the emotion "${emotion}".
+Note: "${note}"
+
+Analyze the text and extract:
+1. sentiment: One of "positive", "negative", or "neutral".
+2. cognitiveDistortion: The main cognitive distortion or pattern found (e.g., 'Catastrophizing', 'All-or-Nothing', 'Should Statements', 'Emotional Reasoning', 'None - Mindful Self-Awareness', 'None - Positive Reframing', 'None - Self-Compassion').
+3. primaryTrigger: The main trigger/domain mentioned (e.g., 'Work/Deadlines', 'Fatigue/Energy', 'Social/Interpersonal', 'General Productivity', 'Personal Well-being', 'Physical Health', 'Unknown/None').
+4. copingStrategy: A warm, scientific, highly actionable 1-2 sentence advice or mindfulness coping tip tailored to this specific note.`;
+
+        const response = await ai.models.generateContent({
+          model: "gemini-3.5-flash",
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                analysis: {
+                  type: Type.OBJECT,
+                  properties: {
+                    sentiment: {
+                      type: Type.STRING,
+                      enum: ["positive", "negative", "neutral"],
+                      description: "Overall sentiment of the note."
+                    },
+                    cognitiveDistortion: {
+                      type: Type.STRING,
+                      description: "Identified cognitive distortion or mindfulness pattern."
+                    },
+                    primaryTrigger: {
+                      type: Type.STRING,
+                      description: "Estimated life trigger domain."
+                    },
+                    copingStrategy: {
+                      type: Type.STRING,
+                      description: "1-2 sentence highly customized coping tip or reflection prompt."
+                    }
+                  },
+                  required: ["sentiment", "cognitiveDistortion", "primaryTrigger", "copingStrategy"]
+                }
+              },
+              required: ["analysis"]
+            }
+          }
+        });
+
+        if (response.text) {
+          const analysisResult = JSON.parse(response.text.trim());
+          return res.json({ analysis: analysisResult.analysis, source: "gemini" });
+        }
+      } catch (err) {
+        console.error("Gemini note-analysis error, falling back to simulation:", err);
+      }
+    }
+
+    // High-Fidelity Simulation Fallback for Local/Offline/Simulated mode
+    console.log("Analyzing reflective note with high-fidelity simulation.");
+    const noteLower = note.toLowerCase();
+    
+    // Determine trigger
+    let trigger = "General Productivity";
+    if (noteLower.match(/(deadline|work|task|exam|study|homework|code|class|submit|finish|project)/)) {
+      trigger = "Work/Deadlines";
+    } else if (noteLower.match(/(tired|sleep|exhausted|lazy|energy|burnout|drained|rest)/)) {
+      trigger = "Fatigue/Energy";
+    } else if (noteLower.match(/(friend|family|someone|talk|people|relationship|mom|dad|brother|sister|manager|colleague)/)) {
+      trigger = "Social/Interpersonal";
+    } else if (noteLower.match(/(feel|anxious|sad|happy|peace|mindful|calm)/)) {
+      trigger = "Personal Well-being";
+    }
+
+    // Determine cognitive distortion / reflection pattern
+    let distortion = "None - Mindful Self-Awareness";
+    let coping = "Your reflective mindfulness is fantastic. Acknowledging your current state is the first step to active cognitive control.";
+
+    if (noteLower.match(/(never|always|can't|cannot|impossible|worst)/)) {
+      distortion = "All-or-Nothing / Overgeneralization";
+      coping = "Try to soften absolute terms. Change 'I can never' to 'This is a temporary challenge that I can take step-by-step.'";
+    } else if (noteLower.match(/(fail|ruin|disaster|terrible|horrible|doomed)/)) {
+      distortion = "Catastrophizing";
+      coping = "Catastrophizing magnifies anxiety. Ask yourself: what is the single, most manageable next action you can take right now?";
+    } else if (noteLower.match(/(should|must|ought)/)) {
+      distortion = "Should Statements";
+      coping = "Be gentle with your expectations. Replace shoulds with permission: 'It is okay to work at a sustainable pace.'";
+    } else if (noteLower.match(/(good|great|happy|excited|ready|positive|glad|accomplish|done)/)) {
+      distortion = "None - Positive Reframing";
+      coping = "Savor this positive emotional win! Take a 10-second mental snapshot of this satisfaction to encode it in your long-term memory.";
+    }
+
+    // Customize coping tip further by trigger
+    if (trigger === "Fatigue/Energy" && distortion === "None - Mindful Self-Awareness") {
+      coping = "Honor your body battery. Rest is not a reward for work; it is a requirement for focus. Take a 10-minute offline breather.";
+    }
+
+    const simulatedAnalysis = {
+      sentiment: noteLower.match(/(good|great|happy|excited|peace|calm|relaxed|love|accomplish|easy)/) ? "positive" : (noteLower.match(/(stress|anxious|fail|hard|bad|worst|scared|sad|angry|hate|ruin)/) ? "negative" : "neutral"),
+      cognitiveDistortion: distortion,
+      primaryTrigger: trigger,
+      copingStrategy: coping
+    };
+
+    return res.json({ analysis: simulatedAnalysis, source: "simulation" });
   });
 
   // API Endpoint: Voice-Command Parser

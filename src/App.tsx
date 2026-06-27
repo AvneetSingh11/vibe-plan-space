@@ -1,5 +1,7 @@
 import React from "react";
-import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight, Volume2, TrendingUp, CheckSquare, Target, Settings, Play as PlayIcon, Pause as PauseIcon } from "lucide-react";
+import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight, Volume2, TrendingUp, CheckSquare, Target, Settings, Play as PlayIcon, Pause as PauseIcon, User, Mail, Award, Sparkles, X, Cloud, CloudOff, RefreshCw } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { saveUserProgress, loadUserProgress } from "./lib/firebase";
 import EisenhowerMatrix from "./components/EisenhowerMatrix";
 import VoiceAssistant from "./components/VoiceAssistant";
 import IntegrationsHub from "./components/IntegrationsHub";
@@ -30,6 +32,9 @@ const safeLocalStorage = {
   },
   setItem: (key: string, value: string) => {
     try { localStorage.setItem(key, value); } catch (e) {}
+  },
+  removeItem: (key: string) => {
+    try { localStorage.removeItem(key); } catch (e) {}
   }
 };
 
@@ -99,135 +104,34 @@ export default function App() {
 
   const [isVoiceLoading, setIsVoiceLoading] = React.useState(false);
 
-  const [emotionState, setEmotionState] = React.useState({ energy: 3, pleasantness: 3, notes: '' });
-
-  const [isAnalyzingEmotion, setIsAnalyzingEmotion] = React.useState(false);
-  const [emotionInsight, setEmotionInsight] = React.useState<string | null>(null);
-
-  const handleEmotionLog = () => {
-    setEmotionLogs([{ ...emotionState, id: Math.random().toString(36).substr(2, 9), timestamp: Date.now() }, ...emotionLogs]);
-    setEmotionState({ energy: 3, pleasantness: 3, notes: '' });
-  };
-
-  const handleAnalyzeEmotions = async () => {
-    setIsAnalyzingEmotion(true);
-    try {
-      const response = await fetch("http://localhost:5000/api/ai/emotions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ logs: emotionLogs })
-      });
-      const data = await response.json();
-      setEmotionInsight(data.insight);
-    } catch(e) {
-      console.error(e);
-      setEmotionInsight("Could not analyze emotions at this time.");
-    }
-    setIsAnalyzingEmotion(false);
-  };
-
-  const [voiceCommandResult, setVoiceCommandResult] = React.useState<string | null>(null);
-  const handleVoiceCommand = async (cmdString: string | any) => {
-    // If it's an event (from button click without input), just use a test string or ignore
-    const cmd = typeof cmdString === 'string' ? cmdString : "analyze my current matrix priorities";
-    
-    setVoiceCommandResult("Running: " + cmd + "...");
-    try {
-      const response = await fetch("http://localhost:5000/api/ai/command", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ command: cmd, context: { tasks, habits } })
-      });
-      const data = await response.json();
-      setVoiceCommandResult(data.message || data.result || "Command executed successfully.");
-    } catch (e) {
-      console.error(e);
-      setVoiceCommandResult("Could not connect to the Acoustic Parse Portal.");
-    }
-  };
-
-  const [voiceSummary, setVoiceSummary] = React.useState<string | null>(null);
-
-  const abortVoiceRef = React.useRef(false);
-
-  const handleVoiceSummary = async () => {
-    if (isVoiceLoading) return; // Prevent multiple clicks causing overlapping voices
-    
-    setIsVoiceLoading(true);
-    setVoiceSummary(null);
-    abortVoiceRef.current = false;
-    
-    // Simulate AI processing delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    if (abortVoiceRef.current) {
-      setIsVoiceLoading(false);
-      return;
-    }
-
-    try {
-      const pendingTasks = tasks.filter(t => !t.completed);
-      const urgentTasks = pendingTasks.filter(t => t.urgent && t.important);
-      const timeOfDay = getTimePhrase().toLowerCase();
-      
-      let summary = `${getTimePhrase()}! You currently have ${pendingTasks.length === 0 ? 'no' : pendingTasks.length} pending tasks. `;
-      
-      if (urgentTasks.length > 0) {
-        summary += `I recommend focusing on your ${urgentTasks.length} urgent and important tasks first, starting with "${urgentTasks[0].title}". `;
-      } else if (pendingTasks.length > 0) {
-        summary += `You have a clear orbit with no urgent tasks. Great job staying ahead! You might want to tackle "${pendingTasks[0].title}" next. `;
-      } else {
-        summary += `Your schedule is completely clear! Take some time to rest and recharge. `;
-      }
-
-      const activeHabits = habits.filter(h => h.streak > 2);
-      if (activeHabits.length > 0) {
-        summary += `Also, keep up the great work on your habits! You have a solid ${activeHabits[0].streak} day streak going for ${activeHabits[0].name}.`;
-      }
-
-      if (abortVoiceRef.current) {
-        setIsVoiceLoading(false);
-        return;
-      }
-
-      setVoiceSummary(summary);
-      if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel(); // Stop any currently playing voices
-        const utterance = new SpeechSynthesisUtterance(summary);
-        // Let the system use its consistent default voice instead of randomly switching when voices load async
-        window.speechSynthesis.speak(utterance);
-      }
-    } catch (e) {
-      console.error(e);
-      setVoiceSummary("Could not generate your briefing right now.");
-    }
-    setIsVoiceLoading(false);
-  };
-
   const [isDecomposing, setIsDecomposing] = React.useState(false);
   const handleAutonomousBreakdown = async (title: string) => {
     setIsDecomposing(true);
     try {
-      const response = await fetch("http://localhost:5000/api/ai/breakdown", {
+      const response = await fetch("/api/ai/breakdown", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ taskTitle: title })
+        body: JSON.stringify({ goal: title })
       });
       const data = await response.json();
       if (data.subtasks) {
         setTasks(prev => {
-          const newTasks = data.subtasks.map((st: string) => ({
-            id: Math.random().toString(36).substr(2, 9),
-            title: st,
-            quadrant: "Q2",
+          const newTasks = data.subtasks.map((st: any) => ({
+            id: generateUniqueId("task"),
+            title: st.title || st,
+            urgent: false,
+            important: true,
             completed: false,
-            timeEstimate: 15
+            estimatedMinutes: st.durationMinutes || 25,
+            createdAt: new Date().toISOString()
           }));
           return [...newTasks, ...prev];
         });
+        addNotification("Goal Shattered", `Successfully broke down "${title}" into ${data.subtasks.length} actionable steps.`, "success");
       }
     } catch (e) {
       console.error(e);
+      addNotification("Autonomous Breakdown Error", "Could not connect to the cognitive shatter engine.", "alert");
     }
     setIsDecomposing(false);
   };
@@ -282,6 +186,20 @@ export default function App() {
             nextHistory.push(todayStr);
           }
           nextStreak = h.streak + 1;
+          try {
+            triggerAlertBeep();
+          } catch (e) {
+            console.error(e);
+          }
+          try {
+            addNotification(
+              "Atomic Streak Ignited! 🔥",
+              `A daily routine completed. "${h.name}" is now on a ${nextStreak} day streak.`,
+              "success"
+            );
+          } catch (e) {
+            console.error(e);
+          }
         } else {
           nextHistory = nextHistory.filter((d) => d !== todayStr);
           nextStreak = Math.max(0, h.streak - 1);
@@ -304,12 +222,15 @@ export default function App() {
   };
 
   const handleTriggerBriefing = () => {
-    // Calls existing handleVoiceSummary
-    if (typeof handleVoiceSummary === 'function') handleVoiceSummary();
+    if (typeof handleTriggerSpeechBriefing === 'function') {
+      handleTriggerSpeechBriefing();
+    }
   };
 
   const setBreakdownGoal = (goal: string) => {
-    if (typeof handleAutonomousBreakdown === 'function') handleAutonomousBreakdown(goal);
+    if (typeof handleAutonomousBreakdown === 'function') {
+      handleAutonomousBreakdown(goal);
+    }
   };
 
   
@@ -319,22 +240,7 @@ export default function App() {
   const [theme, setTheme] = React.useState<"vibe" | "cosmic" | "clay" | "brutal" | "alabaster">(() => {
     try {
       const saved = safeLocalStorage.getItem("vibe_theme");
-    
-  // Keep tasks synced to local storage
-  React.useEffect(() => {
-    safeLocalStorage.setItem("actionmate_tasks", JSON.stringify(tasks));
-  }, [tasks]);
-  React.useEffect(() => {
-    safeLocalStorage.setItem("actionmate_habits", JSON.stringify(habits));
-  }, [habits]);
-  React.useEffect(() => {
-    safeLocalStorage.setItem("actionmate_emotions", JSON.stringify(emotionLogs));
-  }, [emotionLogs]);
-  React.useEffect(() => {
-    safeLocalStorage.setItem("actionmate_notifs", JSON.stringify(notifications));
-  }, [notifications]);
-
-  return (saved as any) || "vibe";
+      return (saved as any) || "vibe";
     } catch (e) {
       return "vibe";
     }
@@ -424,6 +330,199 @@ export default function App() {
     return ensureUniqueIds(initialEmotionLogs, "log");
   });
 
+  // User Profile States
+  const [userName, setUserName] = React.useState(() => {
+    return safeLocalStorage.getItem("actionmate_username") || "Avneet Arora";
+  });
+  const [userMantra, setUserMantra] = React.useState(() => {
+    return safeLocalStorage.getItem("actionmate_mantra") || "Ascending daily orbits with peak compliance.";
+  });
+  const [isEditingProfile, setIsEditingProfile] = React.useState(false);
+  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+  const [userAvatar, setUserAvatar] = React.useState(() => {
+    return safeLocalStorage.getItem("actionmate_avatar") || "https://lh3.googleusercontent.com/aida-public/AB6AXuAl-laiQcHCZ52LjAnfDbeS4vokKf8qf9qYi26dPMUQnJFXkW7_Su7OrSAj3gS44DNq975mOMy5GUyMptx5sWKqtmM1IhUWC5kBCGXpZl968eK2Gs7wfqXbQ2LU4zhsA5bQKfawd2G2PycrShSwiXUa0W7TZ0ymAVQkr_0YO7xPOSSeClAytrt1kNsMj1oUdawtCx_VjpSfrbZwHPgFOfxTpTbzDCF_oJuoR-0Gt4761i_xmovLUFzK4r7-goRESaIot0OVTpznaqI";
+  });
+
+  // Cloud Sync States
+  const [spaceId, setSpaceId] = React.useState<string>(() => {
+    return safeLocalStorage.getItem("vibe_space_id") || "";
+  });
+  const [spaceIdInput, setSpaceIdInput] = React.useState("");
+  const [syncStatus, setSyncStatus] = React.useState<"idle" | "syncing" | "success" | "error">("idle");
+  const [syncError, setSyncError] = React.useState<string | null>(null);
+  const [lastCloudSync, setLastCloudSync] = React.useState<number | null>(() => {
+    const val = safeLocalStorage.getItem("vibe_last_cloud_sync");
+    return val ? parseInt(val, 10) : null;
+  });
+
+  // Keep spaceIdInput in sync with spaceId when spaceId changes
+  React.useEffect(() => {
+    setSpaceIdInput(spaceId);
+  }, [spaceId]);
+
+  // Action function to connect and sync Space ID
+  const handleConnectSpace = async (targetId: string) => {
+    const trimmed = targetId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+    if (!trimmed) {
+      addNotification("Invalid Space ID 🪐", "Please enter alphanumeric characters for your ID.", "alert");
+      return;
+    }
+    setSyncStatus("syncing");
+    setSyncError(null);
+    try {
+      const cloudData = await loadUserProgress(trimmed);
+      if (cloudData) {
+        // Space exists in the cloud, restore it!
+        setUserName(cloudData.userName);
+        setUserMantra(cloudData.userMantra);
+        setUserAvatar(cloudData.userAvatar);
+        setTasks(cloudData.tasks);
+        setHabits(cloudData.habits);
+        setEmotionLogs(cloudData.emotionLogs);
+
+        // Save local
+        safeLocalStorage.setItem("actionmate_username", cloudData.userName);
+        safeLocalStorage.setItem("actionmate_mantra", cloudData.userMantra);
+        safeLocalStorage.setItem("actionmate_avatar", cloudData.userAvatar);
+        safeLocalStorage.setItem("actionmate_tasks", JSON.stringify(cloudData.tasks));
+        safeLocalStorage.setItem("actionmate_habits", JSON.stringify(cloudData.habits));
+        safeLocalStorage.setItem("actionmate_emotions", JSON.stringify(cloudData.emotionLogs));
+
+        setSpaceId(trimmed);
+        safeLocalStorage.setItem("vibe_space_id", trimmed);
+        setLastCloudSync(cloudData.lastSynced || Date.now());
+        safeLocalStorage.setItem("vibe_last_cloud_sync", String(cloudData.lastSynced || Date.now()));
+
+        setSyncStatus("success");
+        addNotification("Space Restored! 🌌", `Successfully recovered orbits for Space ID: "${trimmed}"`, "success");
+      } else {
+        // Space doesn't exist, register current progress to this space!
+        const payload = {
+          userName,
+          userMantra,
+          userAvatar,
+          tasks,
+          habits,
+          emotionLogs,
+        };
+        await saveUserProgress(trimmed, payload);
+        
+        setSpaceId(trimmed);
+        safeLocalStorage.setItem("vibe_space_id", trimmed);
+        const now = Date.now();
+        setLastCloudSync(now);
+        safeLocalStorage.setItem("vibe_last_cloud_sync", String(now));
+
+        setSyncStatus("success");
+        addNotification("New Cloud Space Initialized! 🚀", `Your progress has been backed up to the new Space ID: "${trimmed}"`, "success");
+      }
+    } catch (err: any) {
+      console.error("Cloud Sync Error:", err);
+      setSyncStatus("error");
+      setSyncError(err?.message || "Unknown error during sync");
+      addNotification("Sync Connection Interrupted 📡", err?.message || "Failed to communicate with the cloud database.", "alert");
+    }
+  };
+
+  // Quick manual backup trigger
+  const handleManualBackup = async () => {
+    if (!spaceId) return;
+    setSyncStatus("syncing");
+    setSyncError(null);
+    try {
+      const payload = {
+        userName,
+        userMantra,
+        userAvatar,
+        tasks,
+        habits,
+        emotionLogs,
+      };
+      await saveUserProgress(spaceId, payload);
+      const now = Date.now();
+      setLastCloudSync(now);
+      safeLocalStorage.setItem("vibe_last_cloud_sync", String(now));
+      setSyncStatus("success");
+      addNotification("Cloud Orbit Synced! 🛰️", "Your latest progress is safely stored in the cloud.", "success");
+    } catch (err: any) {
+      console.error("Manual Sync Error:", err);
+      setSyncStatus("error");
+      setSyncError(err?.message || "Unknown error during sync");
+    }
+  };
+
+  // Auto background sync when local states change
+  React.useEffect(() => {
+    if (!spaceId) return;
+    
+    // Debounce to prevent rapid fire of writes
+    const timer = setTimeout(async () => {
+      try {
+        const payload = {
+          userName,
+          userMantra,
+          userAvatar,
+          tasks,
+          habits,
+          emotionLogs,
+        };
+        await saveUserProgress(spaceId, payload);
+        const now = Date.now();
+        setLastCloudSync(now);
+        safeLocalStorage.setItem("vibe_last_cloud_sync", String(now));
+        setSyncStatus("success");
+      } catch (err) {
+        console.warn("Background auto-sync failed:", err);
+      }
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, [tasks, habits, emotionLogs, userName, userMantra, userAvatar, spaceId]);
+
+  // Calculate active streak of user live
+  const userStreak = React.useMemo(() => {
+    const allDates = new Set<string>();
+    habits.forEach(h => {
+      if (h.history) {
+        h.history.forEach(d => allDates.add(d));
+      }
+    });
+
+    const today = new Date();
+    let streak = 0;
+    
+    const formatDate = (date: Date) => {
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    };
+
+    const todayStr = formatDate(today);
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = formatDate(yesterday);
+
+    if (!allDates.has(todayStr) && !allDates.has(yesterdayStr)) {
+      return 0;
+    }
+
+    let checkDate = allDates.has(todayStr) ? today : yesterday;
+    let iterations = 0;
+    while (iterations < 1000) {
+      iterations++;
+      const checkDateStr = formatDate(checkDate);
+      if (allDates.has(checkDateStr)) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }, [habits]);
+
   // Clock & Ambient Time States
   const [timeString, setTimeString] = React.useState("");
   const [dateString, setDateString] = React.useState("");
@@ -439,6 +538,7 @@ export default function App() {
   const [focusTimerActive, setFocusTimerActive] = React.useState(false);
   const [focusSelectedPreset, setFocusSelectedPreset] = React.useState<number>(25);
   const [showCustomTimer, setShowCustomTimer] = React.useState(false);
+  const [customMinutesInput, setCustomMinutesInput] = React.useState("30");
 
   // Goal Breakdown States
   const [goalInput, setGoalInput] = React.useState("");
@@ -1002,7 +1102,34 @@ export default function App() {
     }
   };
 
+  const analyzeEmotionNote = async (logId: string, note: string, emotion: string) => {
+    try {
+      const response = await fetch("/api/ai/analyze-note", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note, emotion })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.analysis) {
+          setEmotionLogs(prev => prev.map(l => l.id === logId ? { ...l, analysis: data.analysis } : l));
+          
+          if (data.analysis.copingStrategy) {
+            addNotification(
+              `AI Mind Strategy: ${emotion}`,
+              `${data.analysis.copingStrategy}`,
+              "suggestion"
+            );
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to analyze self-reflective note:", e);
+    }
+  };
+
   const handleAddEmotionalLog = () => {
+    const noteText = emotionNote.trim();
     const newLog: EmotionLog = {
       id: generateUniqueId("log"),
       stage: "independent",
@@ -1010,12 +1137,16 @@ export default function App() {
       emoji: selectedEmoji,
       energy: emotionEnergy,
       pleasantness: emotionPleasant,
-      note: emotionNote.trim() || undefined,
+      note: noteText || undefined,
       createdAt: new Date().toISOString()
     };
     setEmotionLogs((prev) => [newLog, ...prev]);
     addNotification("Atmosphere Calibrated 🧘", `Logged feeling ${selectedEmotion} with ${emotionEnergy} energy.`, "success");
     setEmotionNote("");
+
+    if (noteText) {
+      analyzeEmotionNote(newLog.id, noteText, selectedEmotion);
+    }
   };
 
   // Clean workspaces and seed demo data
@@ -1100,9 +1231,13 @@ export default function App() {
           <button onClick={() => setActiveTab('integrations')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'integrations' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Integrations</button>
         </div>
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-full overflow-hidden border border-glass-stroke">
-            <img alt="User profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl-laiQcHCZ52LjAnfDbeS4vokKf8qf9qYi26dPMUQnJFXkW7_Su7OrSAj3gS44DNq975mOMy5GUyMptx5sWKqtmM1IhUWC5kBCGXpZl968eK2Gs7wfqXbQ2LU4zhsA5bQKfawd2G2PycrShSwiXUa0W7TZ0ymAVQkr_0YO7xPOSSeClAytrt1kNsMj1oUdawtCx_VjpSfrbZwHPgFOfxTpTbzDCF_oJuoR-0Gt4761i_xmovLUFzK4r7-goRESaIot0OVTpznaqI" />
-          </div>
+          <button 
+            onClick={() => setIsProfileOpen(true)}
+            className="w-8 h-8 rounded-full overflow-hidden border border-primary-fixed-dim/50 hover:border-primary-fixed-dim hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            title="User Account"
+          >
+            <img alt="User profile" className="w-full h-full object-cover" src={userAvatar} />
+          </button>
         </div>
       </nav>
 
@@ -1135,7 +1270,27 @@ export default function App() {
           {/* ACTIVE VIEW BLOCK */}
           {/* ACTIVE VIEW BLOCK */}
           {activeTab === "dashboard" && (
-            <div className="flex flex-col lg:flex-row gap-6 h-full pb-12 animate-rise">
+            <div className="flex flex-col gap-6 w-full pb-12 animate-rise">
+              {/* Dashboard Sub-Header with Account Summary */}
+              <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between p-6 rounded-3xl glass-panel relative overflow-hidden border border-glass-stroke/50 bg-black/15 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary-fixed-dim to-aurora-orange rounded-full blur-[100px] opacity-[0.06] pointer-events-none"></div>
+                
+                <div className="relative z-10 space-y-1">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-primary-fixed-dim font-black flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-fixed-dim animate-ping"></span>
+                    Orbit Command Center
+                  </span>
+                  <h2 className="font-display-hero text-2xl sm:text-3xl font-black text-on-surface tracking-tight leading-none">
+                    Good day, {userName.split(" ")[0]}
+                  </h2>
+                  <p className="text-xs text-on-surface-variant font-body-md italic opacity-90 max-w-xl">
+                    "{userMantra}"
+                  </p>
+                </div>
+              </div>
+
+              {/* Grid content columns */}
+              <div className="flex flex-col lg:flex-row gap-6 h-full">
               
               {/* Left Column: Today's Prime Objectives */}
               <section className="glass-panel rounded-3xl p-6 lg:w-[40%] flex flex-col h-[850px] relative">
@@ -1199,7 +1354,15 @@ export default function App() {
                 <div className="glass-panel rounded-3xl p-8 flex-1 flex flex-col items-center justify-center relative overflow-hidden">
                   <div className={`absolute inset-0 bg-aurora-orange blur-[120px] transition-opacity duration-1000 ${focusTimerActive ? 'opacity-20' : 'opacity-0'} pointer-events-none`}></div>
                   
-                  <div className="relative w-[400px] h-[400px] flex flex-col items-center justify-center my-2 z-10 group">
+                  <div 
+                    onClick={() => {
+                      if (window.matchMedia("(max-width: 768px)").matches) {
+                        setFocusTimerActive(!focusTimerActive);
+                        triggerAlertBeep();
+                      }
+                    }}
+                    className="relative w-[280px] h-[280px] xs:w-[320px] xs:h-[320px] sm:w-[400px] sm:h-[400px] flex flex-col items-center justify-center my-2 z-10 group cursor-pointer"
+                  >
                     {/* SVG Ring */}
                     <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 400 400">
                       <circle cx="200" cy="200" r="184" className="stroke-white/10" strokeWidth="12" fill="transparent" />
@@ -1217,27 +1380,29 @@ export default function App() {
                     </svg>
                     
                     {/* Inner Content (Title, Time, Status) */}
-                    <div className="flex flex-col items-center justify-center relative z-20 gap-4">
-                      <h3 className="font-headline-md text-[18px] text-on-surface-variant font-medium tracking-wide">Deep Work Session</h3>
+                    <div className="flex flex-col items-center justify-center relative z-20 gap-2 sm:gap-4 select-none">
+                      <h3 className="font-headline-md text-[14px] sm:text-[18px] text-on-surface-variant font-medium tracking-wide">Deep Work Session</h3>
                       
-                      <div className={`font-display-hero text-[80px] tracking-tighter leading-none ${focusTimerActive ? 'text-on-surface' : 'text-on-surface-variant'} transition-colors duration-500`}>
+                      <div className={`font-display-hero text-[48px] sm:text-[80px] tracking-tighter leading-none ${focusTimerActive ? 'text-on-surface' : 'text-on-surface-variant'} transition-colors duration-500`}>
                         {Math.floor(focusTimeLeft / 60).toString().padStart(2, "0")}:{Math.floor(focusTimeLeft % 60).toString().padStart(2, "0")}
                       </div>
                       
-                      <p className={`font-label-caps text-[13px] uppercase tracking-widest ${focusTimerActive ? 'text-primary-container' : 'text-on-surface-variant'}`}>
-                        {focusTimerActive ? 'Focus Mode Active' : 'System Standby'}
+                      <p className={`font-label-caps text-[11px] sm:text-[13px] uppercase tracking-widest ${focusTimerActive ? 'text-primary-container' : 'text-on-surface-variant'}`}>
+                        {focusTimerActive ? 'Focus Mode Active' : 'Tap to Start / Standby'}
                       </p>
                     </div>
 
-                    {/* Hover Controls */}
-                    <div className="absolute w-[140px] h-[64px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/60 backdrop-blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 z-30 shadow-2xl">
-                        <button onClick={() => {
+                    {/* Hover Controls (Desktop Only) */}
+                    <div className="absolute w-[140px] h-[64px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/60 backdrop-blur-md rounded-full opacity-0 md:group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center gap-3 z-30 shadow-2xl">
+                        <button onClick={(e) => {
+                          e.stopPropagation();
                           setFocusTimerActive(!focusTimerActive);
                           triggerAlertBeep();
                         }} className="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-110 transition-transform cursor-pointer shadow-lg">
                           {focusTimerActive ? <PauseIcon className="w-6 h-6" /> : <PlayIcon className="w-6 h-6 ml-1 fill-current" />}
                         </button>
-                        <button onClick={() => {
+                        <button onClick={(e) => {
+                          e.stopPropagation();
                           setFocusTimerActive(false);
                           setFocusTimeLeft(focusSelectedPreset * 60);
                         }} className="w-10 h-10 rounded-full bg-white/10 text-on-surface flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer border border-glass-stroke">
@@ -1246,25 +1411,111 @@ export default function App() {
                     </div>
                   </div>
 
+                  {/* Mobile Controls (Always Visible on Mobile/Touch Devices) */}
+                  <div className="flex items-center gap-4 mt-2 sm:mt-4 md:hidden z-20">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFocusTimerActive(!focusTimerActive);
+                        triggerAlertBeep();
+                      }}
+                      className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary-container text-on-primary-container font-semibold tracking-wide active:scale-95 transition-all shadow-md cursor-pointer text-sm"
+                    >
+                      {focusTimerActive ? (
+                        <>
+                          <PauseIcon className="w-4 h-4" />
+                          <span>Pause Session</span>
+                        </>
+                      ) : (
+                        <>
+                          <PlayIcon className="w-4 h-4 fill-current" />
+                          <span>Start Session</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFocusTimerActive(false);
+                        setFocusTimeLeft(focusSelectedPreset * 60);
+                      }}
+                      className="p-2.5 rounded-full bg-white/10 text-on-surface active:scale-95 transition-all cursor-pointer border border-glass-stroke flex items-center justify-center"
+                      title="Reset Timer"
+                    >
+                      <span className="material-symbols-outlined text-[20px]">replay</span>
+                    </button>
+                  </div>
+
                   {/* Preset Controls */}
-                  <div className="flex items-center gap-3 mt-6 z-20">
-                    {[15, 25, 45, 60].map(preset => (
-                      <button
-                        key={preset}
-                        onClick={() => {
-                          setFocusSelectedPreset(preset);
-                          setFocusTimeLeft(preset * 60);
-                          setFocusTimerActive(false);
+                  <div className="flex flex-wrap items-center justify-center gap-2 mt-6 z-20">
+                    {!showCustomTimer ? (
+                      <>
+                        {[15, 25, 45, 60].map(preset => (
+                          <button
+                            key={preset}
+                            onClick={() => {
+                              setFocusSelectedPreset(preset);
+                              setFocusTimeLeft(preset * 60);
+                              setFocusTimerActive(false);
+                            }}
+                            className={`px-4 py-1.5 rounded-full font-label-caps text-[12px] transition-colors border cursor-pointer ${
+                              focusSelectedPreset === preset 
+                                ? 'bg-primary-container text-on-primary-container border-primary-container shadow-[0_0_15px_rgba(255,180,161,0.3)]' 
+                                : 'bg-white/5 text-on-surface-variant border-glass-stroke hover:bg-white/10 hover:text-on-surface'
+                            }`}
+                          >
+                            {preset}m
+                          </button>
+                        ))}
+                        <button
+                          onClick={() => {
+                            setShowCustomTimer(true);
+                          }}
+                          className={`px-4 py-1.5 rounded-full font-label-caps text-[12px] transition-colors border cursor-pointer bg-white/5 text-primary-fixed-dim border-glass-stroke hover:bg-white/10`}
+                        >
+                          + Custom
+                        </button>
+                      </>
+                    ) : (
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const mins = parseInt(customMinutesInput, 10);
+                          if (mins > 0 && mins <= 360) {
+                            setFocusSelectedPreset(mins);
+                            setFocusTimeLeft(mins * 60);
+                            setFocusTimerActive(false);
+                            setShowCustomTimer(false);
+                          }
                         }}
-                        className={`px-4 py-1.5 rounded-full font-label-caps text-[12px] transition-colors border ${
-                          focusSelectedPreset === preset 
-                            ? 'bg-primary-container text-on-primary-container border-primary-container shadow-[0_0_15px_rgba(255,180,161,0.3)]' 
-                            : 'bg-white/5 text-on-surface-variant border-glass-stroke hover:bg-white/10 hover:text-on-surface'
-                        }`}
+                        className="flex items-center gap-2 bg-white/5 border border-glass-stroke rounded-full px-3 py-1"
                       >
-                        {preset}m
-                      </button>
-                    ))}
+                        <input
+                          type="number"
+                          min="1"
+                          max="360"
+                          value={customMinutesInput}
+                          onChange={(e) => setCustomMinutesInput(e.target.value)}
+                          className="w-16 bg-transparent text-center text-on-surface focus:outline-none text-xs font-mono"
+                          autoFocus
+                          placeholder="Min"
+                        />
+                        <span className="text-on-surface-variant text-[11px] font-label-caps">min</span>
+                        <button 
+                          type="submit"
+                          className="text-primary-fixed-dim hover:text-on-surface p-1 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => setShowCustomTimer(false)}
+                          className="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">close</span>
+                        </button>
+                      </form>
+                    )}
                   </div>
 
                 </div>
@@ -1299,7 +1550,8 @@ export default function App() {
                 
               </section>
             </div>
-          )}
+          </div>
+        )}
 
           
     {/* Matrix Tab */}
@@ -1332,8 +1584,22 @@ export default function App() {
     {activeTab === "mind" && (
       <HowWeFeelHub 
         emotionLogs={emotionLogs}
-        onLogEmotion={logEmotion}
+        onAddEmotionLog={(log) => {
+          const newLog: EmotionLog = {
+            id: generateUniqueId("log"),
+            createdAt: new Date().toISOString(),
+            ...log
+          };
+          setEmotionLogs(prev => [newLog, ...prev]);
+          if (log.note && log.note.trim()) {
+            analyzeEmotionNote(newLog.id, log.note, log.emotion);
+          }
+        }}
         tasks={tasks}
+        onUpdateTaskDetails={(id, updates) => {
+          setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+        }}
+        onAddNotification={addNotification}
       />
     )}
 
@@ -1370,16 +1636,321 @@ export default function App() {
     
     {activeTab === "privacy" && <PrivacyPolicy />}
     {activeTab === "terms" && <TermsOfService />}
-    </main>
 
-      {/* FOOTER ZONE */}
-      <footer className="fixed bottom-0 w-full text-center py-2 pb-16 md:pb-2 text-xs text-on-surface-variant/50 border-t border-glass-stroke bg-background/80 backdrop-blur-md z-40">
-        <div className="flex items-center justify-center gap-6 mb-4">
-          <button onClick={() => setView('privacy')} className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</button>
-          <button onClick={() => setView('terms')} className="hover:text-primary transition-colors cursor-pointer">Terms of Service</button>
-        </div>
-        <p>&copy; {new Date().getFullYear()} Vibe Plan Space. All rights reserved.</p>
-      </footer>
-    </div>
-  );
+    {/* FOOTER ZONE */}
+    <footer className="mt-auto pt-16 pb-24 md:pb-8 w-full text-center text-xs text-on-surface-variant/50 border-t border-glass-stroke/10 z-10">
+      <div className="flex items-center justify-center gap-6 mb-3">
+        <button onClick={() => setActiveTab('privacy')} className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</button>
+        <button onClick={() => setActiveTab('terms')} className="hover:text-primary transition-colors cursor-pointer">Terms of Service</button>
+      </div>
+      <p>&copy; {new Date().getFullYear()} Vibe Plan Space. All rights reserved.</p>
+    </footer>
+
+    {/* Dynamic, Interactive, High-Fidelity User Account Panel with Scroll-Down/Slide-Down Animation */}
+    <AnimatePresence>
+      {isProfileOpen && (
+        <>
+          {/* Subtle click-outside backdrop overlay */}
+          <motion.div
+            id="user-account-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[45] bg-black/25 backdrop-blur-[2px] cursor-pointer"
+            onClick={() => setIsProfileOpen(false)}
+          />
+          
+          {/* Dropdown panel with scroll-down physics animation */}
+          <motion.div
+            id="user-account-panel"
+            initial={{ opacity: 0, y: -40, scaleY: 0.8 }}
+            animate={{ opacity: 1, y: 0, scaleY: 1 }}
+            exit={{ opacity: 0, y: -40, scaleY: 0.8 }}
+            transition={{ type: "spring", damping: 24, stiffness: 220 }}
+            style={{ transformOrigin: "top right" }}
+            className="fixed top-[76px] right-[2.5%] md:right-[calc(50%-500px+24px)] w-[90%] max-w-[420px] z-[50] glass-panel rounded-3xl p-6 md:p-8 border border-white/10 bg-surface-container-highest/95 shadow-2xl overflow-hidden text-center flex flex-col items-center"
+          >
+            {/* Ambient visual glowing spheres */}
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-primary-container/20 rounded-full blur-[80px] pointer-events-none"></div>
+            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-aurora-orange/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+            {/* Close Button */}
+            <button
+              id="close-profile-modal-btn"
+              onClick={() => setIsProfileOpen(false)}
+              className="absolute top-5 right-5 z-30 p-2 rounded-full hover:bg-white/5 text-on-surface-variant hover:text-on-surface transition-all active:scale-90 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Modal Content */}
+            <div className="relative z-10 flex flex-col items-center text-center w-full">
+              
+              {/* Badge Tag */}
+              <span className="font-mono text-[9px] font-black uppercase tracking-widest text-primary-fixed-dim bg-primary-fixed-dim/10 px-2.5 py-1 rounded-full mb-6 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-primary-fixed-dim animate-pulse" />
+                Astronaut Account Core
+              </span>
+
+              {/* Avatar image with hovering effects */}
+              <div className="relative group w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary-fixed-dim/40 hover:border-primary-fixed-dim transition-all duration-300 shadow-xl mb-4">
+                <img
+                  alt="Avneet's avatar profile"
+                  className="w-full h-full object-cover"
+                  src={userAvatar}
+                />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[10px] font-mono tracking-wider font-bold transition-opacity duration-300 pointer-events-none">
+                  <span>ACTIVE ORBIT</span>
+                </div>
+              </div>
+
+              {/* Editable Name & Mantra Form */}
+              {isEditingProfile ? (
+                <div className="w-full space-y-4 mb-6">
+                  <div className="text-left">
+                    <label className="font-mono text-[10px] text-primary-fixed-dim font-bold uppercase tracking-widest block mb-1">
+                      Cosmological Name
+                    </label>
+                    <input
+                      id="edit-profile-name-input"
+                      type="text"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-on-surface text-sm focus:outline-none focus:border-primary-fixed-dim transition-all text-center"
+                      placeholder="Your Name"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <label className="font-mono text-[10px] text-primary-fixed-dim font-bold uppercase tracking-widest block mb-1">
+                      Daily Directive Mantra
+                    </label>
+                    <textarea
+                      id="edit-profile-mantra-input"
+                      rows={2}
+                      value={userMantra}
+                      onChange={(e) => setUserMantra(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-on-surface text-xs focus:outline-none focus:border-primary-fixed-dim transition-all text-center resize-none"
+                      placeholder="Your Directive Mantra"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <label className="font-mono text-[10px] text-primary-fixed-dim font-bold uppercase tracking-widest block mb-1">
+                      Avatar URL
+                    </label>
+                    <input
+                      id="edit-profile-avatar-input"
+                      type="text"
+                      value={userAvatar}
+                      onChange={(e) => setUserAvatar(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-on-surface text-xs font-mono focus:outline-none focus:border-primary-fixed-dim transition-all"
+                      placeholder="Avatar URL"
+                    />
+                    {/* Curated quick-select avatars */}
+                    <div className="flex gap-2 justify-center mt-2.5">
+                      {[
+                        "https://lh3.googleusercontent.com/aida-public/AB6AXuAl-laiQcHCZ52LjAnfDbeS4vokKf8qf9qYi26dPMUQnJFXkW7_Su7OrSAj3gS44DNq975mOMy5GUyMptx5sWKqtmM1IhUWC5kBCGXpZl968eK2Gs7wfqXbQ2LU4zhsA5bQKfawd2G2PycrShSwiXUa0W7TZ0ymAVQkr_0YO7xPOSSeClAytrt1kNsMj1oUdawtCx_VjpSfrbZwHPgFOfxTpTbzDCF_oJuoR-0Gt4761i_xmovLUFzK4r7-goRESaIot0OVTpznaqI",
+                        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80",
+                        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80",
+                        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80"
+                      ].map((url, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setUserAvatar(url)}
+                          className={`w-7 h-7 rounded-lg overflow-hidden border transition-all ${
+                            userAvatar === url ? "border-primary-fixed-dim scale-110 shadow-lg" : "border-white/10 opacity-70 hover:opacity-100 hover:scale-105"
+                          }`}
+                        >
+                          <img src={url} alt={`Option ${i}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    id="save-profile-btn"
+                    onClick={() => {
+                      safeLocalStorage.setItem("actionmate_username", userName);
+                      safeLocalStorage.setItem("actionmate_mantra", userMantra);
+                      safeLocalStorage.setItem("actionmate_avatar", userAvatar);
+                      setIsEditingProfile(false);
+                      addNotification("Coordinates Rewritten 🔮", "User profile configuration synced successfully.", "success");
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-primary-container text-on-primary-container hover:scale-[1.02] active:scale-[0.98] font-bold text-sm transition-all cursor-pointer shadow-md"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full mb-6">
+                  <h3 className="font-display-hero text-xl font-black text-on-surface tracking-tight">
+                    {userName}
+                  </h3>
+                  <p className="font-mono text-xs text-on-surface-variant flex items-center justify-center gap-1 mt-1">
+                    <Mail className="w-3.5 h-3.5 text-on-surface-variant/70" />
+                    avneetarora1106@gmail.com
+                  </p>
+                  
+                  <p className="text-xs text-on-surface-variant font-body-md italic mt-3 bg-white/5 p-3.5 rounded-2xl border border-glass-stroke">
+                    "{userMantra}"
+                  </p>
+
+                  <button
+                    id="edit-profile-toggle-btn"
+                    onClick={() => setIsEditingProfile(true)}
+                    className="mt-4 px-5 py-2.5 rounded-full border border-glass-stroke text-xs font-mono text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:border-white/20 active:scale-95 transition-all cursor-pointer"
+                  >
+                    Modify Space Credentials
+                  </button>
+                </div>
+              )}
+
+              {/* Cloud Space Synchronizer */}
+              <div className="w-full border-t border-glass-stroke/50 pt-6 mt-2 mb-6">
+                <h4 className="font-mono text-[10px] text-primary-fixed-dim font-black uppercase tracking-widest text-left mb-3 flex items-center gap-1.5">
+                  <Cloud className="w-4 h-4 text-primary-fixed-dim" /> Cloud Orbit Sync Core
+                </h4>
+                
+                {spaceId ? (
+                  /* Connected State */
+                  <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-4 text-left space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </div>
+                        <span className="font-mono text-xs text-emerald-400 font-bold uppercase tracking-wider">
+                          Orbit Connected
+                        </span>
+                      </div>
+                      <span className="font-mono text-[10px] text-on-surface-variant font-bold bg-white/5 px-2 py-0.5 rounded border border-glass-stroke">
+                        ID: {spaceId}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-on-surface-variant/90 leading-relaxed font-body-md">
+                      Your emotions, logs, tasks, and habits are backed up in real-time. Close the app or switch devices, and log back in with this ID to restore your progress!
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <button
+                        onClick={handleManualBackup}
+                        disabled={syncStatus === "syncing"}
+                        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[11px] font-mono font-bold text-on-surface hover:bg-white/10 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        <RefreshCw className={`w-3 h-3 ${syncStatus === "syncing" ? "animate-spin" : ""}`} />
+                        Sync Now
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSpaceId("");
+                          safeLocalStorage.removeItem("vibe_space_id");
+                          safeLocalStorage.removeItem("vibe_last_cloud_sync");
+                          addNotification("Cloud Space Disconnected 📡", "Switched back to offline storage mode.", "suggestion");
+                        }}
+                        className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[11px] font-mono text-on-surface-variant hover:text-on-surface hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
+                      >
+                        Disconnect ID
+                      </button>
+                    </div>
+
+                    {lastCloudSync && (
+                      <div className="text-[10px] font-mono text-on-surface-variant/70 text-right">
+                        Last saved: {new Date(lastCloudSync).toLocaleTimeString()}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Disconnected State */
+                  <div className="bg-white/5 border border-dashed border-white/10 rounded-2xl p-4 text-left space-y-3.5">
+                    <div className="flex items-center gap-2">
+                      <CloudOff className="w-4 h-4 text-on-surface-variant" />
+                      <span className="font-mono text-xs text-on-surface-variant font-bold uppercase tracking-wider">
+                        Offline Mode (Local Storage Only)
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-on-surface-variant/85 leading-relaxed font-body-md">
+                      Enter a custom Space ID below to connect a cloud backup. Connecting will save your current progress, or load your existing data if the ID is already registered.
+                    </p>
+
+                    <div className="flex gap-2">
+                      <input
+                        id="cloud-space-id-input"
+                        type="text"
+                        value={spaceIdInput}
+                        onChange={(e) => setSpaceIdInput(e.target.value)}
+                        placeholder="e.g. pilot_avneet"
+                        className="flex-1 px-3 py-1.5 rounded-xl bg-black/30 border border-white/10 text-xs font-mono text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-primary-fixed-dim transition-all"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleConnectSpace(spaceIdInput);
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={() => handleConnectSpace(spaceIdInput)}
+                        disabled={syncStatus === "syncing" || !spaceIdInput.trim()}
+                        className="px-3.5 py-1.5 rounded-xl bg-primary-container text-on-primary-container font-bold text-xs hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40 cursor-pointer"
+                      >
+                        {syncStatus === "syncing" ? "Linking..." : "Connect"}
+                      </button>
+                    </div>
+
+                    {syncError && (
+                      <p className="text-[10px] font-mono text-rose-400">
+                        Error: {syncError}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Statistics Grid */}
+              <div className="w-full border-t border-glass-stroke/50 pt-6 mt-2">
+                <h4 className="font-mono text-[10px] text-primary-fixed-dim font-black uppercase tracking-widest text-left mb-4 flex items-center gap-1.5">
+                  <Award className="w-4 h-4 text-primary-fixed-dim" /> Metrics Compliance Status
+                </h4>
+                
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-white/5 p-3.5 rounded-2xl border border-glass-stroke flex flex-col items-center justify-center">
+                    <span className="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider font-bold">STREAK</span>
+                    <span className="font-display-hero text-lg font-black text-amber-400 mt-1">{userStreak}d</span>
+                  </div>
+                  <div className="bg-white/5 p-3.5 rounded-2xl border border-glass-stroke flex flex-col items-center justify-center">
+                    <span className="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider font-bold">COMPLETED</span>
+                    <span className="font-display-hero text-lg font-black text-primary-fixed-dim mt-1">{totalCompletedTasks}</span>
+                  </div>
+                  <div className="bg-white/5 p-3.5 rounded-2xl border border-glass-stroke flex flex-col items-center justify-center">
+                    <span className="font-mono text-[11px] text-on-surface-variant uppercase tracking-wider font-bold">COMPLIANCE</span>
+                    <span className="font-display-hero text-lg font-black text-emerald-400 mt-1">{taskCompletionRate}%</span>
+                  </div>
+                </div>
+
+                {/* Performance Rank */}
+                <div className="mt-4 bg-primary-container/10 border border-primary-container/20 rounded-2xl p-3 flex items-center justify-between text-left">
+                  <div>
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-primary-fixed-dim font-bold block">Current Rank Tier</span>
+                    <span className="font-headline-md text-xs font-bold text-on-surface mt-0.5 block">
+                      {userStreak >= 5 
+                        ? "🌌 Cosmic Orbit Captain" 
+                        : userStreak >= 2 
+                        ? "🚀 Atmospheric Pilot" 
+                        : "📡 Ground Operations Unit"}
+                    </span>
+                  </div>
+                  <span className="text-xl">
+                    {userStreak >= 5 ? "🎖️" : userStreak >= 2 ? "🏅" : "🔋"}
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  </main>
+  </div>
+);
 }

@@ -613,7 +613,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                       <div key={task.id} className="p-2 bg-slate-950/40 border border-slate-800/80 rounded-xl flex items-center justify-between gap-2">
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold text-slate-200 truncate">{task.title}</p>
-                          <p className="text-[9px] text-muted-foreground font-mono flex items-center gap-1.5 mt-0.5">
+                          <div className="text-[9px] text-muted-foreground font-mono flex items-center gap-1.5 mt-0.5">
                             Before state: {task.emotionBefore ? (
                               <span className="text-slate-400 font-bold flex items-center gap-1">
                                 <EmotionBlock emotion={task.emotionBefore} size="xs" animate={false} />
@@ -622,7 +622,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                             ) : (
                               <span className="text-slate-600 italic">Not logged</span>
                             )}
-                          </p>
+                          </div>
                         </div>
 
                         {taskBeforeLogSelected === task.id ? (
@@ -672,7 +672,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                       <div key={task.id} className="p-2 bg-slate-950/40 border border-slate-800/80 rounded-xl flex items-center justify-between gap-2">
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold text-muted-foreground line-through truncate">{task.title}</p>
-                          <p className="text-[9px] text-muted-foreground font-mono flex items-center gap-1.5 flex-wrap mt-0.5">
+                          <div className="text-[9px] text-muted-foreground font-mono flex items-center gap-1.5 flex-wrap mt-0.5">
                             Mindset Flow: 
                             {task.emotionBefore ? (
                               <span className="text-foreground flex items-center gap-1">
@@ -691,7 +691,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                             ) : (
                               <span className="text-slate-600 italic">Not logged</span>
                             )}
-                          </p>
+                          </div>
                         </div>
 
                         {!task.emotionAfter && (
@@ -737,8 +737,31 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
       )}
 
       {/* RENDER STATISTICS TAB */}
-      {hubTab === "stats" && (
-        <div className="space-y-6">
+      {hubTab === "stats" && (() => {
+        const triggerCounts: Record<string, number> = {};
+        const distortionCounts: Record<string, number> = {};
+        let positiveCount = 0;
+        let negativeCount = 0;
+        let neutralCount = 0;
+        let logsWithAnalysis = 0;
+
+        emotionLogs.forEach(l => {
+          if (l.analysis) {
+            logsWithAnalysis++;
+            const t = l.analysis.primaryTrigger || "Unknown";
+            triggerCounts[t] = (triggerCounts[t] || 0) + 1;
+
+            const d = l.analysis.cognitiveDistortion || "Mindful Reflection";
+            distortionCounts[d] = (distortionCounts[d] || 0) + 1;
+
+            if (l.analysis.sentiment === "positive") positiveCount++;
+            else if (l.analysis.sentiment === "negative") negativeCount++;
+            else neutralCount++;
+          }
+        });
+
+        return (
+          <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             
             {/* Visual Donut Dial Metrics (5 cols) */}
@@ -863,6 +886,97 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
 
           </div>
 
+          {/* Reflective Mindset Analytics (AI-Powered) */}
+          <div className="card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60 space-y-4">
+            <h3 className="text-sm font-bold text-slate-200 flex items-center gap-1.5 font-display">
+              <Sparkles className="w-4 h-4 text-slate-400 animate-pulse" /> Reflective Mindset Analytics (AI)
+            </h3>
+
+            {logsWithAnalysis === 0 ? (
+              <div className="p-4 bg-slate-950/40 border border-slate-900 rounded-xl space-y-2">
+                <p className="text-xs font-bold text-slate-300">Unlock Deep Cognitive Insights</p>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Start logging your thoughts in the <strong>Self-Reflective Note</strong> box when capturing your mood.
+                  Gemini will analyze your cognitive triggers and patterns, building customized sentiment and psychological graphs right here.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                {/* Column 1: Sentiment */}
+                <div className="bg-slate-950/30 border border-slate-900 rounded-xl p-4 space-y-3">
+                  <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground font-mono">Reflective Sentiment</p>
+                  <div className="space-y-2">
+                    {/* Positive */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[11px]">
+                        <span className="text-emerald-400 font-medium">🟢 Positive Outcomes</span>
+                        <span className="font-mono text-muted-foreground">{positiveCount} ({Math.round((positiveCount / logsWithAnalysis) * 100)}%)</span>
+                      </div>
+                      <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${(positiveCount / logsWithAnalysis) * 100}%` }}></div>
+                      </div>
+                    </div>
+
+                    {/* Negative */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[11px]">
+                        <span className="text-rose-400 font-medium">🔴 Cognitive Strain</span>
+                        <span className="font-mono text-muted-foreground">{negativeCount} ({Math.round((negativeCount / logsWithAnalysis) * 100)}%)</span>
+                      </div>
+                      <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-rose-500 h-full rounded-full" style={{ width: `${(negativeCount / logsWithAnalysis) * 100}%` }}></div>
+                      </div>
+                    </div>
+
+                    {/* Neutral */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[11px]">
+                        <span className="text-slate-400 font-medium">⚪ Grounded / Neutral</span>
+                        <span className="font-mono text-muted-foreground">{neutralCount} ({Math.round((neutralCount / logsWithAnalysis) * 100)}%)</span>
+                      </div>
+                      <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-slate-400 h-full rounded-full" style={{ width: `${(neutralCount / logsWithAnalysis) * 100}%` }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Column 2: Emotional Triggers */}
+                <div className="bg-slate-950/30 border border-slate-900 rounded-xl p-4 space-y-3">
+                  <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground font-mono">Top Mind Triggers</p>
+                  <div className="space-y-2">
+                    {Object.entries(triggerCounts).sort((a,b) => b[1] - a[1]).slice(0, 3).map(([trigger, count]) => (
+                      <div key={trigger} className="space-y-1">
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-slate-300 truncate max-w-[150px] font-medium">{trigger}</span>
+                          <span className="font-mono text-muted-foreground">{count} times</span>
+                        </div>
+                        <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                          <div className="bg-blue-500 h-full rounded-full" style={{ width: `${(count / logsWithAnalysis) * 100}%` }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Column 3: Mindset Patterns */}
+                <div className="bg-slate-950/30 border border-slate-900 rounded-xl p-4 space-y-3">
+                  <p className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground font-mono">Cognitive Patterns</p>
+                  <div className="space-y-2 overflow-y-auto max-h-[100px] pr-1">
+                    {Object.entries(distortionCounts).sort((a,b) => b[1] - a[1]).map(([distortion, count]) => (
+                      <div key={distortion} className="flex justify-between items-center text-[11px] py-0.5 border-b border-slate-900/40">
+                        <span className="text-slate-300 font-medium truncate max-w-[160px]">{distortion}</span>
+                        <span className="bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-400 font-bold">{count}x</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            )}
+          </div>
+
           {/* Historical Check-Ins log feed list */}
           <div className="card-3d bg-card border-none p-5 rounded-2xl border border-slate-800/60">
             <h3 className="text-sm font-bold text-slate-200 mb-4 flex items-center gap-1.5 font-display">
@@ -874,7 +988,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
               <p className="text-xs text-muted-foreground text-center py-6 italic">No reflection logs stored. Share how you feel above!</p>
             ) : (
               <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-                {emotionLogs.slice().reverse().map((log) => {
+                {emotionLogs.slice().map((log) => {
                   let badgeColor = "bg-slate-900 border-slate-800 text-muted-foreground";
                   if (log.energy === "high" && log.pleasantness === "pleasant") badgeColor = "bg-indigo-500/10 border-indigo-500/20 text-indigo-300";
                   if (log.energy === "high" && log.pleasantness === "unpleasant") badgeColor = "bg-blue-500/10 border-blue-500/20 text-blue-300";
@@ -883,9 +997,9 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
 
                   return (
                     <div key={log.id} className="p-3 bg-slate-950/40 border border-slate-900 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
                         <EmotionBlock emotion={log.emotion} size="sm" className="mt-0.5" />
-                        <div>
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-bold text-foreground text-[12px]">{log.emotion}</span>
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${badgeColor}`}>
@@ -898,9 +1012,42 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                             )}
                           </div>
                           {log.note && (
-                            <p className="text-muted-foreground mt-1 italic text-[11px] leading-relaxed">
-                              "{log.note}"
-                            </p>
+                            <div className="mt-1 space-y-1">
+                              <p className="text-muted-foreground italic text-[11px] leading-relaxed">
+                                "{log.note}"
+                              </p>
+                              {log.analysis && (
+                                <div className="flex flex-wrap items-center gap-2 mt-1.5 pt-1.5 border-t border-slate-900/30">
+                                  {/* Sentiment */}
+                                  <span className={`text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-1 ${
+                                    log.analysis.sentiment === "positive" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
+                                    log.analysis.sentiment === "negative" ? "bg-rose-500/10 text-rose-400 border border-rose-500/20" :
+                                    "bg-slate-500/10 text-slate-400 border border-slate-500/20"
+                                  }`}>
+                                    <span>{log.analysis.sentiment === "positive" ? "🟢 Positive" : log.analysis.sentiment === "negative" ? "🔴 Negative" : "⚪ Neutral"}</span>
+                                  </span>
+
+                                  {/* Trigger */}
+                                  {log.analysis.primaryTrigger && (
+                                    <span className="text-[9px] bg-blue-500/10 text-blue-300 border border-blue-500/20 px-1.5 py-0.5 rounded-md font-mono">
+                                      🎯 {log.analysis.primaryTrigger}
+                                    </span>
+                                  )}
+
+                                  {/* Cognitive Distortion */}
+                                  {log.analysis.cognitiveDistortion && (
+                                    <span className="text-[9px] bg-amber-500/10 text-amber-300 border border-amber-500/20 px-1.5 py-0.5 rounded-md font-mono">
+                                      🧠 Pattern: {log.analysis.cognitiveDistortion}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                              {log.analysis?.copingStrategy && (
+                                <p className="text-[10px] text-amber-200/90 bg-amber-500/5 border border-amber-500/10 p-2 rounded-lg mt-1 font-sans leading-relaxed">
+                                  💡 <strong>AI Strategy:</strong> {log.analysis.copingStrategy}
+                                </p>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -915,7 +1062,8 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
             )}
           </div>
         </div>
-      )}
+      );
+    })()}
 
       {/* RENDER AI INSIGHTS TAB */}
       {hubTab === "insights" && (
@@ -1047,7 +1195,7 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
       {/* RENDER ANALYTICS TAB */}
       {hubTab === "analytics" && (() => {
         // Local calculations for Deep Analytics
-        const logPoints = emotionLogs.slice(-12).map((log, index) => {
+        const logPoints = emotionLogs.slice(0, 12).reverse().map((log, index) => {
           const energyVal = log.energy === "high" ? 85 : 25;
           const pleasantVal = log.pleasantness === "pleasant" ? 85 : 25;
           return {
@@ -1146,6 +1294,11 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
         const getEnergyY = (val: number) => h - 30 - ((val - 20) * (h - 60) / 80);
         const getPleasantY = (val: number) => h - 30 - ((val - 20) * (h - 60) / 80);
 
+        const formatAxisTime = (dateStr: string) => {
+          const d = new Date(dateStr);
+          return `${d.toLocaleDateString([], { month: "short", day: "numeric" })} ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}`;
+        };
+
         // Line and area paths generators
         let energyPath = "";
         let energyAreaPath = "";
@@ -1199,7 +1352,14 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
 
                 {/* The Interactive SVG Graph */}
                 <div className="relative w-full h-[220px] bg-slate-950/40 rounded-xl border border-slate-900 overflow-hidden p-2">
-                  <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="100%" preserveAspectRatio="none" className="overflow-visible animate-fade-in">
+                  <svg 
+                    viewBox={`0 0 ${w} ${h}`} 
+                    width="100%" 
+                    height="100%" 
+                    preserveAspectRatio="none" 
+                    className="overflow-visible animate-fade-in"
+                    onMouseLeave={() => setHoveredPointIndex(null)}
+                  >
                     <defs>
                       <linearGradient id="energyAreaGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.12" />
@@ -1220,6 +1380,18 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
                     <text x={10} y={34} fill="#64748b" className="text-[8px] font-mono font-bold">HIGH</text>
                     <text x={10} y={h / 2 + 3} fill="#64748b" className="text-[8px] font-mono font-bold">MID</text>
                     <text x={10} y={h - 26} fill="#64748b" className="text-[8px] font-mono font-bold">LOW</text>
+
+                    {/* X-axis time labels */}
+                    {logPoints.length >= 2 && (
+                      <>
+                        <text x={xOffset} y={h - 10} fill="#475569" className="text-[7.5px] font-mono font-bold" textAnchor="start">
+                          {formatAxisTime(logPoints[0].createdAt)}
+                        </text>
+                        <text x={w - xOffset} y={h - 10} fill="#475569" className="text-[7.5px] font-mono font-bold" textAnchor="end">
+                          {formatAxisTime(logPoints[logPoints.length - 1].createdAt)}
+                        </text>
+                      </>
+                    )}
 
                     {/* Filled Area Paths */}
                     {energyAreaPath && <path d={energyAreaPath} fill="url(#energyAreaGrad)" />}

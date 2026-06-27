@@ -150,8 +150,8 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
           
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400">
-              <Calendar className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 shadow-sm">
+              <GoogleCalendarLogo />
             </div>
             <div>
               <h3 className="font-semibold text-lg">Google Calendar</h3>
@@ -188,8 +188,8 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
           <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl"></div>
           
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-              <GraduationCap className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 shadow-sm">
+              <GoogleClassroomLogo />
             </div>
             <div>
               <h3 className="font-semibold text-lg">Google Classroom</h3>
@@ -258,5 +258,22 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
 const SparklesIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+  </svg>
+);
+
+const GoogleCalendarLogo = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-blue-400" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="4" />
+    <path d="M16 2v4M8 2v4M3 10h18" />
+    <rect x="7" y="14" width="4" height="4" rx="1.5" fill="currentColor" fillOpacity="0.3" />
+    <rect x="13" y="14" width="4" height="4" rx="1.5" fill="currentColor" />
+  </svg>
+);
+
+const GoogleClassroomLogo = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-emerald-400" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+    <path d="M6 12v5c0 1.5 2 2.5 6 2.5s6-1 6-2.5v-5" />
+    <circle cx="12" cy="10" r="2.5" fill="currentColor" fillOpacity="0.3" />
   </svg>
 );

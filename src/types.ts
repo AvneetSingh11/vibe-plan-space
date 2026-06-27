@@ -22,6 +22,12 @@ export interface EmotionLog {
   pleasantness: "pleasant" | "unpleasant";
   note?: string;
   createdAt: string;
+  analysis?: {
+    sentiment: "positive" | "negative" | "neutral";
+    cognitiveDistortion?: string;
+    primaryTrigger?: string;
+    copingStrategy?: string;
+  };
 }
 
 export interface EmotionalInsight {

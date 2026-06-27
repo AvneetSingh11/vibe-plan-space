@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, ArrowLeft } from 'lucide-react';
 import { EmotionBlock } from './EmotionBlock';
 import { EMOTION_TEMPLATES } from './HowWeFeelHub';
@@ -8,11 +8,36 @@ interface QuadrantEmotionPickerProps {
   onChange: (val: string) => void;
   placeholder: string;
   className?: string;
+  align?: 'left' | 'right';
 }
 
-export const QuadrantEmotionPicker = ({ value, onChange, placeholder, className = "" }: QuadrantEmotionPickerProps) => {
+export const QuadrantEmotionPicker = ({ 
+  value, 
+  onChange, 
+  placeholder, 
+  className = "",
+  align = "right"
+}: QuadrantEmotionPickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedQuadrant, setSelectedQuadrant] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dynamicAlign, setDynamicAlign] = useState<'left' | 'right'>(align);
+
+  useEffect(() => {
+    if (isOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceOnRight = window.innerWidth - rect.left;
+      const spaceOnLeft = rect.right;
+      
+      // If a 290px dropdown would overflow the right edge of the screen,
+      // and we have more space on the left, align to the right (grows leftwards).
+      if (spaceOnRight < 310 && spaceOnLeft > spaceOnRight) {
+        setDynamicAlign('right');
+      } else {
+        setDynamicAlign('left');
+      }
+    }
+  }, [isOpen, align]);
 
   const selectedTemplate = EMOTION_TEMPLATES.find(e => e.emotion === value);
 
@@ -34,7 +59,7 @@ export const QuadrantEmotionPicker = ({ value, onChange, placeholder, className 
   };
 
   return (
-    <div className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative ${className}`}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -59,16 +84,19 @@ export const QuadrantEmotionPicker = ({ value, onChange, placeholder, className 
             className="fixed inset-0 z-40" 
             onClick={() => { setIsOpen(false); setSelectedQuadrant(null); }}
           />
-          <div className="absolute z-50 mt-1 w-64 bg-slate-900 border border-slate-700 rounded-xl shadow-xl overflow-hidden right-0 md:left-0 md:right-auto animate-in fade-in zoom-in-95 duration-200">
+          <div className={`absolute z-50 mt-1 w-[290px] bg-slate-900 border border-slate-700 rounded-xl shadow-xl overflow-hidden ${dynamicAlign === 'right' ? 'right-0' : 'left-0'} animate-in fade-in zoom-in-95 duration-200`}>
             {!selectedQuadrant ? (
-              <div className="p-2 grid grid-cols-2 grid-rows-2 gap-1">
+              <div className="p-2 grid grid-cols-2 grid-rows-2 gap-1.5">
                 {/* Q1: High/Pleasant (Yellow) */}
                 <button
                   type="button"
                   onClick={() => setSelectedQuadrant('Q1')}
                   className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-yellow-500/10 border border-yellow-500/20 hover:bg-yellow-500/20 transition-colors cursor-pointer"
                 >
-                  <span className="text-[10px] font-bold text-yellow-400 uppercase">High Energy</span>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
+                    <span className="text-[10px] font-bold text-yellow-400">High Energy</span>
+                  </div>
                   <span className="text-[9px] text-yellow-500/80">Pleasant</span>
                 </button>
                 {/* Q2: High/Unpleasant (Red) */}
@@ -77,7 +105,10 @@ export const QuadrantEmotionPicker = ({ value, onChange, placeholder, className 
                   onClick={() => setSelectedQuadrant('Q2')}
                   className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-colors cursor-pointer"
                 >
-                  <span className="text-[10px] font-bold text-red-400 uppercase">High Energy</span>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                    <span className="text-[10px] font-bold text-red-400">High Energy</span>
+                  </div>
                   <span className="text-[9px] text-red-500/80">Unpleasant</span>
                 </button>
                 {/* Q3: Low/Pleasant (Green) */}
@@ -86,7 +117,10 @@ export const QuadrantEmotionPicker = ({ value, onChange, placeholder, className 
                   onClick={() => setSelectedQuadrant('Q3')}
                   className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 transition-colors cursor-pointer"
                 >
-                  <span className="text-[10px] font-bold text-green-400 uppercase">Low Energy</span>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                    <span className="text-[10px] font-bold text-green-400">Low Energy</span>
+                  </div>
                   <span className="text-[9px] text-green-500/80">Pleasant</span>
                 </button>
                 {/* Q4: Low/Unpleasant (Blue) */}
@@ -95,7 +129,10 @@ export const QuadrantEmotionPicker = ({ value, onChange, placeholder, className 
                   onClick={() => setSelectedQuadrant('Q4')}
                   className="p-3 flex flex-col items-center justify-center text-center rounded-lg bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20 transition-colors cursor-pointer"
                 >
-                  <span className="text-[10px] font-bold text-blue-400 uppercase">Low Energy</span>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                    <span className="text-[10px] font-bold text-blue-400">Low Energy</span>
+                  </div>
                   <span className="text-[9px] text-blue-500/80">Unpleasant</span>
                 </button>
               </div>
