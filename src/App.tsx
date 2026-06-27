@@ -1,16 +1,9 @@
 import React from "react";
 import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight, Volume2, TrendingUp, CheckSquare, Target, Settings, Play as PlayIcon, Pause as PauseIcon, User, Mail, Award, Sparkles, X, Cloud, CloudOff, RefreshCw, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { saveUserProgress, loadUserProgress } from "./lib/firebase";
+import { saveUserProgress, loadUserProgress, auth } from "./lib/firebase";
 import { GoogleLogin } from "@react-oauth/google";
-
-const parseJwt = (token: string) => {
-  try {
-    return JSON.parse(atob(token.split('.')[1]));
-  } catch (e) {
-    return null;
-  }
-};
+import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 import EisenhowerMatrix from "./components/EisenhowerMatrix";
 import VoiceAssistant from "./components/VoiceAssistant";
 import IntegrationsHub from "./components/IntegrationsHub";
@@ -1939,15 +1932,20 @@ export default function App() {
 
                     <div className="mt-2 flex justify-start">
                       <GoogleLogin
-                        onSuccess={(credentialResponse) => {
+                        onSuccess={async (credentialResponse) => {
                           if (credentialResponse.credential) {
-                            const decoded = parseJwt(credentialResponse.credential);
-                            if (decoded && decoded.sub) {
-                              // Use Google sub ID as the secure space ID
-                              // Keeping the user's local avatar/name intact as requested
-                              handleConnectSpace(decoded.sub);
-                            } else {
-                              setSyncError("Failed to decode Google profile data.");
+                            try {
+                              setSyncStatus("syncing");
+                              const credential = GoogleAuthProvider.credential(credentialResponse.credential);
+                              const userCredential = await signInWithCredential(auth, credential);
+                              if (userCredential.user) {
+                                // Use secure Firebase Auth UID
+                                handleConnectSpace(userCredential.user.uid);
+                              }
+                            } catch (error: any) {
+                              console.error("Firebase auth error:", error);
+                              setSyncError(error.message || "Failed to authenticate securely with Firebase.");
+                              setSyncStatus("idle");
                             }
                           }
                         }}

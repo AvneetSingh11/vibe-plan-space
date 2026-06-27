@@ -1,10 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import firebaseConfig from "../../firebase-applet-config.json";
 
 // Initialize Firebase with auto-provisioned client credentials
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
 
 export interface UserCloudData {
   userName: string;
