@@ -2,6 +2,15 @@ import React from "react";
 import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight, Volume2, TrendingUp, CheckSquare, Target, Settings, Play as PlayIcon, Pause as PauseIcon, User, Mail, Award, Sparkles, X, Cloud, CloudOff, RefreshCw, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { saveUserProgress, loadUserProgress } from "./lib/firebase";
+import { GoogleLogin } from "@react-oauth/google";
+
+const parseJwt = (token: string) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
 import EisenhowerMatrix from "./components/EisenhowerMatrix";
 import VoiceAssistant from "./components/VoiceAssistant";
 import IntegrationsHub from "./components/IntegrationsHub";
@@ -1925,30 +1934,30 @@ export default function App() {
                     </div>
 
                     <p className="text-xs text-on-surface-variant/85 leading-relaxed font-body-md">
-                      Enter a custom Space ID below to connect a cloud backup. Connecting will save your current progress, or load your existing data if the ID is already registered.
+                      Sign in with your Google account to securely back up your space. Your progress will be saved to the cloud and synced across devices.
                     </p>
 
-                    <div className="flex gap-2">
-                      <input
-                        id="cloud-space-id-input"
-                        type="text"
-                        value={spaceIdInput}
-                        onChange={(e) => setSpaceIdInput(e.target.value)}
-                        placeholder="e.g. pilot_avneet"
-                        className="flex-1 px-3 py-1.5 rounded-xl bg-black/30 border border-white/10 text-xs font-mono text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-primary-fixed-dim transition-all"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handleConnectSpace(spaceIdInput);
+                    <div className="mt-2 flex justify-start">
+                      <GoogleLogin
+                        onSuccess={(credentialResponse) => {
+                          if (credentialResponse.credential) {
+                            const decoded = parseJwt(credentialResponse.credential);
+                            if (decoded && decoded.sub) {
+                              // Use Google sub ID as the secure space ID
+                              // Keeping the user's local avatar/name intact as requested
+                              handleConnectSpace(decoded.sub);
+                            } else {
+                              setSyncError("Failed to decode Google profile data.");
+                            }
                           }
                         }}
+                        onError={() => {
+                          setSyncError("Google Login Failed.");
+                        }}
+                        theme="filled_black"
+                        shape="pill"
+                        text="continue_with"
                       />
-                      <button
-                        onClick={() => handleConnectSpace(spaceIdInput)}
-                        disabled={syncStatus === "syncing" || !spaceIdInput.trim()}
-                        className="px-3.5 py-1.5 rounded-xl bg-primary-container text-on-primary-container font-bold text-xs hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40 cursor-pointer"
-                      >
-                        {syncStatus === "syncing" ? "Linking..." : "Connect"}
-                      </button>
                     </div>
 
                     {syncError && (
