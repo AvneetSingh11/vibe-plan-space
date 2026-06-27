@@ -1233,10 +1233,13 @@ export default function App() {
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsProfileOpen(true)}
-            className="w-8 h-8 rounded-full overflow-hidden border border-primary-fixed-dim/50 hover:border-primary-fixed-dim hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-primary-fixed-dim/30 hover:border-primary-fixed-dim hover:bg-white/5 active:scale-95 transition-all cursor-pointer"
             title="User Account"
           >
-            <img alt="User profile" className="w-full h-full object-cover" src={userAvatar} />
+            <div className="w-7 h-7 rounded-full overflow-hidden border border-white/10">
+              <img alt="User profile" className="w-full h-full object-cover" src={userAvatar} />
+            </div>
+            <span className="text-xs font-bold text-primary-container max-w-[80px] truncate">{userName || "Account"}</span>
           </button>
         </div>
       </nav>
