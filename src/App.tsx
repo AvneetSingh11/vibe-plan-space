@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight, Volume2, TrendingUp, CheckSquare, Target, Settings, Play as PlayIcon, Pause as PauseIcon, User, Mail, Award, Sparkles, X, Cloud, CloudOff, RefreshCw } from "lucide-react";
+import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight, Volume2, TrendingUp, CheckSquare, Target, Settings, Play as PlayIcon, Pause as PauseIcon, User, Mail, Award, Sparkles, X, Cloud, CloudOff, RefreshCw, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { saveUserProgress, loadUserProgress } from "./lib/firebase";
 import EisenhowerMatrix from "./components/EisenhowerMatrix";
@@ -1749,12 +1749,16 @@ export default function App() {
                       placeholder="Avatar URL"
                     />
                     {/* Curated quick-select avatars */}
-                    <div className="flex gap-2 justify-center mt-2.5">
+                    <div className="flex flex-wrap gap-2 justify-center mt-2.5">
                       {[
                         "https://lh3.googleusercontent.com/aida-public/AB6AXuAl-laiQcHCZ52LjAnfDbeS4vokKf8qf9qYi26dPMUQnJFXkW7_Su7OrSAj3gS44DNq975mOMy5GUyMptx5sWKqtmM1IhUWC5kBCGXpZl968eK2Gs7wfqXbQ2LU4zhsA5bQKfawd2G2PycrShSwiXUa0W7TZ0ymAVQkr_0YO7xPOSSeClAytrt1kNsMj1oUdawtCx_VjpSfrbZwHPgFOfxTpTbzDCF_oJuoR-0Gt4761i_xmovLUFzK4r7-goRESaIot0OVTpznaqI",
                         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80",
                         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80",
-                        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80"
+                        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
+                        "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&h=150&q=80",
+                        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&h=150&q=80",
+                        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&h=150&q=80",
+                        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80"
                       ].map((url, i) => (
                         <button
                           key={i}
@@ -1767,6 +1771,53 @@ export default function App() {
                           <img src={url} alt={`Option ${i}`} className="w-full h-full object-cover" />
                         </button>
                       ))}
+                      
+                      {/* Custom Upload Button */}
+                      <label className="w-7 h-7 rounded-lg overflow-hidden border border-dashed border-white/30 hover:border-primary-fixed-dim flex items-center justify-center cursor-pointer transition-all hover:bg-white/5 group">
+                        <Upload className="w-3.5 h-3.5 text-on-surface-variant group-hover:text-primary-fixed-dim" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              const img = new Image();
+                              img.onload = () => {
+                                const canvas = document.createElement("canvas");
+                                const MAX_WIDTH = 150;
+                                const MAX_HEIGHT = 150;
+                                let width = img.width;
+                                let height = img.height;
+
+                                if (width > height) {
+                                  if (width > MAX_WIDTH) {
+                                    height *= MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                                  }
+                                } else {
+                                  if (height > MAX_HEIGHT) {
+                                    width *= MAX_HEIGHT / height;
+                                    height = MAX_HEIGHT;
+                                  }
+                                }
+                                canvas.width = width;
+                                canvas.height = height;
+                                const ctx = canvas.getContext("2d");
+                                ctx?.drawImage(img, 0, 0, width, height);
+                                
+                                const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+                                setUserAvatar(dataUrl);
+                              };
+                              img.src = event.target?.result as string;
+                            };
+                            reader.readAsDataURL(file);
+                          }}
+                        />
+                      </label>
                     </div>
                   </div>
                   <button
