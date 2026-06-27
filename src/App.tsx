@@ -1760,7 +1760,11 @@ export default function App() {
                         "https://api.dicebear.com/7.x/lorelei/svg?seed=vibe4",
                         "https://api.dicebear.com/7.x/pixel-art/svg?seed=vibe5",
                         "https://api.dicebear.com/7.x/thumbs/svg?seed=vibe6",
-                        "https://api.dicebear.com/7.x/rings/svg?seed=vibe7"
+                        "https://api.dicebear.com/7.x/rings/svg?seed=vibe7",
+                        "https://api.dicebear.com/7.x/identicon/svg?seed=vibe8",
+                        "https://api.dicebear.com/7.x/micah/svg?seed=vibe9",
+                        "https://api.dicebear.com/7.x/adventurer/svg?seed=vibe10",
+                        "https://api.dicebear.com/7.x/avataaars/svg?seed=vibe11"
                       ].map((url, i) => (
                         <button
                           key={i}
