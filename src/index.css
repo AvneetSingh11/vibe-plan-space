@@ -82,6 +82,7 @@
     background-color: var(--color-background);
     color: var(--color-on-background);
     overflow-x: hidden;
+    color-scheme: dark;
   }
 }
 
