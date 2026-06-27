@@ -376,9 +376,9 @@ export default function App() {
         setUserName(cloudData.userName);
         setUserMantra(cloudData.userMantra);
         setUserAvatar(cloudData.userAvatar);
-        setTasks(cloudData.tasks);
-        setHabits(cloudData.habits);
-        setEmotionLogs(cloudData.emotionLogs);
+        setTasks(cloudData.tasks || []);
+        setHabits(cloudData.habits || []);
+        setEmotionLogs(cloudData.emotionLogs || []);
 
         // Save local
         safeLocalStorage.setItem("actionmate_username", cloudData.userName);
