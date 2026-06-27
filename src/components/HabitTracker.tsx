@@ -124,53 +124,34 @@ export default function HabitTracker({ habits, onToggleHabit, onAddHabit, onDele
       <div className="w-full max-w-4xl mb-6 glass-panel rounded-3xl p-6 relative overflow-hidden border border-glass-stroke/50 bg-black/10">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full blur-[90px] opacity-[0.08] pointer-events-none"></div>
         
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
-          {/* Flame & Live Count */}
-          <div className="flex items-center gap-4 w-full lg:w-auto">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-[0_4px_15px_rgba(245,158,11,0.25)] relative group">
-              <Flame className="w-8 h-8 fill-amber-100 animate-pulse" />
-              <span className="absolute -bottom-1 -right-1 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
-              </span>
-            </div>
-            <div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-display-hero text-[30px] text-on-surface leading-none font-black tracking-tight">{userStreak}</span>
-                <span className="font-mono text-[11px] text-amber-400 font-bold uppercase tracking-widest">DAY ACTIVE STREAK</span>
+        <div className="flex flex-col gap-6 relative z-10">
+          {/* Top Row: Flame & Live Count AND 7-Day Visualizer */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            {/* Flame & Live Count */}
+            <div className="flex items-center gap-4 w-full lg:w-auto">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-[0_4px_15px_rgba(245,158,11,0.25)] relative group">
+                <Flame className="w-8 h-8 fill-amber-100 animate-pulse" />
+                <span className="absolute -bottom-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                </span>
               </div>
-              <p className="text-[11px] text-on-surface-variant mt-1 max-w-[280px] leading-relaxed">
-                {userStreak > 0 
-                  ? "Your consistency sequence is currently active. Maintain compliance to upgrade metrics."
-                  : "Complete any daily directive below to ignite your live streak protocol!"
-                }
-              </p>
+              <div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="font-display-hero text-[30px] text-on-surface leading-none font-black tracking-tight">{userStreak}</span>
+                  <span className="font-mono text-[11px] text-amber-400 font-bold uppercase tracking-widest">DAY ACTIVE STREAK</span>
+                </div>
+                <p className="text-[11px] text-on-surface-variant mt-1 max-w-[280px] leading-relaxed">
+                  {userStreak > 0 
+                    ? "Your consistency sequence is currently active. Maintain compliance to upgrade metrics."
+                    : "Complete any daily directive below to ignite your live streak protocol!"
+                  }
+                </p>
+              </div>
             </div>
-          </div>
 
-          {/* Live Status Description Bar */}
-          <div className="flex-1 w-full lg:w-auto bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col justify-center">
-            <div className="flex items-center gap-1.5 mb-1">
-              <span className={`w-2.5 h-2.5 rounded-full ${
-                last7Days[6].hasCompleted ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.6)]"
-              }`} />
-              <span className="font-mono text-[9px] uppercase tracking-wider text-on-surface-variant font-bold">
-                STREAK SECURITY STANDBY
-              </span>
-            </div>
-            {last7Days[6].hasCompleted ? (
-              <p className="text-[11px] text-emerald-400 font-medium">
-                🔒 SECURED FOR TODAY. Great job continuing your consistency!
-              </p>
-            ) : (
-              <p className="text-[11px] text-amber-400 font-medium animate-pulse">
-                ⚠️ PENDING PROGRESS. Check off any directive below to secure today.
-              </p>
-            )}
-          </div>
-
-          {/* 7-Day Consistency Week Visualizer */}
-          <div className="w-full lg:w-auto flex gap-2 justify-between overflow-x-auto py-1 border-t border-white/5 lg:border-t-0 pt-3 lg:pt-0">
+            {/* 7-Day Consistency Week Visualizer */}
+            <div className="w-full lg:w-auto flex gap-2 justify-between overflow-x-auto py-1 border-t border-white/5 lg:border-t-0 pt-3 lg:pt-0">
             {last7Days.map((day) => (
               <div
                 key={day.dateStr}
@@ -206,6 +187,27 @@ export default function HabitTracker({ habits, onToggleHabit, onAddHabit, onDele
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Live Status Description Bar */}
+        <div className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 flex flex-col justify-center mb-6">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className={`w-2.5 h-2.5 rounded-full ${
+              last7Days[6].hasCompleted ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.6)]"
+            }`} />
+            <span className="font-mono text-[9px] uppercase tracking-wider text-on-surface-variant font-bold">
+              STREAK SECURITY STANDBY
+            </span>
+          </div>
+          {last7Days[6].hasCompleted ? (
+            <p className="text-[11px] text-emerald-400 font-medium">
+              🔒 SECURED FOR TODAY. Great job continuing your consistency!
+            </p>
+          ) : (
+            <p className="text-[11px] text-amber-400 font-medium animate-pulse">
+              ⚠️ PENDING PROGRESS. Check off any directive below to secure today.
+            </p>
+          )}
         </div>
       </div>
 
