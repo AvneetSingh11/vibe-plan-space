@@ -84,7 +84,18 @@ function AmbientSound({ name, url, volume, onVolumeChange }: { key?: string, nam
         className="flex-1 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary-container" 
       />
       <Volume2 className="w-4 h-4 text-on-surface-variant/50" />
-      <audio ref={audioRef} src={url} loop preload="auto" />
+      <audio 
+        ref={audioRef} 
+        src={url} 
+        loop 
+        preload="auto" 
+        onEnded={() => {
+          if (audioRef.current && volume > 0) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(() => console.log('Autoplay prevented on loop'));
+          }
+        }}
+      />
     </div>
   );
 }
