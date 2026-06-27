@@ -5,7 +5,6 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/vibe-plan-space/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
