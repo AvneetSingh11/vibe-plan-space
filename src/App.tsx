@@ -1225,12 +1225,12 @@ export default function App() {
             <span className="font-headline-md text-lg font-bold tracking-tight text-primary-container">Vibe Plan Space</span>
         </div>
         <div className="hidden md:flex items-center gap-4">
-          <button onClick={() => setActiveTab('dashboard')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Dashboard</button>
-          <button onClick={() => setActiveTab('matrix')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'matrix' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Matrix</button>
-          <button onClick={() => setActiveTab('habits')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'habits' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Habits</button>
-          <button onClick={() => setActiveTab('mind')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'mind' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Mind</button>
-          <button onClick={() => setActiveTab('command')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'command' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Voice</button>
-          <button onClick={() => setActiveTab('integrations')} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'integrations' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Integrations</button>
+          <button onClick={() => { setActiveTab('dashboard'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Dashboard</button>
+          <button onClick={() => { setActiveTab('matrix'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'matrix' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Matrix</button>
+          <button onClick={() => { setActiveTab('habits'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'habits' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Habits</button>
+          <button onClick={() => { setActiveTab('mind'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'mind' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Mind</button>
+          <button onClick={() => { setActiveTab('command'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'command' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Voice</button>
+          <button onClick={() => { setActiveTab('integrations'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'integrations' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Integrations</button>
         </div>
         <div className="flex items-center gap-3">
           <button 
@@ -1248,16 +1248,16 @@ export default function App() {
 
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-4 left-4 right-4 bg-surface-container-highest/80 backdrop-blur-xl border border-glass-stroke rounded-full px-6 py-3 flex justify-between items-center z-50 shadow-2xl">
-        <button onClick={() => setActiveTab('dashboard')} className={`flex flex-col items-center gap-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
+        <button onClick={() => { setActiveTab('dashboard'); setIsProfileOpen(false); }} className={`flex flex-col items-center gap-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
           <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' " + (activeTab === 'dashboard' ? '1' : '0') }}>grid_view</span>
         </button>
-        <button onClick={() => setActiveTab('matrix')} className={`flex flex-col items-center gap-1 ${activeTab === 'matrix' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
+        <button onClick={() => { setActiveTab('matrix'); setIsProfileOpen(false); }} className={`flex flex-col items-center gap-1 ${activeTab === 'matrix' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
           <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' " + (activeTab === 'matrix' ? '1' : '0') }}>blur_on</span>
         </button>
-        <button onClick={() => setActiveTab('command')} className="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center -mt-8 shadow-[0_0_20px_rgba(255,180,161,0.4)] text-on-primary-container">
+        <button onClick={() => { setActiveTab('command'); setIsProfileOpen(false); }} className="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center -mt-8 shadow-[0_0_20px_rgba(255,180,161,0.4)] text-on-primary-container">
           <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
         </button>
-        <button onClick={() => setActiveTab('habits')} className={`flex flex-col items-center gap-1 ${activeTab === 'habits' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
+        <button onClick={() => { setActiveTab('habits'); setIsProfileOpen(false); }} className={`flex flex-col items-center gap-1 ${activeTab === 'habits' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
           <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' " + (activeTab === 'habits' ? '1' : '0') }}>inventory_2</span>
         </button>
         <button className="flex flex-col items-center gap-1 text-on-surface-variant">
