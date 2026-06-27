@@ -1752,13 +1752,13 @@ export default function App() {
                     <div className="flex flex-wrap gap-2 justify-center mt-2.5">
                       {[
                         "https://lh3.googleusercontent.com/aida-public/AB6AXuAl-laiQcHCZ52LjAnfDbeS4vokKf8qf9qYi26dPMUQnJFXkW7_Su7OrSAj3gS44DNq975mOMy5GUyMptx5sWKqtmM1IhUWC5kBCGXpZl968eK2Gs7wfqXbQ2LU4zhsA5bQKfawd2G2PycrShSwiXUa0W7TZ0ymAVQkr_0YO7xPOSSeClAytrt1kNsMj1oUdawtCx_VjpSfrbZwHPgFOfxTpTbzDCF_oJuoR-0Gt4761i_xmovLUFzK4r7-goRESaIot0OVTpznaqI",
-                        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80",
-                        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80",
-                        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
-                        "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&h=150&q=80",
-                        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&h=150&q=80",
-                        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&h=150&q=80",
-                        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80"
+                        "https://api.dicebear.com/7.x/bottts/svg?seed=vibe1",
+                        "https://api.dicebear.com/7.x/shapes/svg?seed=vibe2",
+                        "https://api.dicebear.com/7.x/fun-emoji/svg?seed=vibe3",
+                        "https://api.dicebear.com/7.x/lorelei/svg?seed=vibe4",
+                        "https://api.dicebear.com/7.x/pixel-art/svg?seed=vibe5",
+                        "https://api.dicebear.com/7.x/thumbs/svg?seed=vibe6",
+                        "https://api.dicebear.com/7.x/rings/svg?seed=vibe7"
                       ].map((url, i) => (
                         <button
                           key={i}
