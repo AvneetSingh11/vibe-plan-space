@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
-import * as express from "express";
-import * as cors from "cors";
+import express = require("express");
+import cors = require("cors");
 import { GoogleGenAI, Type } from "@google/genai";
 
 const app = express();
@@ -9,7 +9,6 @@ app.use(express.json());
 
 // Helper to initialize Gemini API Client
 function getAiClient(): GoogleGenAI | null {
-  // Use Firebase Functions config/secrets for the key
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
     console.log("No valid GEMINI_API_KEY found. Running in high-fidelity simulated AI mode.");
@@ -32,7 +31,7 @@ function getAiClient(): GoogleGenAI | null {
 }
 
 // API Endpoint: AI Task Breakdown
-app.post("/ai/breakdown", async (req, res) => {
+app.post("/ai/breakdown", async (req: express.Request, res: express.Response) => {
   const { goal } = req.body;
   if (!goal || typeof goal !== "string" || goal.trim() === "") {
     res.status(400).json({ error: "Goal is required" });
@@ -126,8 +125,8 @@ Goal: "${goal}"`;
 });
 
 // API Endpoint: Daily AI Briefing
-app.post("/ai/briefing", async (req, res) => {
-  const { tasks, habits, timeOfDay } = req.body;
+app.post("/ai/briefing", async (req: express.Request, res: express.Response) => {
+  const { tasks, timeOfDay } = req.body;
   const timePhrase = timeOfDay || "morning";
   const ai = getAiClient();
 
@@ -162,8 +161,8 @@ Current Tasks: ${taskSummary}`;
 });
 
 // API Endpoint: AI Emotional Insights
-app.post("/ai/emotional-insights", async (req, res) => {
-  const { tasks, emotionLogs } = req.body;
+app.post("/ai/emotional-insights", async (req: express.Request, res: express.Response) => {
+  const { emotionLogs } = req.body;
   const ai = getAiClient();
 
   if (ai) {
@@ -214,7 +213,7 @@ Provide an analysis with 3 fields in JSON format: summary, productivityCorrelati
 });
 
 // API Endpoint: Analyze Note
-app.post("/ai/analyze-note", async (req, res) => {
+app.post("/ai/analyze-note", async (req: express.Request, res: express.Response) => {
   const { note, emotion } = req.body;
   if (!note) {
     res.status(400).json({ error: "Note is required" });
@@ -271,7 +270,7 @@ Analyze and extract JSON with fields: sentiment (positive/negative/neutral), cog
 });
 
 // API Endpoint: Voice-Command Parser
-app.post("/ai/voice-command", async (req, res) => {
+app.post("/ai/voice-command", async (req: express.Request, res: express.Response) => {
   const { text } = req.body;
   if (!text) {
     res.status(400).json({ error: "Text is required" });
@@ -327,6 +326,4 @@ Return JSON with fields: action, taskDetails (if add_task, with title, urgent, i
   res.json({ result, source: "simulation" });
 });
 
-// Export the Express app as a Cloud Function
-// Note: We mount it on 'api' so it can handle /api/ai/* 
 export const api = functions.https.onRequest(app);
