@@ -355,6 +355,7 @@ export default function App() {
   });
   const [isEditingProfile, setIsEditingProfile] = React.useState(false);
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [userAvatar, setUserAvatar] = React.useState(() => {
     return safeLocalStorage.getItem("actionmate_avatar") || "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest";
   });
@@ -1249,7 +1250,7 @@ export default function App() {
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsProfileOpen(true)}
-            className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-primary-fixed-dim/30 hover:border-primary-fixed-dim hover:bg-white/5 active:scale-95 transition-all cursor-pointer"
+            className="hidden md:flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-primary-fixed-dim/30 hover:border-primary-fixed-dim hover:bg-white/5 active:scale-95 transition-all cursor-pointer"
             title="User Account"
           >
             <div className="w-7 h-7 rounded-full overflow-hidden border border-white/10">
@@ -1257,30 +1258,44 @@ export default function App() {
             </div>
             <span className="text-xs font-bold text-primary-container max-w-[80px] truncate">{userName || "Account"}</span>
           </button>
+
+          {/* Mobile Menu Toggle */}
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden flex flex-col items-center justify-center p-1.5 rounded-full border border-primary-fixed-dim/30 hover:bg-white/5 transition-all text-primary-fixed-dim cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[24px]">{isMobileMenuOpen ? 'close' : 'menu'}</span>
+          </button>
         </div>
       </nav>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-4 left-4 right-4 bg-surface-container-highest/80 backdrop-blur-xl border border-glass-stroke rounded-full px-6 py-3 flex justify-between items-center z-50 shadow-2xl">
-        <button onClick={() => { setActiveTab('dashboard'); setIsProfileOpen(false); }} className={`flex flex-col items-center gap-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
-          <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' " + (activeTab === 'dashboard' ? '1' : '0') }}>grid_view</span>
-        </button>
-        <button onClick={() => { setActiveTab('matrix'); setIsProfileOpen(false); }} className={`flex flex-col items-center gap-1 ${activeTab === 'matrix' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
-          <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' " + (activeTab === 'matrix' ? '1' : '0') }}>blur_on</span>
-        </button>
-        <button onClick={() => { setActiveTab('command'); setIsProfileOpen(false); }} className="w-12 h-12 bg-primary-container rounded-full flex items-center justify-center -mt-8 shadow-[0_0_20px_rgba(255,180,161,0.4)] text-on-primary-container">
-          <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
-        </button>
-        <button onClick={() => { setActiveTab('habits'); setIsProfileOpen(false); }} className={`flex flex-col items-center gap-1 ${activeTab === 'habits' ? 'text-primary-fixed-dim' : 'text-on-surface-variant'}`}>
-          <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' " + (activeTab === 'habits' ? '1' : '0') }}>inventory_2</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-on-surface-variant">
-          <span className="material-symbols-outlined text-[24px]">menu</span>
-        </button>
-      </nav>
+      {/* Mobile Dropdown Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden fixed top-[72px] left-1/2 -translate-x-1/2 w-[95%] bg-surface-container-highest/95 backdrop-blur-xl border border-glass-stroke rounded-3xl p-4 flex flex-col gap-2 z-40 shadow-2xl animate-rise">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => { setActiveTab(item.id); setIsMobileMenuOpen(false); setIsProfileOpen(false); }}
+              className={`text-left px-4 py-3 rounded-2xl transition-colors font-headline-md uppercase tracking-wider text-sm ${activeTab === item.id ? 'bg-primary-fixed-dim text-black font-black' : 'text-on-surface-variant hover:bg-white/10'}`}
+            >
+              {item.label}
+            </button>
+          ))}
+          <div className="h-px w-full bg-glass-stroke my-2"></div>
+          <button 
+            onClick={() => { setIsProfileOpen(true); setIsMobileMenuOpen(false); }}
+            className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors hover:bg-white/10 cursor-pointer"
+          >
+            <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10">
+              <img alt="User profile" className="w-full h-full object-cover" src={userAvatar} />
+            </div>
+            <span className="font-headline-md text-sm text-primary-container truncate">{userName || "Account"}</span>
+          </button>
+        </div>
+      )}
 
       {/* Main Content Canvas */}
-      <main className="flex-1 mt-20 mb-24 md:mb-0 p-6 perspective-container relative z-10 w-full max-w-[1200px] mx-auto min-h-screen flex flex-col">
+      <main className="flex-1 mt-20 mb-6 p-6 perspective-container relative z-10 w-full max-w-[1200px] mx-auto min-h-screen flex flex-col">
           
           {/* Orbit uses the global header instead */}
 
