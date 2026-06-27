@@ -334,7 +334,10 @@ export default function App() {
 
   // User Profile States
   const [userName, setUserName] = React.useState(() => {
-    return safeLocalStorage.getItem("actionmate_username") || "Avneet Arora";
+    return safeLocalStorage.getItem("actionmate_username") || "Guest User";
+  });
+  const [userEmail, setUserEmail] = React.useState(() => {
+    return safeLocalStorage.getItem("actionmate_email") || "";
   });
   const [userMantra, setUserMantra] = React.useState(() => {
     return safeLocalStorage.getItem("actionmate_mantra") || "Ascending daily orbits with peak compliance.";
@@ -342,7 +345,7 @@ export default function App() {
   const [isEditingProfile, setIsEditingProfile] = React.useState(false);
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
   const [userAvatar, setUserAvatar] = React.useState(() => {
-    return safeLocalStorage.getItem("actionmate_avatar") || "https://lh3.googleusercontent.com/aida-public/AB6AXuAl-laiQcHCZ52LjAnfDbeS4vokKf8qf9qYi26dPMUQnJFXkW7_Su7OrSAj3gS44DNq975mOMy5GUyMptx5sWKqtmM1IhUWC5kBCGXpZl968eK2Gs7wfqXbQ2LU4zhsA5bQKfawd2G2PycrShSwiXUa0W7TZ0ymAVQkr_0YO7xPOSSeClAytrt1kNsMj1oUdawtCx_VjpSfrbZwHPgFOfxTpTbzDCF_oJuoR-0Gt4761i_xmovLUFzK4r7-goRESaIot0OVTpznaqI";
+    return safeLocalStorage.getItem("actionmate_avatar") || "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest";
   });
 
   // Cloud Sync States
@@ -1700,7 +1703,7 @@ export default function App() {
               {/* Avatar image with hovering effects */}
               <div className="relative group w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary-fixed-dim/40 hover:border-primary-fixed-dim transition-all duration-300 shadow-xl mb-4">
                 <img
-                  alt="Avneet's avatar profile"
+                  alt={`${userName}'s avatar profile`}
                   className="w-full h-full object-cover"
                   src={userAvatar}
                 />
@@ -1845,10 +1848,12 @@ export default function App() {
                   <h3 className="font-display-hero text-xl font-black text-on-surface tracking-tight">
                     {userName}
                   </h3>
-                  <p className="font-mono text-xs text-on-surface-variant flex items-center justify-center gap-1 mt-1">
-                    <Mail className="w-3.5 h-3.5 text-on-surface-variant/70" />
-                    avneetarora1106@gmail.com
-                  </p>
+                  {userEmail && (
+                    <p className="font-mono text-xs text-on-surface-variant flex items-center justify-center gap-1 mt-1">
+                      <Mail className="w-3.5 h-3.5 text-on-surface-variant/70" />
+                      {userEmail}
+                    </p>
+                  )}
                   
                   <p className="text-xs text-on-surface-variant font-body-md italic mt-3 bg-white/5 p-3.5 rounded-2xl border border-glass-stroke">
                     "{userMantra}"
@@ -1943,8 +1948,16 @@ export default function App() {
                               const credential = GoogleAuthProvider.credential(credentialResponse.credential);
                               const userCredential = await signInWithCredential(auth, credential);
                               if (userCredential.user) {
+                                const user = userCredential.user;
+                                setUserName(user.displayName || "Guest User");
+                                setUserEmail(user.email || "");
+                                setUserAvatar(user.photoURL || "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest");
+                                safeLocalStorage.setItem("actionmate_username", user.displayName || "Guest User");
+                                safeLocalStorage.setItem("actionmate_email", user.email || "");
+                                if (user.photoURL) safeLocalStorage.setItem("actionmate_avatar", user.photoURL);
+                                
                                 // Use secure Firebase Auth UID
-                                handleConnectSpace(userCredential.user.uid);
+                                handleConnectSpace(user.uid);
                               }
                             } catch (error: any) {
                               console.error("Firebase auth error:", error);
