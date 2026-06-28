@@ -3,7 +3,7 @@ import express = require("express");
 import cors = require("cors");
 import { GoogleGenAI, Type } from "@google/genai";
 
-const app = express();
+export const app = express();
 app.use(cors({ origin: true }));
 app.use(express.json());
 

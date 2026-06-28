@@ -1662,7 +1662,14 @@ export default function App() {
             deadline: t.deadline,
             createdAt: new Date().toISOString()
           }));
-          setTasks([...formattedTasks, ...tasks]);
+          const updatedTasks = [...formattedTasks, ...tasks];
+          setTasks(updatedTasks);
+          safeLocalStorage.setItem("actionmate_tasks", JSON.stringify(updatedTasks));
+          if (spaceId) {
+            saveUserProgress(spaceId, {
+              userName, userMantra, userAvatar, tasks: updatedTasks, habits, emotionLogs
+            }).catch(e => console.error("Cloud sync failed", e));
+          }
           addNotification("Sync Complete", `Successfully imported ${formattedTasks.length} tasks from your connected accounts.`, "success");
         }}
       />
@@ -1965,7 +1972,7 @@ export default function App() {
                       Sign in with your Google account to securely back up your space. Your progress will be saved to the cloud and synced across devices.
                     </p>
 
-                    <div className="mt-2 flex justify-start">
+                    <div className="mt-2 flex justify-start rounded-full overflow-hidden w-max" style={{ backgroundColor: 'transparent' }}>
                       <GoogleLogin
                         onSuccess={async (credentialResponse) => {
                           if (credentialResponse.credential) {

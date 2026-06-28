@@ -8,8 +8,8 @@ interface IntegrationsHubProps {
 }
 
 export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
-  const [calendarState, setCalendarState] = useState<"disconnected" | "connecting" | "connected">("disconnected");
-  const [classroomState, setClassroomState] = useState<"disconnected" | "connecting" | "connected">("disconnected");
+  const [calendarState, setCalendarState] = useState<"disconnected" | "connecting" | "connected" | "demo">("disconnected");
+  const [classroomState, setClassroomState] = useState<"disconnected" | "connecting" | "connected" | "demo">("disconnected");
   const [calendarToken, setCalendarToken] = useState<string | null>(null);
   const [classroomToken, setClassroomToken] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -19,7 +19,15 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
       setCalendarToken(tokenResponse.access_token);
       setCalendarState("connected");
     },
-    onError: () => setCalendarState("disconnected"),
+    onError: (error) => {
+      console.error("Calendar login error:", error);
+      // Fallback to demo mode if OAuth fails (e.g. origins not configured)
+      setCalendarState("demo");
+    },
+    onNonOAuthError: (error) => {
+      console.error("Calendar non-OAuth error (e.g. popup closed):", error);
+      setCalendarState("disconnected");
+    },
     scope: 'https://www.googleapis.com/auth/calendar.readonly',
   });
 
@@ -28,7 +36,15 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
       setClassroomToken(tokenResponse.access_token);
       setClassroomState("connected");
     },
-    onError: () => setClassroomState("disconnected"),
+    onError: (error) => {
+      console.error("Classroom login error:", error);
+      // Fallback to demo mode if OAuth fails
+      setClassroomState("demo");
+    },
+    onNonOAuthError: (error) => {
+      console.error("Classroom non-OAuth error (e.g. popup closed):", error);
+      setClassroomState("disconnected");
+    },
     scope: 'https://www.googleapis.com/auth/classroom.courses.readonly https://www.googleapis.com/auth/classroom.coursework.me.readonly',
   });
 
@@ -58,7 +74,7 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
           const calData = await calRes.json();
           if (calData.items) {
             calData.items.forEach((event: any) => {
-              if (event.summary) {
+              if (event.summary && event.start) {
                 // If the event is happening soon, it's urgent and important
                 const eventDate = new Date(event.start.dateTime || event.start.date);
                 const isUrgent = (eventDate.getTime() - today.getTime()) < 48 * 60 * 60 * 1000;
@@ -73,6 +89,22 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
             });
           }
         }
+      } else if (calendarState === "demo") {
+        // Generate simulated calendar events
+        newTasks.push({
+          title: `📅 (Demo) Project Sync Meeting`,
+          urgent: true,
+          important: true,
+          estimatedMinutes: 45,
+          deadline: new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        });
+        newTasks.push({
+          title: `📅 (Demo) Doctor Appointment`,
+          urgent: false,
+          important: true,
+          estimatedMinutes: 60,
+          deadline: new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        });
       }
 
       // Fetch Classroom Assignments
@@ -117,6 +149,14 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
             }
           }
         }
+      } else if (classroomState === "demo") {
+        newTasks.push({
+          title: `🎓 (Demo) Submit Hackathon Project`,
+          urgent: true,
+          important: true,
+          estimatedMinutes: 120,
+          deadline: new Date(today.getTime() + 12 * 60 * 60 * 1000).toISOString().split('T')[0]
+        });
       }
 
       if (newTasks.length > 0) {
@@ -180,6 +220,12 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
                 Connected
               </div>
             )}
+            {calendarState === "demo" && (
+              <div className="w-full py-2.5 rounded-xl bg-amber-500/10 text-amber-400 text-sm font-medium flex items-center justify-center gap-2" title="OAuth failed, running in simulated demo mode">
+                <CheckCircle2 className="w-4 h-4" />
+                Connected (Demo Mode)
+              </div>
+            )}
           </div>
         </div>
 
@@ -218,12 +264,18 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
                 Connected
               </div>
             )}
+            {classroomState === "demo" && (
+              <div className="w-full py-2.5 rounded-xl bg-amber-500/10 text-amber-400 text-sm font-medium flex items-center justify-center gap-2" title="OAuth failed, running in simulated demo mode">
+                <CheckCircle2 className="w-4 h-4" />
+                Connected (Demo Mode)
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Sync Action Area */}
-      {(calendarState === "connected" || classroomState === "connected") && (
+      {(calendarState === "connected" || classroomState === "connected" || calendarState === "demo" || classroomState === "demo") && (
         <div className="mt-8 p-6 rounded-3xl bg-surface text-center">
           <p className="text-muted-foreground text-sm mb-4">
             Your accounts are connected. You can now use the AI to pull your upcoming events and assignments directly into your Eisenhower Matrix.
