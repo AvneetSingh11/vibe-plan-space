@@ -2012,39 +2012,12 @@ export default function App() {
                     </p>
 
                     <div className="mt-2 flex justify-start rounded-full overflow-hidden w-max" style={{ backgroundColor: 'transparent' }}>
-                      <GoogleLogin
-                        onSuccess={async (credentialResponse) => {
-                          if (credentialResponse.credential) {
-                            try {
-                              setSyncStatus("syncing");
-                              const credential = GoogleAuthProvider.credential(credentialResponse.credential);
-                              const userCredential = await signInWithCredential(auth, credential);
-                              if (userCredential.user) {
-                                const user = userCredential.user;
-                                setUserName(user.displayName || "Guest User");
-                                setUserEmail(user.email || "");
-                                setUserAvatar(user.photoURL || "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest");
-                                safeLocalStorage.setItem("actionmate_username", user.displayName || "Guest User");
-                                safeLocalStorage.setItem("actionmate_email", user.email || "");
-                                if (user.photoURL) safeLocalStorage.setItem("actionmate_avatar", user.photoURL);
-                                
-                                // Use secure Firebase Auth UID
-                                handleConnectSpace(user.uid);
-                              }
-                            } catch (error: any) {
-                              console.error("Firebase auth error:", error);
-                              setSyncError(error.message || "Failed to authenticate securely with Firebase.");
-                              setSyncStatus("idle");
-                            }
-                          }
-                        }}
-                        onError={() => {
-                          setSyncError("Google Login Failed.");
-                        }}
-                        theme="filled_black"
-                        shape="pill"
-                        text="continue_with"
-                      />
+                      <button
+                        onClick={() => setIsAuthModalOpen(true)}
+                        className="px-6 py-2.5 bg-primary text-on-primary text-sm font-semibold rounded-full hover:bg-primary/90 transition-colors shadow-sm"
+                      >
+                        Sign In / Register
+                      </button>
                     </div>
 
                     {syncError && (
