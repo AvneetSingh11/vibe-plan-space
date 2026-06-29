@@ -1,12 +1,28 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAnalytics, logEvent } from "firebase/analytics";
 import firebaseConfig from "../../firebase-applet-config.json";
 
 // Initialize Firebase with auto-provisioned client credentials
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+
+// Initialize Analytics (will only work if a measurementId is provided in config and running in browser)
+export const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
+
+// Safe tracking helper
+export const trackEvent = (eventName: string, params?: Record<string, any>) => {
+  if (analytics) {
+    try {
+      logEvent(analytics, eventName, params);
+    } catch (e) {
+      console.warn("Analytics event failed", e);
+    }
+  }
+};
 
 export interface UserCloudData {
   userName: string;

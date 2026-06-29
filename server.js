@@ -1,14 +1,23 @@
-import * as functions from "firebase-functions";
-import express = require("express");
-import cors = require("cors");
+import express from "express";
+import cors from "cors";
 import { GoogleGenAI, Type } from "@google/genai";
 
-export const app = express();
+const app = express();
 app.use(cors({ origin: true }));
 app.use(express.json());
 
+import rateLimit from "express-rate-limit";
+
+// Rate Limiting (Prevent Brute Force)
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later."
+});
+app.use("/api/", apiLimiter);
+
 // Helper to initialize Gemini API Client
-function getAiClient(): GoogleGenAI | null {
+function getAiClient() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
     console.log("No valid GEMINI_API_KEY found. Running in high-fidelity simulated AI mode.");
@@ -31,7 +40,7 @@ function getAiClient(): GoogleGenAI | null {
 }
 
 // API Endpoint: AI Task Breakdown
-app.post("/api/ai/breakdown", async (req: express.Request, res: express.Response) => {
+app.post("/api/ai/breakdown", async (req, res) => {
   const { goal } = req.body;
   if (!goal || typeof goal !== "string" || goal.trim() === "") {
     res.status(400).json({ error: "Goal is required" });
@@ -43,8 +52,7 @@ app.post("/api/ai/breakdown", async (req: express.Request, res: express.Response
   if (ai) {
     try {
       console.log(`Analyzing goal for breakdown: "${goal}"`);
-      const prompt = `Break down the following complex goal or task into a step-by-step actionable list of 3 to 6 logical sub-tasks. For each sub-task, provide a title, a brief actionable description, and a reasonable estimated duration in minutes.
-Goal: "${goal}"`;
+      const prompt = `Break down the following complex goal or task into a step-by-step actionable list of 3 to 6 logical sub-tasks. For each sub-task, provide a title, a brief actionable description, and a reasonable estimated duration in minutes.\nGoal: "${goal}"`;
 
       const response = await ai.models.generateContent({
         model: "gemini-1.5-flash",
@@ -57,18 +65,9 @@ Goal: "${goal}"`;
             items: {
               type: Type.OBJECT,
               properties: {
-                title: {
-                  type: Type.STRING,
-                  description: "Short title of the sub-task (e.g., 'Brainstorm design layout')."
-                },
-                durationMinutes: {
-                  type: Type.INTEGER,
-                  description: "Estimated time to complete this step in minutes (e.g., 30, 45, 60)."
-                },
-                description: {
-                  type: Type.STRING,
-                  description: "A clear, actionable step-by-step description of what to do."
-                }
+                title: { type: Type.STRING, description: "Short title of the sub-task (e.g., 'Brainstorm design layout')." },
+                durationMinutes: { type: Type.INTEGER, description: "Estimated time to complete this step in minutes (e.g., 30, 45, 60)." },
+                description: { type: Type.STRING, description: "A clear, actionable step-by-step description of what to do." }
               },
               required: ["title", "durationMinutes", "description"]
             }
@@ -89,7 +88,7 @@ Goal: "${goal}"`;
 
   // High-Fidelity Simulation Fallback
   console.log("Generating simulated breakdown response.");
-  const simulatedBreakdowns: Record<string, Array<{ title: string, durationMinutes: number, description: string }>> = {
+  const simulatedBreakdowns = {
     hackathon: [
       { title: "Define Core Scope & Idea", durationMinutes: 20, description: "List the absolute minimum features required to show a functional MVP and map out the user flow." },
       { title: "Set Up Project & Assets", durationMinutes: 15, description: "Create base project configuration, install required dependencies, and initialize the CSS layout." },
@@ -125,7 +124,7 @@ Goal: "${goal}"`;
 });
 
 // API Endpoint: Daily AI Briefing
-app.post("/api/ai/briefing", async (req: express.Request, res: express.Response) => {
+app.post("/api/ai/briefing", async (req, res) => {
   const { tasks, timeOfDay } = req.body;
   const timePhrase = timeOfDay || "morning";
   const ai = getAiClient();
@@ -133,13 +132,10 @@ app.post("/api/ai/briefing", async (req: express.Request, res: express.Response)
   if (ai) {
     try {
       const taskSummary = tasks && tasks.length > 0 
-        ? tasks.map((t: any) => `- ${t.title} (${t.urgent ? 'Urgent' : ''} ${t.important ? 'Important' : ''})`).join("\n")
+        ? tasks.map((t) => `- ${t.title} (${t.urgent ? 'Urgent' : ''} ${t.important ? 'Important' : ''})`).join("\n")
         : "No major tasks listed for today!";
 
-      const prompt = `You are Vibe Plan Space, an enthusiastic, premium, hyper-intelligent AI companion.
-Generate an energetic, highly personalized, and direct vocal daily briefing for the user for their "${timePhrase}".
-Keep it strictly under 120 words.
-Current Tasks: ${taskSummary}`;
+      const prompt = `You are Vibe Plan Space, an enthusiastic, premium, hyper-intelligent AI companion.\nGenerate an energetic, highly personalized, and direct vocal daily briefing for the user for their "${timePhrase}".\nKeep it strictly under 120 words.\nCurrent Tasks: ${taskSummary}`;
 
       const response = await ai.models.generateContent({
         model: "gemini-1.5-flash",
@@ -161,21 +157,17 @@ Current Tasks: ${taskSummary}`;
 });
 
 // API Endpoint: AI Emotional Insights
-app.post("/api/ai/emotional-insights", async (req: express.Request, res: express.Response) => {
+app.post("/api/ai/emotional-insights", async (req, res) => {
   const { emotionLogs } = req.body;
   const ai = getAiClient();
 
   if (ai) {
     try {
       const logSummary = emotionLogs && emotionLogs.length > 0
-        ? emotionLogs.map((l: any) => `- Logged: ${l.emotion}. Energy: ${l.energy}. Note: "${l.note || ''}".`).join("\n")
+        ? emotionLogs.map((l) => `- Logged: ${l.emotion}. Energy: ${l.energy}. Note: "${l.note || ''}".`).join("\n")
         : "No general emotion logs recorded.";
 
-      const prompt = `You are Vibe Plan Space Mind & Focus Guide.
-Analyze the user's logged emotions.
-User's General Emotion Logs: ${logSummary}
-
-Provide an analysis with 3 fields in JSON format: summary, productivityCorrelation, actionableAdvice.`;
+      const prompt = `You are Vibe Plan Space Mind & Focus Guide.\nAnalyze the user's logged emotions.\nUser's General Emotion Logs: ${logSummary}\n\nProvide an analysis with 3 fields in JSON format: summary, productivityCorrelation, actionableAdvice.`;
 
       const response = await ai.models.generateContent({
         model: "gemini-1.5-flash",
@@ -213,7 +205,7 @@ Provide an analysis with 3 fields in JSON format: summary, productivityCorrelati
 });
 
 // API Endpoint: Analyze Note
-app.post("/api/ai/analyze-note", async (req: express.Request, res: express.Response) => {
+app.post("/api/ai/analyze-note", async (req, res) => {
   const { note, emotion } = req.body;
   if (!note) {
     res.status(400).json({ error: "Note is required" });
@@ -223,8 +215,7 @@ app.post("/api/ai/analyze-note", async (req: express.Request, res: express.Respo
 
   if (ai) {
     try {
-      const prompt = `Analyze this self-reflective note written by a user when logging the emotion "${emotion}". Note: "${note}"
-Analyze and extract JSON with fields: sentiment (positive/negative/neutral), cognitiveDistortion, primaryTrigger, copingStrategy.`;
+      const prompt = `Analyze this self-reflective note written by a user when logging the emotion "${emotion}". Note: "${note}"\nAnalyze and extract JSON with fields: sentiment (positive/negative/neutral), cognitiveDistortion, primaryTrigger, copingStrategy.`;
 
       const response = await ai.models.generateContent({
         model: "gemini-1.5-flash",
@@ -270,7 +261,7 @@ Analyze and extract JSON with fields: sentiment (positive/negative/neutral), cog
 });
 
 // API Endpoint: Voice-Command Parser
-app.post("/api/ai/voice-command", async (req: express.Request, res: express.Response) => {
+app.post("/api/ai/voice-command", async (req, res) => {
   const { text } = req.body;
   if (!text) {
     res.status(400).json({ error: "Text is required" });
@@ -280,8 +271,7 @@ app.post("/api/ai/voice-command", async (req: express.Request, res: express.Resp
   const ai = getAiClient();
   if (ai) {
     try {
-      const prompt = `Analyze vocal input: "${text}". Classify intent to "add_task" | "get_briefing" | "breakdown" | "unknown".
-Return JSON with fields: action, taskDetails (if add_task, with title, urgent, important), goal (if breakdown), explanation.`;
+      const prompt = `Analyze vocal input: "${text}". Classify intent to "add_task" | "get_briefing" | "breakdown" | "unknown".\nReturn JSON with fields: action, taskDetails (if add_task, with title, urgent, important), goal (if breakdown), explanation.`;
 
       const response = await ai.models.generateContent({
         model: "gemini-1.5-flash",
@@ -326,4 +316,7 @@ Return JSON with fields: action, taskDetails (if add_task, with title, urgent, i
   res.json({ result, source: "simulation" });
 });
 
-export const api = functions.https.onRequest(app);
+const PORT = 5001;
+app.listen(PORT, () => {
+  console.log(`Local AI API server running on port ${PORT}`);
+});

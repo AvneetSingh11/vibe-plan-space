@@ -2,7 +2,7 @@ import React from "react";
 import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight, Volume2, TrendingUp, CheckSquare, Target, Settings, Play as PlayIcon, Pause as PauseIcon, User, Mail, Award, Sparkles, X, Cloud, CloudOff, RefreshCw, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { saveUserProgress, loadUserProgress, auth } from "./lib/firebase";
-import { GoogleLogin } from "@react-oauth/google";
+
 import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 import EisenhowerMatrix from "./components/EisenhowerMatrix";
 import VoiceAssistant from "./components/VoiceAssistant";
@@ -250,6 +250,44 @@ export default function App() {
 
 
   // Theme state: default to beautiful 'vibe'
+  const [currentUser, setCurrentUser] = React.useState<User | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+  
+  React.useEffect(() => {
+    trackEvent("page_view", { page_path: "/" + activeTab });
+  }, [activeTab]);
+  
+  React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+      if (user) {
+        setSpaceId(user.uid);
+        safeLocalStorage.setItem("vibe_space_id", user.uid);
+        try {
+          const cloudData = await loadUserProgress(user.uid);
+          if (cloudData) {
+            setUserName(cloudData.userName || user.displayName || "Guest");
+            setUserMantra(cloudData.userMantra || "");
+            if (cloudData.userAvatar) setUserAvatar(cloudData.userAvatar);
+            if (cloudData.tasks) setTasks(cloudData.tasks);
+            if (cloudData.habits) setHabits(cloudData.habits);
+            if (cloudData.emotionLogs) setEmotionLogs(cloudData.emotionLogs);
+            const now = Date.now();
+            setLastCloudSync(cloudData.lastSynced || now);
+            safeLocalStorage.setItem("vibe_last_cloud_sync", String(cloudData.lastSynced || now));
+            setSyncStatus("success");
+          }
+        } catch (e) {
+          console.error("Failed to load user data", e);
+        }
+      } else {
+        setSpaceId("");
+        safeLocalStorage.removeItem("vibe_space_id");
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+  
   const [theme, setTheme] = React.useState<"vibe" | "cosmic" | "clay" | "brutal" | "alabaster">(() => {
     try {
       const saved = safeLocalStorage.getItem("vibe_theme");
@@ -2061,6 +2099,12 @@ export default function App() {
         </>
       )}
     </AnimatePresence>
+  <CookieConsent />
+  <AuthModal 
+    isOpen={isAuthModalOpen} 
+    onClose={() => setIsAuthModalOpen(false)} 
+    currentUser={currentUser} 
+  />
   </main>
   </div>
 );
