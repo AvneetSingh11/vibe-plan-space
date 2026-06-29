@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mission Control - Today</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400..700&family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..900&family=Space+Grotesk:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e2e2e2",
+                        "secondary-fixed": "#e1e0ff",
+                        "primary-container": "#2563eb",
+                        "on-primary-container": "#eeefff",
+                        "secondary": "#c0c1ff",
+                        "on-surface": "#e2e2e2",
+                        "outline-variant": "#434655",
+                        "background": "#0e0e0e",
+                        "surface-container-lowest": "#050505",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-variant": "#1a1a1a",
+                        "inverse-primary": "#0053db",
+                        "surface-container": "#131313",
+                        "tertiary-container": "#656d84",
+                        "surface-bright": "#2a2a2a",
+                        "on-secondary-fixed": "#07006c",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "on-primary-fixed": "#00174b",
+                        "on-tertiary": "#283044",
+                        "on-tertiary-container": "#eef0ff",
+                        "tertiary": "#bec6e0",
+                        "primary-fixed": "#dbe1ff",
+                        "on-secondary-container": "#b0b2ff",
+                        "on-error-container": "#ffdad6",
+                        "on-primary": "#002a78",
+                        "secondary-container": "#3131c0",
+                        "on-secondary": "#1000a9",
+                        "surface-tint": "#b4c5ff",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-surface-variant": "#c3c6d7",
+                        "on-error": "#690005",
+                        "primary": "#b4c5ff",
+                        "tertiary-fixed": "#dae2fd",
+                        "surface": "#0e0e0e",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-background": "#e2e2e2",
+                        "surface-container-high": "#222222",
+                        "surface-container-low": "#161616",
+                        "surface-container-highest": "#2d2d2d",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "error": "#ffb4ab",
+                        "outline": "#8d90a0",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "surface-dim": "#0e0e0e",
+                        "inverse-on-surface": "#131313"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "xl": "40px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "base": "4px",
+                        "gutter": "24px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["JetBrains Mono"],
+                        "display-lg": ["Space Grotesk"],
+                        "headline-md": ["Space Grotesk"],
+                        "data-mono": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .glass-panel {
+            background: rgba(19, 19, 19, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .blue-glow {
+            box-shadow: 0 0 40px -10px rgba(37, 99, 235, 0.4);
+        }
+        .neural-scan {
+            background: linear-gradient(90deg, transparent 0%, rgba(37, 99, 235, 0.2) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .pulse-soft {
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-hidden">
+<div class="flex h-screen w-full overflow-hidden">
+<!-- Sidebar Navigation (Shared Component Integration) -->
+<aside class="w-64 border-r border-outline-variant flex flex-col bg-surface-container-lowest z-20">
+<div class="p-6 flex items-center gap-3">
+<div class="size-8 bg-primary-container flex items-center justify-center rounded">
+<svg class="text-white size-6" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="font-display-lg text-lg tracking-tight">Mission Control</h2>
+</div>
+<nav class="flex-1 px-4 py-2 space-y-1">
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary-container text-white cursor-pointer group">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-medium text-sm">Today</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-variant transition-colors text-on-surface-variant cursor-pointer group">
+<span class="material-symbols-outlined">task_alt</span>
+<span class="font-medium text-sm">Tasks</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-variant transition-colors text-on-surface-variant cursor-pointer group">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-medium text-sm">Telemetry</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-variant transition-colors text-on-surface-variant cursor-pointer group">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium text-sm">Settings</span>
+</div>
+</nav>
+<div class="mt-auto p-4 border-t border-outline-variant">
+<div class="glass-panel rounded-xl p-4 flex flex-col gap-3">
+<p class="font-label-caps text-[10px] text-outline uppercase">Uptime Session</p>
+<div class="flex gap-2">
+<div class="flex-1 bg-surface-container-highest rounded py-2 text-center">
+<span class="font-data-mono text-sm">08h</span>
+</div>
+<div class="flex-1 bg-surface-container-highest rounded py-2 text-center">
+<span class="font-data-mono text-sm">12m</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Dashboard Content -->
+<main class="flex-1 relative flex flex-col overflow-hidden">
+<!-- Ambient Background Animation -->
+<webgl-shader class="absolute inset-0 opacity-20 pointer-events-none" src="{{DATA:ANIMATION:ANIMATION_1}}"></webgl-shader>
+<!-- Top Header Bar -->
+<header class="h-16 flex items-center justify-between px-8 z-10 border-b border-outline-variant/30">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-xs font-label-caps text-outline uppercase tracking-widest">Operational Status</span>
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-medium text-sm">System Admin: All systems nominal</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="size-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface">search</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors border border-outline-variant relative">
+<span class="material-symbols-outlined text-on-surface">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-primary rounded-full border border-background"></span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+<div class="text-right">
+<p class="text-sm font-bold">A. Vance</p>
+<p class="text-[10px] text-primary uppercase font-bold">L-7 Clearance</p>
+</div>
+<div class="size-10 rounded-full border-2 border-primary-container p-0.5">
+<div class="size-full rounded-full bg-cover bg-center" data-alt="A close-up high-resolution profile portrait of a futuristic system administrator with subtle cybernetic facial markings. The lighting is cold and atmospheric with deep blue highlights from nearby terminal screens, maintaining a professional yet high-tech aesthetic. The background is a dark, sleek command center with glowing interface elements." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCxSrznHwtMEQ85KuUtnR4tNaFykxtIv6K8j2h9vOL0LdehOZzWD5B-PlS1hwyfP0s5xO7yjfJxMzzxwB3mPnLx5EG-nXn5dw4r0BajBrkrv6lG5eKYe0dd719Rh2Vuho7RWZkWnxw0LBAj1uzR8G1UH0NO4F5ySG3o7gsILKym4Xzao6F6lrmQLib4KC_TYR5y61QxlewvNY9umbPkY8dzfsDjnQgZ9mXWkTTQAblD1uDxzToNsjNrXaNWLerE_K8u9SJnDmhFF5w')"></div>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Grid -->
+<div class="flex-1 grid grid-cols-12 gap-6 p-8 relative z-10 overflow-hidden">
+<!-- Left: 3D Focus Timer -->
+<div class="col-span-8 flex flex-col items-center justify-center relative bg-surface-container-lowest/40 rounded-3xl border border-outline-variant/20">
+<div class="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+<div class="absolute -top-1/4 -right-1/4 size-[600px] bg-primary/5 blur-[120px] rounded-full"></div>
+</div>
+<div class="relative w-[450px] h-[450px] flex items-center justify-center">
+<!-- Central 3D Asset Holder -->
+<div class="absolute inset-0 flex items-center justify-center">
+<threejs-scene class="w-full h-full" src="{{DATA:ANIMATION:ANIMATION_2}}"></threejs-scene>
+</div>
+<!-- Timer Overlay -->
+<div class="relative z-10 text-center flex flex-col items-center">
+<span class="text-xs font-label-caps tracking-[0.4em] text-primary/80 mb-2 uppercase">Deep Focus Engaged</span>
+<h2 class="text-[110px] font-display-lg leading-none tracking-tighter text-white drop-shadow-2xl">
+                                42<span class="text-primary">:</span>18
+                            </h2>
+<div class="flex gap-4 mt-8">
+<button class="flex items-center gap-2 bg-primary text-on-primary px-8 py-3 rounded-full font-bold transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pause</span>
+                                    PAUSE MISSION
+                                </button>
+<button class="size-12 flex items-center justify-center rounded-full border border-outline text-white hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">restart_alt</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Environment Info -->
+<div class="absolute bottom-8 left-8 right-8 flex justify-between items-end">
+<div class="flex flex-col gap-1">
+<span class="text-[10px] font-label-caps text-outline uppercase">Active Context</span>
+<span class="text-sm font-medium">Neural Net Architecture Refactor</span>
+</div>
+<div class="flex items-center gap-4 bg-black/40 px-6 py-3 rounded-full border border-outline-variant/30 backdrop-blur">
+<div class="flex flex-col items-center">
+<span class="text-[10px] font-label-caps text-outline uppercase">Level</span>
+<span class="text-sm font-data-mono">Stage 4</span>
+</div>
+<div class="w-px h-6 bg-outline-variant/50"></div>
+<div class="flex flex-col items-center">
+<span class="text-[10px] font-label-caps text-outline uppercase">Yield</span>
+<span class="text-sm font-data-mono text-primary">+12.5%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Priority Queue -->
+<div class="col-span-4 flex flex-col gap-6 h-full overflow-hidden">
+<div class="flex-1 glass-panel rounded-3xl p-6 flex flex-col overflow-hidden">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-lg">Priority Queue</h3>
+<button class="text-primary text-xs font-bold hover:underline">VIEW ALL</button>
+</div>
+<div class="space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+<!-- Active Task -->
+<div class="p-4 rounded-2xl bg-primary-container/10 border border-primary-container/30 relative overflow-hidden group cursor-pointer">
+<div class="absolute inset-y-0 left-0 w-1 bg-primary"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-label-caps text-primary uppercase">Current Task</span>
+<span class="text-[10px] font-data-mono text-outline">08:00 - 10:00</span>
+</div>
+<h4 class="font-bold text-sm mb-1">Architecture Refactor</h4>
+<p class="text-xs text-outline leading-relaxed line-clamp-2">Optimizing node weight distribution for the V-4 Neural Mesh.</p>
+</div>
+<!-- Queued Tasks -->
+<div class="p-4 rounded-2xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/20 transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-label-caps text-on-tertiary-fixed-variant uppercase">Up Next</span>
+<span class="text-[10px] font-data-mono text-outline">10:15 - 11:30</span>
+</div>
+<h4 class="font-bold text-sm mb-1 text-white/90">Protocol Audit</h4>
+<div class="flex gap-2 mt-3">
+<span class="text-[9px] px-2 py-0.5 rounded bg-surface-variant text-outline border border-outline-variant/30">SECURITY</span>
+<span class="text-[9px] px-2 py-0.5 rounded bg-surface-variant text-outline border border-outline-variant/30">SYSTEM</span>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/20 transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-label-caps text-on-tertiary-fixed-variant uppercase">Scheduled</span>
+<span class="text-[10px] font-data-mono text-outline">13:00 - 14:00</span>
+</div>
+<h4 class="font-bold text-sm mb-1 text-white/90">Data Core Sync</h4>
+<p class="text-xs text-outline">Synchronize encrypted shards across regional nodes.</p>
+</div>
+<div class="p-4 rounded-2xl bg-surface-container/50 border border-dashed border-outline-variant/30 hover:bg-surface-container-high transition-all flex items-center justify-center gap-2 group cursor-pointer py-8">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">add_circle</span>
+<span class="text-xs font-bold text-outline uppercase tracking-wider">Queue Mission</span>
+</div>
+</div>
+</div>
+<!-- Atmosphere Widget -->
+<div class="h-32 glass-panel rounded-3xl p-4 flex flex-col justify-between">
+<div class="flex justify-between items-center">
+<span class="text-[10px] font-label-caps text-outline uppercase">Environment Control</span>
+<span class="material-symbols-outlined text-sm text-outline">ac_unit</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-2xl font-data-mono">22.4°C</span>
+<span class="text-[10px] text-outline uppercase">Ambience</span>
+</div>
+<div class="flex-1 flex flex-col gap-2">
+<div class="flex justify-between text-[10px] text-outline px-1">
+<span>O2 Level</span>
+<span>Optimal</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[88%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Telemetry Tray -->
+<footer class="h-24 bg-surface-container-lowest/80 border-t border-outline-variant/30 px-8 flex items-center gap-8 relative z-10 backdrop-blur-xl">
+<!-- Heart Rate Widget -->
+<div class="flex items-center gap-4 group">
+<div class="size-12 rounded-full bg-error-container/20 border border-error-container/40 flex items-center justify-center relative overflow-hidden">
+<span class="material-symbols-outlined text-error relative z-10 animate-pulse" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<div class="absolute inset-0 bg-error/5 pulse-soft"></div>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-label-caps text-outline uppercase">Heart Rate</span>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-data-mono">72</span>
+<span class="text-[10px] text-outline">BPM</span>
+</div>
+</div>
+<div class="w-24 h-10 opacity-50">
+<animated-svg class="w-full h-full" src="{{DATA:ANIMATION:ANIMATION_3}}"></animated-svg>
+</div>
+</div>
+<div class="w-px h-10 bg-outline-variant/30"></div>
+<!-- Neural Load Widget -->
+<div class="flex items-center gap-4 flex-1">
+<div class="size-12 rounded-full bg-primary-container/20 border border-primary-container/40 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div class="flex flex-col flex-1 max-w-xs">
+<div class="flex justify-between items-baseline mb-1">
+<span class="text-xs font-label-caps text-outline uppercase">Neural Load</span>
+<span class="text-sm font-data-mono text-primary">64%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full relative overflow-hidden">
+<div class="absolute inset-0 neural-scan opacity-40"></div>
+<div class="h-full bg-primary w-[64%] relative z-10"></div>
+</div>
+</div>
+</div>
+<div class="w-px h-10 bg-outline-variant/30"></div>
+<!-- Session Progress -->
+<div class="flex items-center gap-4">
+<div class="flex flex-col text-right">
+<span class="text-xs font-label-caps text-outline uppercase">Daily Quota</span>
+<span class="text-sm font-bold">5.2 / 8.0 hrs</span>
+</div>
+<div class="relative size-14">
+<svg class="size-full -rotate-90" viewbox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<circle class="stroke-surface-container-highest" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+<circle class="stroke-primary" cx="18" cy="18" fill="none" r="16" stroke-dasharray="100" stroke-dashoffset="35" stroke-linecap="round" stroke-width="3"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="text-[10px] font-bold">65%</span>
+</div>
+</div>
+</div>
+<div class="ml-auto flex items-center gap-3">
+<button class="bg-surface-container-highest/50 border border-outline-variant/50 px-4 py-2 rounded-lg text-xs font-bold hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">terminal</span>
+                        LOG_REPORT
+                    </button>
+<button class="bg-error/10 border border-error/20 text-error px-4 py-2 rounded-lg text-xs font-bold hover:bg-error/20 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">power_settings_new</span>
+                        TERMINATE
+                    </button>
+</div>
+</footer>
+</main>
+</div>
+<script>
+        // Micro-interaction for heart rate animation
+        const heartRateVal = document.querySelector('.font-data-mono');
+        setInterval(() => {
+            const current = parseInt(heartRateVal.innerText);
+            const drift = Math.floor(Math.random() * 3) - 1;
+            heartRateVal.innerText = 72 + drift;
+        }, 3000);
+
+        // Simple mouse follow effect for the background
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            document.documentElement.style.setProperty('--mouse-x', x);
+            document.documentElement.style.setProperty('--mouse-y', y);
+        });
+    </script>
+</body></html>
