@@ -1,9 +1,10 @@
 import React from "react";
 import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, HeartPulse, Mic, ChevronRight, Volume2, TrendingUp, CheckSquare, Target, Settings, Play as PlayIcon, Pause as PauseIcon, User, Mail, Award, Sparkles, X, Cloud, CloudOff, RefreshCw, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { saveUserProgress, loadUserProgress, auth } from "./lib/firebase";
-
-import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
+import { saveUserProgress, loadUserProgress, auth, trackEvent } from "./lib/firebase";
+import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
+import CookieConsent from "./components/CookieConsent";
+import AuthModal from "./components/AuthModal";
 import EisenhowerMatrix from "./components/EisenhowerMatrix";
 import VoiceAssistant from "./components/VoiceAssistant";
 import IntegrationsHub from "./components/IntegrationsHub";
@@ -250,7 +251,7 @@ export default function App() {
 
 
   // Theme state: default to beautiful 'vibe'
-  const [currentUser, setCurrentUser] = React.useState<User | null>(null);
+  const [currentUser, setCurrentUser] = React.useState<FirebaseUser | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
   
   React.useEffect(() => {
