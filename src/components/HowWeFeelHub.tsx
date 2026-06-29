@@ -323,13 +323,13 @@ export const HowWeFeelHub: React.FC<HowWeFeelHubProps> = ({
         <div className="absolute top-[-10%] right-[-5%] w-[30%] h-[120%] bg-gradient-to-br from-slate-500/10 to-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono flex items-center gap-1.5">
+            <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono flex items-center gap-1.5 mb-2">
               <Heart className="w-3.5 h-3.5 text-slate-400 fill-slate-400/20" /> Mind & Focus Hub
             </span>
-            <h2 className="text-xl md:text-2xl font-extrabold text-foreground font-display">
-              The "How We Feel" Focus Engine
-            </h2>
-            <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+            <h1 className="font-display-hero text-display-hero text-white mb-2">
+              Cognitive Focus Engine
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
               Emotions drive focus. Track your emotional state before and after task execution. Optimize your workflow, manage performance anxiety, and unlock tailored AI cognitive recommendations.
             </p>
           </div>

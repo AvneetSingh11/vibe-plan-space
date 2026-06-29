@@ -207,7 +207,7 @@ export default function EisenhowerMatrix({
     <div className="w-full h-full flex flex-col">
       <header className="mb-8 flex justify-between items-end">
         <div>
-          <h1 className="font-display-hero text-display-hero gradient-text mb-2">Vibe Task Fleet</h1>
+          <h1 className="font-display-hero text-display-hero text-white mb-2">Vibe Task Fleet</h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
             Prioritization matrix. Critical operational tasks sorted by urgency and strategic importance.
           </p>

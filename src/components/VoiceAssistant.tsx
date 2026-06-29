@@ -241,7 +241,7 @@ export default function VoiceAssistant({
       {/* Header Section */}
       <header className="mb-12 flex justify-between items-end">
         <div>
-          <h1 className="font-display-hero text-display-hero gradient-text mb-2">Vocal Resonance</h1>
+          <h1 className="font-display-hero text-display-hero text-white mb-2">Vocal Resonance</h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Initiate command sequence or dictate space parameters. Acoustic environment optimized.</p>
         </div>
       </header>

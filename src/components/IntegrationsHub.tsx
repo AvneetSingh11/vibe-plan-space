@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Task } from "../types";
 import { Calendar, GraduationCap, Loader2, Link2, CheckCircle2 } from "lucide-react";
 import { useGoogleLogin } from '@react-oauth/google';
+import { Skeleton } from 'boneyard-js/react';
 
 interface IntegrationsHubProps {
   onAddTasks: (tasks: Partial<Task>[]) => void;
@@ -184,7 +185,8 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Skeleton name="integrations-grid" loading={isSyncing} animate="pulse">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Google Calendar Card */}
         <div className="card-3d p-6 rounded-3xl relative overflow-hidden bg-card">
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
@@ -271,10 +273,11 @@ export default function IntegrationsHub({ onAddTasks }: IntegrationsHubProps) {
               </div>
             )}
           </div>
+          </div>
         </div>
-      </div>
+      </Skeleton>
 
-      {/* Sync Action Area */}
+      {/* Manual Sync Trigger (Optional now that auto-sync exists) */}
       {(calendarState === "connected" || classroomState === "connected" || calendarState === "demo" || classroomState === "demo") && (
         <div className="mt-8 p-6 rounded-3xl bg-surface text-center">
           <p className="text-muted-foreground text-sm mb-4">

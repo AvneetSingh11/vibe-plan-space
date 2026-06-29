@@ -111,9 +111,9 @@ export default function HabitTracker({ habits, onToggleHabit, onAddHabit, onDele
 
   return (
     <div className="w-full h-full flex flex-col items-center">
-      <header className="w-full max-w-4xl mb-8 flex justify-between items-end">
+      <header className="w-full mb-8 flex justify-between items-end">
         <div>
-          <h1 className="font-display-hero text-display-hero gradient-text mb-2">Vibe Vault</h1>
+          <h1 className="font-display-hero text-display-hero text-white mb-2">Vibe Vault</h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
             Behavioral conditioning and consistency protocols.
           </p>
@@ -121,7 +121,7 @@ export default function HabitTracker({ habits, onToggleHabit, onAddHabit, onDele
       </header>
 
       {/* Dynamic Active Consistency Streak Protocol Card */}
-      <div className="w-full max-w-4xl mb-6 glass-panel rounded-3xl p-6 relative overflow-hidden border border-glass-stroke/50 bg-black/10">
+      <div className="w-full mb-6 glass-panel rounded-3xl p-6 relative overflow-hidden border border-glass-stroke/50 bg-black/10">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full blur-[90px] opacity-[0.08] pointer-events-none"></div>
         
         <div className="flex flex-col gap-6 relative z-10">
@@ -212,7 +212,7 @@ export default function HabitTracker({ habits, onToggleHabit, onAddHabit, onDele
         </div>
       </div>
 
-      <div className="w-full max-w-4xl glass-panel rounded-3xl p-8 relative overflow-hidden flex flex-col md:flex-row gap-8">
+      <div className="w-full glass-panel rounded-3xl p-8 relative overflow-hidden flex flex-col md:flex-row gap-8">
          <div className="absolute top-0 right-0 w-64 h-64 bg-aurora-orange rounded-full blur-[100px] opacity-10 pointer-events-none"></div>
          
          <div className="flex-1 flex flex-col">

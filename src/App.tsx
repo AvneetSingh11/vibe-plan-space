@@ -3,8 +3,10 @@ import { Plus, Check, MoreVertical, Layout, LayoutDashboard, BrainCircuit, Heart
 import { motion, AnimatePresence } from "motion/react";
 import { saveUserProgress, loadUserProgress, auth, trackEvent } from "./lib/firebase";
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
+import { autoSyncTasks } from "./lib/autoSync";
 import CookieConsent from "./components/CookieConsent";
 import AuthModal from "./components/AuthModal";
+import AuraDashboard from "./components/AuraDashboard";
 import EisenhowerMatrix from "./components/EisenhowerMatrix";
 import VoiceAssistant from "./components/VoiceAssistant";
 import IntegrationsHub from "./components/IntegrationsHub";
@@ -349,6 +351,35 @@ export default function App() {
     
     checkDailyReset();
     const interval = setInterval(checkDailyReset, 60000); // Check every minute
+
+    // Auto-sync integrations in background
+    const runAutoSync = async () => {
+      const synced = await autoSyncTasks(new Date());
+      if (synced.length > 0) {
+        setTasks(prev => {
+          // Avoid duplicating tasks by title
+          const existingTitles = new Set(prev.map(t => t.title));
+          const toAdd = synced.filter(t => !existingTitles.has(t.title)).map(t => ({
+            id: generateUniqueId(),
+            title: t.title,
+            urgent: t.urgent,
+            important: t.important,
+            completed: false,
+            estimatedMinutes: t.estimatedMinutes,
+            deadline: t.deadline,
+            createdAt: new Date().toISOString()
+          }));
+          if (toAdd.length > 0) {
+            const updated = [...toAdd, ...prev];
+            safeLocalStorage.setItem("actionmate_tasks", JSON.stringify(updated));
+            return updated;
+          }
+          return prev;
+        });
+      }
+    };
+    runAutoSync();
+
     return () => clearInterval(interval);
   }, []);
 
@@ -398,6 +429,38 @@ export default function App() {
   const [userAvatar, setUserAvatar] = React.useState(() => {
     return safeLocalStorage.getItem("actionmate_avatar") || "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest";
   });
+
+  // Global Timer State
+  const [timerMode, setTimerMode] = React.useState<'standby' | 'running' | 'paused'>('standby');
+  const [timeLeft, setTimeLeft] = React.useState(25 * 60);
+  const [totalTime, setTotalTime] = React.useState(25 * 60);
+
+  // Timer Logic
+  React.useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timerMode === 'running' && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft(prev => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && timerMode === 'running') {
+      setTimerMode('standby');
+      // Play a simple beep when done
+      const beep = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+      beep.play().catch(e => console.log(e));
+    }
+    return () => clearInterval(interval);
+  }, [timerMode, timeLeft]);
+
+  const toggleTimer = () => {
+    if (timerMode === 'standby' || timerMode === 'paused') setTimerMode('running');
+    else setTimerMode('paused');
+  };
+
+  const setTimerDuration = (minutes: number) => {
+    setTimerMode('standby');
+    setTotalTime(minutes * 60);
+    setTimeLeft(minutes * 60);
+  };
 
   // Cloud Sync States
   const [spaceId, setSpaceId] = React.useState<string>(() => {
@@ -648,6 +711,21 @@ export default function App() {
   React.useEffect(() => {
     safeLocalStorage.setItem("actionmate_emotions", JSON.stringify(emotionLogs));
   }, [emotionLogs]);
+
+  // Auto-sync to cloud if connected to a space
+  React.useEffect(() => {
+    if (spaceId) {
+      // Debounce saving to avoid spamming the backend
+      const timer = setTimeout(() => {
+        saveUserProgress(spaceId, {
+          userName, userMantra, userAvatar,
+          tasks, habits, emotionLogs,
+          lastSynced: Date.now()
+        }).catch(err => console.error("Auto-sync to cloud failed:", err));
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [spaceId, tasks, habits, emotionLogs, userName, userMantra, userAvatar]);
 
   // Memorize 30-day streak growth trend data
   const chartData = React.useMemo(() => {
@@ -1253,7 +1331,7 @@ export default function App() {
   const totalStreakPoints = habits.reduce((acc, h) => acc + h.streak, 0);
   const activeHabitsCompletedTodayCount = habits.filter((h) => h.completed).length;
   const navItems: { id: "dashboard" | "matrix" | "habits" | "mind" | "command" | "integrations"; label: string }[] = [
-    { id: "dashboard", label: "today" },
+    { id: "dashboard", label: "home" },
     { id: "matrix", label: "matrix" },
     { id: "habits", label: "habits" },
     { id: "mind", label: "mind" },
@@ -1268,18 +1346,18 @@ export default function App() {
     >
       {/* Atmospheric Shader Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-aurora-orange via-background to-background opacity-50"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-aurora-blue via-transparent to-transparent opacity-30"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-surface-container-highest via-background to-background opacity-50"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-30"></div>
       </div>
 
       {/* SideNavBar removed as per user request */}
       {/* TopNavBar */}
       <nav className="top-nav-container fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-[1000px] rounded-full backdrop-blur-3xl text-primary-container font-headline-md text-sm border border-glass-stroke shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex justify-between items-center px-6 py-2 z-50">
         <div className="flex items-center gap-2">
-            <span className="font-headline-md text-lg font-bold tracking-tight text-primary-container">Vibe Plan Space</span>
+            <span className="font-headline-md text-lg font-bold tracking-tight text-white">Vibe Plan Space</span>
         </div>
         <div className="hidden md:flex items-center gap-4">
-          <button onClick={() => { setActiveTab('dashboard'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Dashboard</button>
+          <button onClick={() => { setActiveTab('dashboard'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'dashboard' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Home</button>
           <button onClick={() => { setActiveTab('matrix'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'matrix' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Matrix</button>
           <button onClick={() => { setActiveTab('habits'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'habits' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Habits</button>
           <button onClick={() => { setActiveTab('mind'); setIsProfileOpen(false); }} className={`transition-colors duration-300 hover:scale-105 hover:bg-white/5 rounded-full px-3 py-1 ${activeTab === 'mind' ? 'text-primary-fixed-dim border-b-2 border-primary-fixed-dim' : 'text-on-surface-variant hover:text-on-surface'}`}>Mind</button>
@@ -1334,299 +1412,25 @@ export default function App() {
       )}
 
       {/* Main Content Canvas */}
-      <main className="flex-1 mt-20 mb-6 p-6 perspective-container relative z-10 w-full max-w-[1200px] mx-auto min-h-screen flex flex-col">
+      <main className="flex-1 mt-20 mb-6 px-3 py-6 md:px-4 perspective-container relative z-10 w-full max-w-[1400px] mx-auto min-h-screen flex flex-col">
           
           {/* Orbit uses the global header instead */}
 
-          {/* Old Pomodoro removed as per user request */}
-
-          {/* ACTIVE VIEW BLOCK */}
           {/* ACTIVE VIEW BLOCK */}
           {activeTab === "dashboard" && (
-            <div className="flex flex-col gap-6 w-full pb-12 animate-rise">
-              {/* Dashboard Sub-Header with Account Summary */}
-              <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between p-6 rounded-3xl glass-panel relative overflow-hidden border border-glass-stroke/50 bg-black/15 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary-fixed-dim to-aurora-orange rounded-full blur-[100px] opacity-[0.06] pointer-events-none"></div>
-                
-                <div className="relative z-10 space-y-1">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-primary-fixed-dim font-black flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary-fixed-dim animate-ping"></span>
-                    Orbit Command Center
-                  </span>
-                  <h2 className="font-display-hero text-2xl sm:text-3xl font-black text-on-surface tracking-tight leading-none">
-                    Good day, {userName.split(" ")[0]}
-                  </h2>
-                  <p className="text-xs text-on-surface-variant font-body-md italic opacity-90 max-w-xl">
-                    "{userMantra}"
-                  </p>
-                </div>
-              </div>
+            <AuraDashboard 
+              userName={userName} 
+              userMantra={userMantra} 
+              tasks={tasks} 
+              onNavigate={setActiveTab} 
+              timerMode={timerMode}
+              timeLeft={timeLeft}
+              totalTime={totalTime}
+              toggleTimer={toggleTimer}
+              setTimerDuration={setTimerDuration}
+            />
+          )}
 
-              {/* Grid content columns */}
-              <div className="flex flex-col lg:flex-row gap-6 h-full">
-              
-              {/* Left Column: Today's Prime Objectives */}
-              <section className="glass-panel rounded-3xl p-6 lg:w-[40%] flex flex-col h-[850px] relative">
-                <h3 className="font-headline-md text-xl mb-6 flex items-center gap-2 text-on-surface">
-                  <CheckSquare className="w-5 h-5 text-primary-fixed-dim" /> Today's Prime Objectives
-                </h3>
-                <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 mb-4">
-                  {(tasks.filter(t => !t.completed && (!t.deadline || t.deadline <= new Date().toISOString().split('T')[0])).length === 0) ? (
-                    <p className="text-sm text-on-surface-variant font-body-md text-center mt-10">Nothing pending for today. A clear orbit.</p>
-                  ) : (
-                    tasks.filter(t => !t.completed && (!t.deadline || t.deadline <= new Date().toISOString().split('T')[0])).map(task => (
-                      <div key={task.id} className="flex flex-col gap-2 p-4 rounded-2xl bg-white/5 border border-glass-stroke hover:bg-white/10 transition-colors">
-                        <div className="flex items-start gap-3">
-                          <button 
-                            onClick={() => setTasks(tasks.map(t => t.id === task.id ? { ...t, completed: !t.completed } : t))}
-                            className="w-5 h-5 mt-0.5 rounded flex items-center justify-center border border-on-surface-variant transition-colors hover:border-on-surface cursor-pointer"
-                          />
-                          <span className="font-body-md text-[15px] text-on-surface leading-snug">{task.title}</span>
-                        </div>
-                        <div className="ml-8 mt-1 h-1 bg-white/10 rounded-full overflow-hidden">
-                           <div className="h-full bg-primary-fixed-dim w-1/3 rounded-full"></div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-                
-                <form 
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const titleInput = e.currentTarget.elements.namedItem('taskInput') as HTMLInputElement;
-                    if (titleInput.value.trim()) {
-                      setTasks([{
-                        id: Math.random().toString(36).substr(2, 9),
-                        title: titleInput.value,
-                        quadrant: "Q2",
-                        completed: false,
-                        estimatedMinutes: 30,
-                        createdAt: new Date().toISOString()
-                      }, ...tasks]);
-                      titleInput.value = '';
-                    }
-                  }}
-                  className="flex gap-2 items-center pt-4 border-t border-glass-stroke"
-                >
-                  <input 
-                    name="taskInput"
-                    placeholder="Type override command..." 
-                    className="flex-1 px-4 py-3 rounded-xl glass-input text-on-surface text-sm focus:outline-none placeholder:text-on-surface-variant" 
-                  />
-                  <button type="submit" className="p-3 rounded-xl bg-primary-container text-on-primary-container hover:scale-105 transition-transform cursor-pointer">
-                    <span className="material-symbols-outlined text-[20px]">send</span>
-                  </button>
-                </form>
-              </section>
-
-              {/* Right Column: Pomodoro + Ambient Sound + Insights */}
-              <section className="lg:w-[60%] flex flex-col gap-6 h-[850px]">
-                
-                {/* Top: Deep Work Session (Pomodoro) */}
-                <div className="glass-panel rounded-3xl p-8 flex-1 flex flex-col items-center justify-center relative overflow-hidden">
-                  <div className={`absolute inset-0 bg-aurora-orange blur-[120px] transition-opacity duration-1000 ${focusTimerActive ? 'opacity-20' : 'opacity-0'} pointer-events-none`}></div>
-                  
-                  <div 
-                    onClick={() => {
-                      if (window.matchMedia("(max-width: 768px)").matches) {
-                        setFocusTimerActive(!focusTimerActive);
-                        triggerAlertBeep();
-                      }
-                    }}
-                    className="relative w-[280px] h-[280px] xs:w-[320px] xs:h-[320px] sm:w-[400px] sm:h-[400px] flex flex-col items-center justify-center my-2 z-10 group cursor-pointer"
-                  >
-                    {/* SVG Ring */}
-                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 400 400">
-                      <circle cx="200" cy="200" r="184" className="stroke-white/10" strokeWidth="12" fill="transparent" />
-                      <circle
-                        cx="200"
-                        cy="200"
-                        r="184"
-                        className={`stroke-primary-container transition-all duration-1000 ${focusTimerActive ? 'drop-shadow-[0_0_20px_rgba(255,180,161,0.6)]' : ''}`}
-                        strokeWidth="12"
-                        fill="transparent"
-                        strokeDasharray={1156.1}
-                        strokeDashoffset={1156.1 - (1156.1 * (focusTimeLeft / (focusSelectedPreset * 60)))}
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    
-                    {/* Inner Content (Title, Time, Status) */}
-                    <div className="flex flex-col items-center justify-center relative z-20 gap-2 sm:gap-4 select-none">
-                      <h3 className="font-headline-md text-[14px] sm:text-[18px] text-on-surface-variant font-medium tracking-wide">Deep Work Session</h3>
-                      
-                      <div className={`font-display-hero text-[48px] sm:text-[80px] tracking-tighter leading-none ${focusTimerActive ? 'text-on-surface' : 'text-on-surface-variant'} transition-colors duration-500`}>
-                        {Math.floor(focusTimeLeft / 60).toString().padStart(2, "0")}:{Math.floor(focusTimeLeft % 60).toString().padStart(2, "0")}
-                      </div>
-                      
-                      <p className={`font-label-caps text-[11px] sm:text-[13px] uppercase tracking-widest ${focusTimerActive ? 'text-primary-container' : 'text-on-surface-variant'}`}>
-                        {focusTimerActive ? 'Focus Mode Active' : 'Tap to Start / Standby'}
-                      </p>
-                    </div>
-
-                    {/* Hover Controls (Desktop Only) */}
-                    <div className="absolute w-[140px] h-[64px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/60 backdrop-blur-md rounded-full opacity-0 md:group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center gap-3 z-30 shadow-2xl">
-                        <button onClick={(e) => {
-                          e.stopPropagation();
-                          setFocusTimerActive(!focusTimerActive);
-                          triggerAlertBeep();
-                        }} className="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:scale-110 transition-transform cursor-pointer shadow-lg">
-                          {focusTimerActive ? <PauseIcon className="w-6 h-6" /> : <PlayIcon className="w-6 h-6 ml-1 fill-current" />}
-                        </button>
-                        <button onClick={(e) => {
-                          e.stopPropagation();
-                          setFocusTimerActive(false);
-                          setFocusTimeLeft(focusSelectedPreset * 60);
-                        }} className="w-10 h-10 rounded-full bg-white/10 text-on-surface flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer border border-glass-stroke">
-                          <span className="material-symbols-outlined text-[20px]">replay</span>
-                        </button>
-                    </div>
-                  </div>
-
-                  {/* Mobile Controls (Always Visible on Mobile/Touch Devices) */}
-                  <div className="flex items-center gap-4 mt-2 sm:mt-4 md:hidden z-20">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFocusTimerActive(!focusTimerActive);
-                        triggerAlertBeep();
-                      }}
-                      className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary-container text-on-primary-container font-semibold tracking-wide active:scale-95 transition-all shadow-md cursor-pointer text-sm"
-                    >
-                      {focusTimerActive ? (
-                        <>
-                          <PauseIcon className="w-4 h-4" />
-                          <span>Pause Session</span>
-                        </>
-                      ) : (
-                        <>
-                          <PlayIcon className="w-4 h-4 fill-current" />
-                          <span>Start Session</span>
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFocusTimerActive(false);
-                        setFocusTimeLeft(focusSelectedPreset * 60);
-                      }}
-                      className="p-2.5 rounded-full bg-white/10 text-on-surface active:scale-95 transition-all cursor-pointer border border-glass-stroke flex items-center justify-center"
-                      title="Reset Timer"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">replay</span>
-                    </button>
-                  </div>
-
-                  {/* Preset Controls */}
-                  <div className="flex flex-wrap items-center justify-center gap-2 mt-6 z-20">
-                    {!showCustomTimer ? (
-                      <>
-                        {[15, 25, 45, 60].map(preset => (
-                          <button
-                            key={preset}
-                            onClick={() => {
-                              setFocusSelectedPreset(preset);
-                              setFocusTimeLeft(preset * 60);
-                              setFocusTimerActive(false);
-                            }}
-                            className={`px-4 py-1.5 rounded-full font-label-caps text-[12px] transition-colors border cursor-pointer ${
-                              focusSelectedPreset === preset 
-                                ? 'bg-primary-container text-on-primary-container border-primary-container shadow-[0_0_15px_rgba(255,180,161,0.3)]' 
-                                : 'bg-white/5 text-on-surface-variant border-glass-stroke hover:bg-white/10 hover:text-on-surface'
-                            }`}
-                          >
-                            {preset}m
-                          </button>
-                        ))}
-                        <button
-                          onClick={() => {
-                            setShowCustomTimer(true);
-                          }}
-                          className={`px-4 py-1.5 rounded-full font-label-caps text-[12px] transition-colors border cursor-pointer bg-white/5 text-primary-fixed-dim border-glass-stroke hover:bg-white/10`}
-                        >
-                          + Custom
-                        </button>
-                      </>
-                    ) : (
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          const mins = parseInt(customMinutesInput, 10);
-                          if (mins > 0 && mins <= 360) {
-                            setFocusSelectedPreset(mins);
-                            setFocusTimeLeft(mins * 60);
-                            setFocusTimerActive(false);
-                            setShowCustomTimer(false);
-                          }
-                        }}
-                        className="flex items-center gap-2 bg-white/5 border border-glass-stroke rounded-full px-3 py-1"
-                      >
-                        <input
-                          type="number"
-                          min="1"
-                          max="360"
-                          value={customMinutesInput}
-                          onChange={(e) => setCustomMinutesInput(e.target.value)}
-                          className="w-16 bg-transparent text-center text-on-surface focus:outline-none text-xs font-mono"
-                          autoFocus
-                          placeholder="Min"
-                        />
-                        <span className="text-on-surface-variant text-[11px] font-label-caps">min</span>
-                        <button 
-                          type="submit"
-                          className="text-primary-fixed-dim hover:text-on-surface p-1 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer"
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                        </button>
-                        <button 
-                          type="button"
-                          onClick={() => setShowCustomTimer(false)}
-                          className="text-on-surface-variant hover:text-on-surface p-1 rounded-full hover:bg-white/10 flex items-center justify-center cursor-pointer"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">close</span>
-                        </button>
-                      </form>
-                    )}
-                  </div>
-
-                </div>
-
-                {/* Middle: Ambient Sound Controls */}
-                <div className="glass-panel rounded-3xl p-6">
-                  <h3 className="font-headline-md text-[16px] flex items-center gap-2 mb-5 text-on-surface">
-                    <Volume2 className="w-4 h-4 text-on-surface-variant" /> Ambient Sound Controls
-                  </h3>
-                  <div className="space-y-5">
-                    {ambientSources.map((sound) => (
-                      <AmbientSound 
-                        key={sound.name}
-                        name={sound.name}
-                        url={sound.url}
-                        volume={ambientVolumes[sound.name] || 0}
-                        onVolumeChange={(v) => setAmbientVolumes(prev => ({...prev, [sound.name]: v}))}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bottom: Productivity Insight */}
-                <div className="glass-panel rounded-3xl p-5 border-l-[6px] border-l-primary-container bg-primary-container/5">
-                  <h3 className="font-headline-md text-[14px] flex items-center gap-2 mb-3 text-on-surface">
-                    <TrendingUp className="w-4 h-4 text-primary-fixed-dim" /> Productivity Insight
-                  </h3>
-                  <p className="font-body-md text-on-surface-variant text-[14px] bg-black/20 p-4 rounded-xl border border-glass-stroke leading-relaxed">
-                    Maintaining focus. Next scheduled break in <span className="text-primary-fixed-dim font-bold">{Math.floor(focusTimeLeft / 60)} minutes</span>. Keep the momentum.
-                  </p>
-                </div>
-                
-              </section>
-            </div>
-          </div>
-        )}
-
-          
     {/* Matrix Tab */}
     {activeTab === "matrix" && (
       <EisenhowerMatrix
@@ -1748,7 +1552,7 @@ export default function App() {
             exit={{ opacity: 0, y: -40, scaleY: 0.8 }}
             transition={{ type: "spring", damping: 24, stiffness: 220 }}
             style={{ transformOrigin: "top right" }}
-            className="fixed top-[76px] right-[2.5%] md:right-[calc(50%-500px+24px)] w-[90%] max-w-[420px] z-[50] glass-panel rounded-3xl p-6 md:p-8 border border-white/10 bg-surface-container-highest/95 shadow-2xl overflow-hidden text-center flex flex-col items-center"
+            className="fixed top-[76px] right-[2.5%] md:right-[calc(50%-500px+24px)] w-[90%] max-w-[420px] z-[50] abyssal-card rounded-3xl py-6 px-4 md:py-8 md:px-6 overflow-y-auto overflow-x-hidden max-h-[85vh] text-center flex flex-col items-center"
           >
             {/* Ambient visual glowing spheres */}
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-primary-container/20 rounded-full blur-[80px] pointer-events-none"></div>
