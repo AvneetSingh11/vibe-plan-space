@@ -5,7 +5,13 @@ export default function AuraDashboard({
   userName = "Guest User",
   userMantra = "Ascending daily orbits with peak compliance.",
   tasks = [],
-  onNavigate
+  onNavigate,
+  timerMode,
+  timeLeft,
+  totalTime,
+  toggleTimer,
+  setTimerDuration
+
 }: {
   userName?: string;
   userMantra?: string;
