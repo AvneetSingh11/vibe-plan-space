@@ -2073,13 +2073,13 @@ export default function App() {
         </>
       )}
     </AnimatePresence>
+  </main>
   <CookieConsent />
   <AuthModal 
     isOpen={isAuthModalOpen} 
     onClose={() => setIsAuthModalOpen(false)} 
     currentUser={currentUser} 
   />
-  </main>
   </div>
 );
 }
