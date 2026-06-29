@@ -75,6 +75,8 @@ export default function AuthModal({ isOpen, onClose, currentUser }: AuthModalPro
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         trackEvent("sign_up", { method: "email" });
         await sendEmailVerification(cred.user);
+        await signOut(auth);
+        setIsLogin(true);
         setError("Success! Please check your email to verify your account.");
         // We do not close the modal here so they see the message
       }
